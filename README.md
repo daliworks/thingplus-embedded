@@ -71,7 +71,7 @@ If your gateway/device model is not listed at `Gateway Management` in the previo
 
 The gateway model defines device models. Each device model defines list of sensor actuators. Depending on device capability, the list of sensors and actuators can be discoverable dynamically or pre-defined beforehand.
 
-For more about all sensor and actuator lists, please see [sensorTypes](docs/sensorTypes.md). 
+For more about all sensor and actuator lists, please see [sensorTypes](docs/gateway/sensorTypes.md). 
 
 ## Step 6: Do porting
 
@@ -81,7 +81,7 @@ For more about all sensor and actuator lists, please see [sensorTypes](docs/sens
 
 ### Thing+ Device
   - For limited device, you need to implement [Thing+ Device API over MQTT](/docs/gateway/mqttProtocol.md) set.  [Thing+ Device workspace](https://github.com/daliworks/thingplus-device) has the code sample which implements `Thing+ Device API over MQTT`. 
-  - Also, [Thing+ Device API over http REST](/docs/gateway/restProtocol.md) is available. There are limitations comparing to MQTT API. REST API cannot support actuatation, remote device configuration and etc.
+  - [Thing+ Device API over http REST](/docs/gateway/restProtocol.md) is available as well. Please note that there are limitations comparing to MQTT API. REST API cannot support actuatation, remote device configuration and etc.
 
 Please contact Thing+ support team for access permission to above workspaces.
 
