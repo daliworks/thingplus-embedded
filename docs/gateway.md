@@ -1,9 +1,9 @@
 # Install Thing+ Gateway
-  * [How to install Thing+ Gateway](docs/gateway/install.md)
+  * [How to install Thing+ Gateway](/docs/gateway/install.md)
 
 # Configuration and logging
-  * [Configuration Parameters](docs/gateway/config.md)
-  * [Logging How to](docs/gateway/logging.md)
+  * [Configuration Parameters](/docs/gateway/config.md)
+  * [Logging How to](/docs/gateway/logging.md)
 
 
 # Thing+ Gateway UI howtos
@@ -13,12 +13,12 @@
   - Connect sensors and actuators.
   - Beaglebone Black example:
 
- ![BBB GPIO](docs/image/bbb_gpio.jpg "BBB GPIO")
+ ![BBB GPIO](/docs/image/bbb_gpio.jpg "BBB GPIO")
 
 ### Step 2
   - Web browser open http://[BBB’s IP address]/#/home
 
-  ![Gateway home](docs/image/gatewayui_home.png "Gateway home")
+  ![Gateway home](/docs/image/gatewayui_home.png "Gateway home")
 
 ### Step 3
    - Add sensor information with plus button at home
@@ -28,11 +28,11 @@
    - Test
    - Save and add additional sensors
 
-  ![Gateway sensor](docs/image/gatewayui_sensor.png "Gateway sensor")
+  ![Gateway sensor](/docs/image/gatewayui_sensor.png "Gateway sensor")
 
 ## 3G Modem setup
 
-![Thingworks modem](docs/image/bbb_modem_z.jpg "Thingworks modem")
+![Thingworks modem](/docs/image/bbb_modem_z.jpg "Thingworks modem")
  * Requirement
    * Update the gateway software
    * Make sure the modem on your PC works
@@ -58,7 +58,7 @@
         - SIM pass: 1234
         - check enabled
      - Press "Change Configuration" button
-     - ![modem setting](docs/image/bbb_modem_setting.png "modem setting")
+     - ![modem setting](/docs/image/bbb_modem_setting.png "modem setting")
    * Step 3 Gateway side: remember mac adress
      - HOME->Cloud Connection->Mac address
    * Step 4 PC side: [gateway registration to server](#gateway-registration-to-server)
