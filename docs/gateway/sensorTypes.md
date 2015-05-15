@@ -1,3 +1,9 @@
+```
+Copyright (c) 2014, Daliworks. All rights reserved.
+Reproduction and/or distribution in source and binary forms
+without the written consent of Daliworks, Inc. is prohibited.
+```
+
 Sensor types definition
 ------------------------
 
@@ -18,9 +24,10 @@ Each field means as follows.
         * any string value or
         * possible values can be defined in "enum" field
     * `object`
-        * coords json string as specified in [html5 geolocation](http://dev.w3.org/geo/api/spec-source.html)        
-        * latitude and longitude are mandatory. those can be abbreviated as lat and lng.
-        * example value: { latitude: -50, longitude: 100 } or { lat: -50, lng: 100 }
+        * complex object value with properties
+        * location example:
+          * coords json string as specified in [html5 geolocation](http://dev.w3.org/geo/api/spec-source.html)        
+          * example value: { latitude: -50, longitude: 100 } or { lat: -50, lng: 100 }
  * enum
      * arrary of possible values.
  * maximum, minimum
