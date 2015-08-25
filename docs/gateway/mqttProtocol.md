@@ -5,11 +5,14 @@ Reproduction and/or distribution without the written consent of
 Daliworks, Inc. is prohibited.
 ```
 
-__Version: 0.9.4__
+__Version: 0.9.5__
 
     
 Change History:
 
+0.9.5
+
+ * adding "Implementation Note" section
 0.9.4
 
  * newly introducing "Gateway data" message. You have an option to send multiple sensors' data together instead of multiple "Sensor data" messages.
@@ -56,6 +59,7 @@ Change History:
    off        | off              | off
 
 ## Terms that topic and content contains: 
+  * reportInterval: the interval that all gathered sensor data are sent regularily. It must be equal or greater than 1 minutes.
   * {service} : ```v``` for now. It is part of topic and reserved for future extension.
   * {region} : ```a``` for now. It is part of topic and reserved for future extension.
   * g: gateway. part of topic.
@@ -66,7 +70,7 @@ Change History:
     * {error_code_or_message} : [OPTIONAL] error code(comply with http status codes), or message which doesn't include comma.
   * {time} : the number of milliseconds since 1970/01/01
   * {value} : any string or json object
-  * {valid_duration} : the value will be expired in this valid duration. -1 for unlimited.
+  * {valid_duration} : the value will be expired in this ealid duration. -1 for unlimited.
 
 ## Connection setting
   * protocolId: Protocol ID, usually ```MQIsdp```
@@ -99,7 +103,7 @@ Change History:
       --will-payload err 
       # On connected, publish 'on' as retained message.
       > mosquitto_pub -h mqtt.thingplus.net -p 8883 \
-      -u {mac addr} -P {password}  -k 120 -i {mac addr} -q 1 \
+      -u {mac addr} -P {password} -i {mac addr} -q 1 \
       --cafile ./ca-cert.pem \
       -t 'v/a/g/b827eb1dcccc/mqtt/status' -r -m "on" 
       ```
@@ -125,7 +129,7 @@ Note: a zip compressed message is supported. It is recommended for large message
   * topic:
     * ```{service}/{region}/g/{gateway_id}/s/{sensor_id}/status```
   * message:
-    * ```{sensor_status}{valid_duration}```
+    * ```{sensor_status},{valid_duration}```
   * example:
     * ```v/a/g/b827eb1dcccc/s/28–000003a7f65d/status on,90```
 
@@ -134,12 +138,11 @@ Note: a zip compressed message is supported. It is recommended for large message
     * ```{service}/{region}/g/{gateway_id}/s/{sensor_id}```
   * message:
     * ```{time},{value},...(repeats)```
-    * more than one sensor data can be sent together.
-    * complex object data must be JSON type(Array)
-      * ```[{time}, {object value}, ...(repeats)]```
+    * more than one sensor data(time and value pair) can be sent together. Json array of time and value pair is also accepted.
   * example:
     * ```v/a/g/b827eb1dcccc/s/28–000003a82057 1372874400865,-15.687,1372874401865,-16.687```
-  * complex object data example:
+  * json example:
+    * ```v/a/g/b827eb1dcccc/s/28–000003a82057 [1372874400865,-15.687,1372874401865,-16.687]```
     * ```v/a/g/b827eb1dcccc/s/28–000003a82057 [1372874400865, {"lat': 37.11, "lng": 117.22}]```
 
 ### Gateway data(sending multiple sensors' data);
@@ -213,3 +216,14 @@ implemented if any actuator is supported on your device.
     * success message: ```{"id":"46h6f8xp3","result":""}```
     * error message: ```{"id":"46h6f8xp3","error": {"code": -32000, "message": "invalid options"}}```
 
+
+# Implementation Note
+
+## MQTT Connection
+
+ * When MQTT connection is closed, the device must wait until close event form the MQTT server. The next reconnection try must happen after waiting at least 10 secs.
+
+## Sending Sensor Data 
+
+ * The report interval must be equal or greater than 1 minutes.
+ * The time of sensor data must be reported in time order. Otherwise, those data will be ignored.
