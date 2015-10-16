@@ -166,7 +166,7 @@ implemented if any actuator is supported on your device.
      * subscription options: 
         * qos level : ```1```
   * request message
-     * id: String
+     * id: String. The request id
      * method: String
      * params: Object
         * poweroff, reboot, restart, swUpdate and swInfo params: NONE
@@ -186,10 +186,10 @@ implemented if any actuator is supported on your device.
   * topic
     * ```{service}/{region}/g/{gateway_id}/res```
   * response message on success
-    * id: String
+    * id: String. It must be the same id as the request it is responding to.
     * result: String or Object
   * response message on failure
-    * id: String
+    * id: String. It MUST be the same as the value of the id member in the Request Message.
     * error: Object
       * code: Number
       * message: String
