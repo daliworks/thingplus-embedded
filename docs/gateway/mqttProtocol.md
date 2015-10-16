@@ -73,7 +73,7 @@ Change History:
   * {value} : any string or json object
   * {valid_duration} : the value will be expired in this ealid duration. -1 for unlimited.
 
-## Connection setting
+## Connection setting (MUST)
   * protocolId: Protocol ID, usually ```MQIsdp```
   * protocolVersion: Protocol version, ```3```
   * clientId: {gateway_id}
@@ -111,7 +111,7 @@ Change History:
 
 ## Publish message 
 
-### Publish message options:
+### Publish message options (MUST)
   * qos level : ```1```
   * retain : ```false```
 
