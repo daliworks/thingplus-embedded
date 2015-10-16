@@ -139,7 +139,9 @@ Note: a zip compressed message is supported. It is recommended for large message
     * ```{service}/{region}/g/{gateway_id}/s/{sensor_id}```
   * message:
     * ```{time},{value},...(repeats)```
-    * more than one sensor data(time and value pair) can be sent together. Json array of time and value pair is also accepted.
+      * more than one sensor data(time and value pair) can be sent together.
+    * ```[{time},{value},...(repeats)]```
+      * Json array of time and value pair is also accepted.
   * example:
     * ```v/a/g/b827eb1dcccc/s/28–000003a82057 1372874400865,-15.687,1372874401865,-16.687```
   * json example:
