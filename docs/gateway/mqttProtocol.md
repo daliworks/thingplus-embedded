@@ -13,6 +13,7 @@ Change History:
 0.9.5
 
  * adding "Implementation Note" section
+
 0.9.4
 
  * newly introducing "Gateway data" message. You have an option to send multiple sensors' data together instead of multiple "Sensor data" messages.
