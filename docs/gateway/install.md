@@ -1,4 +1,4 @@
-System specific preparations
+# System specific preparations
 -------------------------------
 
 ## Ubuntu 
@@ -12,6 +12,26 @@ $ sudo apt-get install nodejs
 Rsync is used for software update. Stunnel make rsync communication secure.
 ```
 $ sudo apt-get install stunnel
+```
+
+## Linux
+### nodejs build
+* ref: https://github.com/nodejs/node/tree/v0.10.40-release#to-build
+* Prerequisites
+  - `GCC` 4.2 or newer
+  - `Python` 2.6 or 2.7
+  - GNU `Make` 3.81 or newer
+  - `libexecinfo` (FreeBSD and OpenBSD only)
+  - **In addition, `G++` is required on a certain environment.**
+  - For test, `curl` is required.
+
+```shell
+$ git clone -b v0.10.40-release https://github.com/nodejs/node.git
+$ cd node
+$ ./configure
+$ make
+$ sudo make install
+$ make test           # optional
 ```
 
 ## OSX Darwin 
@@ -28,7 +48,7 @@ gnu readlink and getopt in bin path, add path:
 /usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/gnu-getopt/bin
 ```
 
-Install
+# Install
 -------------
 
 ## Install Thing+ Gateway
