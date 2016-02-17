@@ -80,7 +80,7 @@ Thing+와 IoT 기기들 사이에는 MQTT 프로토콜을 이용합니다. Thing
 ### 2.1 MQTT
 MQTT(Message Queuing Telemetry Transport)는 경량 메시지 프로토콜로 낮은 대역폭과 낮은 전력을 사용하는 IoT 기기와 Thing+ Cloud 사이에 사용되는 프로토콜입니다. MQTT는 Publish/Subscribe 구조로 되어으며, TCP/IP를 통해 구현됩니다. SSL 및 TLS를 사용하여 데이터 보안을 할 수 있고, USERNAME/PASSWORD 기반의 인증방법을 제공하고 있습니다.
 
-<img src="https://raw.githubusercontent.com/daliworks/thingplus-embedded/master/docs/image/Thingplus_Embedded_Guide/MQTT_thing.png?token=ANiRiqWIrLbAOz9S2uumFs8FuMUL7gyEks5WvUkjwA%3D%3D" align="middle" width="600">
+![MQTT_thing](/docs/image/Thingplus_Embedded_Guide/MQTT_thing.png)
 
 MQTT 브로커(Broker)는 다양한 클라이언트들이 메시지를 주고 받을 수 있도록 메시지를 전달하는 역할을 합니다. Thing+ Cloud는 MQTT 브로커를 제공하고 있으며, IoT 기기는 Thing+ Cloud가 제공하는 MQTT 브로커에게 센서값을 전송(Publish)하고, 액추에이터 명령을 수신(Subscribe)하여 명령에 맞는 동작하면 됩니다.
 
@@ -350,7 +350,7 @@ Thing+ gateway는  Daliworks에서 만든 Thing+ MQTT 프로토콜을 따르는 
 
 Thing+ Gateway를 사용하면 Thing+ MQTT 프로토콜을 직접 구현하는 것 보다 간편하고 빠르게 하드웨어를 Thing+와 연동할 수 있습니다.
 
-<img src="https://raw.githubusercontent.com/daliworks/thingplus-embedded/master/docs/image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png?token=ANiRio9wB282bxOFxx75cnRkdN2unLS7ks5WvUlEwA%3D%3D" align="middle" width="600">
+![Cloud_Gateway_DeviceAgent](/docs/image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png)
 
 ### 4.1 Hardware Requirement
 Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며, Node.js로 작성되어 있습니다. **Node.js가 동작하지 않는 시스템에서는 사용할 수 없습니다.**
@@ -407,8 +407,7 @@ thing의 시간이 서버시간과 다를경우 thing의 로컬시간은 서버�
 #### 4.3.1 JSON RPC 연결
 Thing+ Gateway와 디바이스 에이전트는 JSONRPC 프로토콜을 사용합니다. 디바이스 에이전트는 JSONRPC 서버이며, 포트 50800를 열어두어야 합니다. 또한, Thing+ Gateway에서 사용할 서비스를 공개(expose)해야합니다. Thing+ Gateway는 JSONRPC 클라이언트며 해당 포트로 접속하여, 디바이스 에이전트가 제공하는 서비스를 사용합니다.
 
-<img src="https://raw.githubusercontent.com/daliworks/thingplus-embedded/master/docs/image/Thingplus_Embedded_Guide/Gateway_DeviceAgent.png?token=ANiRiqICAhPGB_TB-lotb4ZE7efeiOxKks5WvUldwA%3D%3D" align="middle" width="600">
-
+![Gateway_DeviceAgent](/docs/image/Thingplus_Embedded_Guide/Gateway_DeviceAgent.png)
 
 #### 4.3.2 Device Agent Services
 디바이스 에이전트는 Thing+ Gateway를 위해 두 개의 서비스를 제공해야 합니다. 첫번째는 센서상태, 센서값을 읽고 엑추에이터를 구동시키는 서비스로 서비스 이름은 "sensor"로 정의되어야 합니다. 두 번째는 와 하드웨어에 연결된 센서, 액추에이터를 탐색하는 서비스로 "discover"로 정의되어야 합니다.<br>
