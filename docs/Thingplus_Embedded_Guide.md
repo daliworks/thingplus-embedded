@@ -83,9 +83,7 @@ Thing+와 IoT 기기들 사이 사용하는 네트워크 프로토콜은 MQTT와
 
 ### 2.1 MQTT
 MQTT(Message Queuing Telemetry Transport)는 경량 메시지 프로토콜로 낮은 대역폭과 낮은 전력을 사용하는 IoT 기기와 Thing+ Cloud 사이에 사용되는 프로토콜입니다. MQTT는 Publish/Subscribe 구조로 되어으며, TCP/IP를 통해 구현됩니다. SSL 및 TLS를 사용하여 데이터 보안을 할 수 있고, USERNAME/PASSWORD 기반의 인증방법을 제공하고 있습니다.
-
-![MQTT_thing](/docs/image/Thingplus_Embedded_Guide/MQTT_thing.png)
-[comment]:![MQTT_thing](./image/Thingplus_Embedded_Guide/MQTT_thing.png)
+![MQTT_thing](./image/Thingplus_Embedded_Guide/MQTT_thing.png)
 
 MQTT 브로커(Broker)는 다양한 클라이언트들이 메시지를 주고 받을 수 있도록 메시지를 전달하는 역할을 합니다. Thing+ Cloud는 MQTT 브로커를 제공하고 있으며, IoT 기기는 Thing+ Cloud가 제공하는 MQTT 브로커에게 센서값을 전송(Publish)하고, 액추에이터 명령을 수신(Subscribe)하여 명령에 맞는 동작하면 됩니다.
 
@@ -348,8 +346,7 @@ swInfo은 IoT 기기의 소프트웨어 버전 정표를 가져가는 메쏘드�
 Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입니다. 디스커버 기능 구현 시 IoT 기기는 자신에게 연결된 디바이스와 센서의 정보를 REST API를 통해 Thing+에게 알려줍니다. 디스커버 기능은 사용하기 위해선 Thing+ HTTP Protocol은 구현은 필수입니다.
 
 #### 2.3.1 디바이스 등록 과정
-![Device_Discover](/docs/image/Thingplus_Embedded_Guide/DeviceDiscover.png)
-[comment]:![Device_Discover](/docs/image/Thingplus_Embedded_Guide/DeviceDiscover.png)
+![Device_Discover](./image/Thingplus_Embedded_Guide/DeviceDiscover.png)
 
 1. 게이트웨이 정보를 얻어옵니다. (2.3.4절 참고)
   * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
@@ -941,12 +938,12 @@ Thing+ Gateway는 이벤트 센서를 받을 준비가 되면 "setNotification"�
 ```
 
 ## 5. How to Test Example Code
-하드웨어에서 구현해야 할 Thing+ 연동 예제 코드에 대한 설명입니다.
+하드웨어에서 구현해야 할 Thing+ 연동에 대한 예제 코드에 대한 설명입니다.
 
 thing에서 선택할 수 있는 연동 방법은 세 가지가 있습니다.
 
 1. Thing+ Embedded Protocol 직접 구현
-  * Thing+에서 정의한 MQTT, HTTP로 데이터 형식에 맞쳐 Thing+로 정의
+  * Thing+에서 정의한 MQTT, HTTP 데이터 형식에 맞쳐 데이터 전송
 2. Thing+ Embedded SDK 사용
   * Thing+에서 제공하는 SDK를 사용하여 데이터 전송
 3. Thing+ Gateway를 사용하고 Device Agent 구현
@@ -968,35 +965,41 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
      * Event : 온오프
   * 액츄에이터 : LED
   
-센서는 시뮬레이션을 하였습니다. 온도, 습도 센서는 랜덤한 값을 생성하도록 하였으며, 온오프 센서는 랜덤한 시간에 센서 값이 변하도록 하였습니다. 
+센서는 시뮬레이션 하였습니다. 온도, 습도 센서는 랜덤한 값을 생성하도록 하였으며, 온오프 센서는 랜덤한 시간에 센서 값이 변하도록 하였습니다. 
 
 #### 5.1.1 예제 프로그램 실행 방법
 1. 예제 코드를 실행 시킬 하드웨어를 Thing+ Portal에서 게이트웨이로 등록합니다.
 2. 예제 코드의 config.json에 MAC 주소와 APIKEY를 설정합니다.
-3. 예제 코드를 빌드한 후 실행시킵니다.
+3. 예제 코드를 빌드 후 실행시킵니다.
 
 #### 5.1.2 게이트웨이 등록 방법
-1. [Thing+](http://www.thingplus.net) 회원 가입 후 로그인
+##### 1. [Thing+](http://www.thingplus.net) 회원 가입 후 로그인
 
-2. 오른쪽 상단의 "설정" -> "게이트웨이 관리"로 이동<br>
-![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/1Setting_GatewayManagement.png)
-[comment]:![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/1Setting_GatewayManagement.png)
-3. 게이트웨이 추가를 위해 "+" 아이콘 누름<br>
-![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/2GatewayPlus.png)
-[comment]:![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/2GatewayPlus.png)
-4. APIKEY 발급을 위하여 "게이트웨이 인증서/API키 발급급기"로 이동<br>
-![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/3RequestAPIKEY.png)
-[comment]:![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/3RequestAPIKEY.png)
-5. 게이트웨이 모델은 "Linux - Device"로 선택하고, MAC 어드레스 입력<br>
-![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/4SelectModelEnterMac.png)
-[comment]:![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/4SelectModelEnterMac.png)
-6. APIKEY 발급<br>
-![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/5APIKEY.png)
-[comment]:![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/5APIKEY.png)
-7. 게이트웨이 이름, 디바이스 이름 설정하고, 디바이스 모델을 "Basic Model"로 선택<br>
-![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/6EnterGWName.png)
-[comment]:![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/6EnterGWName.png)
-8. 게이트웨이 등록 완료
+##### 2. 오른쪽 상단의 "설정" -> "게이트웨이 관리"로 이동<br>
+[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/1Setting_GatewayManagement.png)
+![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/1Setting_GatewayManagement.png)
+
+##### 3. 게이트웨이 추가를 위해 "+" 아이콘 누름<br>
+[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/2GatewayPlus.png)
+![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/2GatewayPlus.png)
+
+##### 4. APIKEY 발급을 위하여 "게이트웨이 인증서/API키 발급받기"로 이동<br>
+[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/3RequestAPIKEY.png)
+![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/3RequestAPIKEY.png)
+
+##### 5. 게이트웨이 모델은 "Linux - Device"로 선택하고, MAC 어드레스 입력<br>
+[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/4SelectModelEnterMac.png)
+![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/4SelectModelEnterMac.png)
+
+##### 6. APIKEY 발급<br>
+[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/5APIKEY.png)
+![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/5APIKEY.png)
+
+##### 7. 게이트웨이 이름, 디바이스 이름 설정하고, 디바이스 모델을 "Basic Model"로 선택<br>
+[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/6EnterGWName.png)
+![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/6EnterGWName.png)
+
+##### 8. 게이트웨이 등록 완료
 
 #### 5.1.3 소스의 config.json 설정
 ```
@@ -1010,7 +1013,7 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
 }
 ```
 > **HW_MAC_ADDRESS** : MAC 어드레스<br>
-> **APKEY** : Thing+ Portal에서 발급받은 APIKEY
+> **APIKEY** : Thing+ Portal에서 발급받은 APIKEY
 
 #### 5.1.4 빌드 및 실행방법
 * 빌드
