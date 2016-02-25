@@ -375,8 +375,8 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   * model : 사용할 디바이스 모델의 이름. 게이트웨이 모델 정보에서 사용할 디바이스 모델 이름입니다.
 
 #### 2.3.2 센서 등록 과정
-![SensorDiscover](/docs/image/Thingplus_Embedded_Guide/SensorDiscover.png)
-[comment]:![SensorDiscover](/docs/image/Thingplus_Embedded_Guide/SensorDiscover.png)
+
+![SensorDiscover](./image/Thingplus_Embedded_Guide/SensorDiscover.png)
 
 1. 게이트웨이 정보를 얻어옵니다.(2.3.4절 참고)
   * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
@@ -770,8 +770,7 @@ Thing+ gateway는  Daliworks에서 만든 Thing+ MQTT 프로토콜을 따르는 
 
 Thing+ Gateway를 사용하면 Thing+ MQTT 프로토콜을 직접 구현하는 것 보다 간편하고 빠르게 하드웨어를 Thing+와 연동할 수 있습니다.
 
-![Cloud_Gateway_DeviceAgent](/docs/image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png)
-[comment]:![Cloud_Gateway_DeviceAgent](/docs/image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png)
+![Cloud_Gateway_DeviceAgent](./image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png)
 
 ### 4.1 Hardware Requirement
 Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며, Node.js로 작성되어 있습니다. **Node.js가 동작하지 않는 시스템에서는 사용할 수 없습니다.**
@@ -828,8 +827,7 @@ thing의 시간이 서버시간과 다를경우 thing의 로컬시간은 서버�
 #### 4.3.1 JSON RPC 연결
 Thing+ Gateway와 디바이스 에이전트는 JSONRPC 프로토콜을 사용합니다. 디바이스 에이전트는 JSONRPC 서버이며, 포트 50800를 열어두어야 합니다. 또한, Thing+ Gateway에서 사용할 서비스를 공개(expose)해야합니다. Thing+ Gateway는 JSONRPC 클라이언트며 해당 포트로 접속하여, 디바이스 에이전트가 제공하는 서비스를 사용합니다.
 
-![Gateway_DeviceAgent](/docs/image/Thingplus_Embedded_Guide/Gateway_DeviceAgent.png)
-[comment]:![Gateway_DeviceAgent](/docs/image/Thingplus_Embedded_Guide/Gateway_DeviceAgent.png)
+![Gateway_DeviceAgent](./image/Thingplus_Embedded_Guide/Gateway_DeviceAgent.png)
 
 #### 4.3.2 Device Agent Services
 디바이스 에이전트는 Thing+ Gateway를 위해 두 개의 서비스를 제공해야 합니다. 첫번째는 센서상태, 센서값을 읽고 엑추에이터를 구동시키는 서비스로 서비스 이름은 "sensor"로 정의되어야 합니다. 두 번째는 와 하드웨어에 연결된 센서, 액추에이터를 탐색하는 서비스로 "discover"로 정의되어야 합니다.<br>
@@ -976,27 +974,21 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
 ##### 1. [Thing+](http://www.thingplus.net) 회원 가입 후 로그인
 
 ##### 2. 오른쪽 상단의 "설정" -> "게이트웨이 관리"로 이동<br>
-[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/1Setting_GatewayManagement.png)
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/1Setting_GatewayManagement.png)
 
 ##### 3. 게이트웨이 추가를 위해 "+" 아이콘 누름<br>
-[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/2GatewayPlus.png)
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/2GatewayPlus.png)
 
 ##### 4. APIKEY 발급을 위하여 "게이트웨이 인증서/API키 발급받기"로 이동<br>
-[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/3RequestAPIKEY.png)
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/3RequestAPIKEY.png)
 
 ##### 5. 게이트웨이 모델은 "Linux - Device"로 선택하고, MAC 어드레스 입력<br>
-[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/4SelectModelEnterMac.png)
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/4SelectModelEnterMac.png)
 
 ##### 6. APIKEY 발급<br>
-[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/5APIKEY.png)
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/5APIKEY.png)
 
 ##### 7. 게이트웨이 이름, 디바이스 이름 설정하고, 디바이스 모델을 "Basic Model"로 선택<br>
-[comment]:![SelectGatewayManagement](/docs/image/Thingplus_Embedded_Guide/5/protocol/6EnterGWName.png)
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/6EnterGWName.png)
 
 ##### 8. 게이트웨이 등록 완료
