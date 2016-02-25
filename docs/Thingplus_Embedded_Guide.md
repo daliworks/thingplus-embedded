@@ -4,7 +4,7 @@
 Thing+ Embedded는 다양한 IoT 기기들이 Thing+ Cloud에 연결될 수 있도록 프로토콜을 정의하고 있으며, IoT 기기(thing) 제조사들이 Thing+ 연동을 쉽게 할 수 있도록 라이브러리를 제공하고 있습니다. 또한, IoT 기기와 Thing+ Cloud 연결과 하드웨어에 맞는 부가적인 기능이 포함된 Thing+ Gateway 프로그램도 포함이 됩니다.<br>
 
 ## 0. Thing+ Overview
-홈페이지 참조
+[홈페이지](https://thingplus.net/) 참조
 
 ## 1. Thing+ Embedded Overview
 Thing+ Embedded는 Thing+ MQTT 프로토콜, Thing+ Embedded SDK, Thing+ Gateway로 구성됩니다.<br>
@@ -73,9 +73,13 @@ Thing+가 지원하는 센서, 액추에이터의 전체 목록은 [센서,엑�
 APIKEY는 Thing+에서 발급하는 KEY로 MQTT 인증에 사용됩니다. Thing+ 포털에 게이트웨이 아이디를 등록하면 APIKEY를 발급하실 수 있으며, **발급된 APIKEY는 해당 thing에만 유효합니다. 하드웨어는 발급받은 APIKEY를 저장하고 있어야하며, MQTT 접속 시 인증 비밀번호로 APIKEY를 사용해야 합니다.**
 
 
-## 2. Thing+ MQTT 프로토콜
+## 2. Thing+ Embedded 프로토콜
 
-Thing+와 IoT 기기들 사이에는 MQTT 프로토콜을 이용합니다. Thing+와 연동할 thing은 고유의 APIKEY를 Thing+로 부터 발급받아야 하며, 이를 MQTT 인증 수단에 사용합니다.
+Thing+는 IoT 기기와 주고 받는 데이터 형식을 사전에 정의해 두었으며, 이를 Thing+ Embedded 프로토콜이라고 합니다. thing은 Thing+에서 정의한 형태로 데이터를 구성하여 Thing+로 전송해야 하며, Thing+도 Embedded 프로토콜에서 정의한 형식에 따라 데이터를 전송합니다.
+
+
+Thing+와 IoT 기기들 사이 사용하는 네트워크 프로토콜은 MQTT와 HTTP입니다. MQTT는 IoT 기기에서 수집한 센서값, 액츄에이터 명령어 등이 전송이 되며, HTTP로는 thing에서 사용하는 디바이스, 센서를 추가할 때 사용됩니다. Thing+ Portal에서 디바이스와 센서를 추가하는 게이트웨이는 HTTP 프로토콜은 사용 안하셔도 됩니다.
+
 
 ### 2.1 MQTT
 MQTT(Message Queuing Telemetry Transport)는 경량 메시지 프로토콜로 낮은 대역폭과 낮은 전력을 사용하는 IoT 기기와 Thing+ Cloud 사이에 사용되는 프로토콜입니다. MQTT는 Publish/Subscribe 구조로 되어으며, TCP/IP를 통해 구현됩니다. SSL 및 TLS를 사용하여 데이터 보안을 할 수 있고, USERNAME/PASSWORD 기반의 인증방법을 제공하고 있습니다.
@@ -338,6 +342,423 @@ reboot은 하드웨어를 재시작하는 메쏘드로 파리미터는 없습니
 restart은 IoT 기기의 소프트웨어를 재시작하는 메쏘드로 파리미터는 없습니다.<br>
 swUpdate은 IoT 기기의 소프트웨어를 업데이트 시키는 메쏘드로 파리미터는 없습니다.<br>
 swInfo은 IoT 기기의 소프트웨어 버전 정표를 가져가는 메쏘드로 파리미터는 없습니다.<br>
+
+### 2.3 Thing+ HTTP Protocol
+Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입니다. 디스커버 기능 구현 시 IoT 기기는 자신에게 연결된 디바이스와 센서의 정보를 REST API를 통해 Thing+에게 알려줍니다. 디스커버 기능은 사용하기 위해선 Thing+ HTTP Protocol은 구현은 필수입니다.
+
+#### 2.3.1 디바이스 등록 과정
+![Device_Discover](/docs/image/Thingplus_Embedded_Guide/DeviceDiscover.png)
+
+
+1. 게이트웨이 정보를 얻어옵니다. (2.3.4절 참고)
+  * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
+      * autoCreateDiscoverable 참조
+         * **디스커버 하지 않다면, thing은 디바이스를 등록할 수 없습니다.**
+      * 게이트웨이 정보의 model은 게이트웨이 모델을 얻어올 때 사용됩니다.
+2. 게이트웨이 모델을 얻어옵니다. (2.3.5절 참고)
+  * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
+  * 디바이스 모델에서 정의한 idTemplate은 디바이스 등록 시 사용됩니다.
+3. 등록할 디바이스 정보를 만들어 전송합니다. (2.3.6절 참고)
+ <br>
+  데이터 포멧은 아래와 같습니다.
+
+  ```javascript
+  {
+      reqId: '<Device ID>',
+      name: '<Device Name>',
+      model: '<Device Model>
+  }
+  ```
+  * reqId : 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
+     * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}입니다.
+         * gatewayID : 게이트웨이 아이디
+         * deviceAddress : 게이트웨이 내에 디바이스를 구분하기 위한 값으로 게이트웨이 내에서 중복이 되면 안됩니다. 사용자 정의
+  * name : 디바이스 이름. 사용자 정의
+  * model : 사용할 디바이스 모델의 이름. 게이트웨이 모델 정보에서 사용할 디바이스 모델 이름입니다.
+
+#### 2.3.2 센서 등록 과정
+![SensorDiscover](/docs/image/Thingplus_Embedded_Guide/SensorDiscover.png)
+
+1. 게이트웨이 정보를 얻어옵니다.(2.3.4절 참고)
+  * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
+      * autoCreateDiscoverable 참조
+         * **디스커버 하지 않다면, thing은 센서를 등록할 수 없습니다.**
+      * 게이트웨이 정보의 model은 게이트웨이 모델을 얻어올 때 사용됩니다.
+2. 게이트웨이 모델을 얻어옵니다. (2.3.5절 참고)
+  * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
+  * 디바이스 모델의 sensors 배열은 디바이스에서 사용할 수 있는 센서 모델 목록 입니다.
+  * 사용할 수 있는 센서 모델 중 network, driverName, model, type, category는 센서 등록 시 사용이 됩니다.
+  * 또한, driverName은 센서 드라이버를 얻어올 때 필요합니다.
+3. 센서 드라이버를 가지고 옵니다. 
+  * 센서 드라이버에서 정의한 idTemplate은 센서 등록 시 사용됩니다.
+4. 등록할 센서 정보를 만들어 전송합니다. (2.3.7절 참고)
+ <br>
+  데이터 포멧은 아래와 같습니다.
+  
+```javascript
+{ 
+  reqId: 'abcdefghijkl-0-humidity',
+  category: 'sensor',
+  type: 'humidity',
+  model: 'jsonrpcHumi',
+  driverName: 'jsonrpcSensor',
+  network: 'jsonrpc',
+  name: 'My Camera',
+  owner: 'abcdefghijkl',
+  ctime: 1456297274325,
+  deviceId: 'abcdefghijkl-0' 
+}
+``` 
+   * reqId : 센서 드라이버에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
+     * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}-{type}-{sequence}입니다.
+      * gatewayID : 게이트웨이 아이디
+      * deviceAddress : 게이트웨이 내에 디바이스를 구분하기 위한 값으로 센서가 속한 디바이스의 어디레스를 적어줘야합니다.
+      * type : Thing+에서 정의한 센서 타입
+      * sequence : 한 디바이스 안에 동일한 종류의 센서가 2개 이상 있을 때 구분하기 위한 값입니다. 한 개만 있으면 생략하셔도 됩니다. 사용자 정의
+  * category : 등록 할 센서의 카테고리로 센서 모델에 정의되어 있습니다.
+  * type : 센서 타입으로 센서 모델에 정의되어 있습니다.
+  * model : 센서 모델의 이름으로 센서 모델에 정의되어 있습니다.
+  * driverName : 센서가 사용할 드라이버 이름으로 센서 모델에 정의되어 있습니다.
+  * network : 센서가 사용하는 네트워크로 센서 모델에 정의되어 있습니다.
+  * name : 센서 이름입니다. 사용자 정의
+  * owner : 센서가 속해 있는 게이트웨이 아이디입니다.
+  * ctime : 센서가 생성 된 시간입니다. UTC
+  * deviceId : 센서가 속해있는 디바이스의 아이디입니다.
+
+  
+#### 2.3.3 기본 설정 및 인증
+REST API의 URL은 다음과 같습니다.<br>
+```
+https://api.thingplus.net
+```
+
+인증을 위해 BODY에 username과 apikey를 채워주시면 됩니다.
+
+``` javascript
+{
+  username: <GATEWAY_ID>
+  apikey: <APIKEY>
+}
+```
+> GATEWAY_ID: 게이트웨이 아이디<br>
+> APIKEY: Thing+ Portal에서 발급받은 APIKEY
+
+#### 2.3.3 에러코드
+|Error Code|Description|
+|---|---|
+|401|Unauthorized|
+|403|Forbidden|
+|404|Not Found|
+|409|Post Item Error|
+|471|Billing Error|
+
+#### 2.3.4 사용중인 게이트웨이 정보 가지고 오기
+사용중인 게이트웨이의 정보를 가지고 오는 API입니다.
+
+#### Resource URL
+`GET https://api.thingplus.net/gateways/<GATEWAY_ID>?fields=model&fiedlds=autoCreateDiscoverable`
+> ##### **GATEWAY_ID** &nbsp;&nbsp;&nbsp; 게이트웨이 아이디
+
+##### Request Example
+`GET https://api.thingpus.net/gateways/abcdefghijkl?fields=model&fields=autoCreateDiscoverable`
+
+--
+#### Response Example
+```javascript
+{
+  id: "abcdefghijkl",
+  model: "34",
+  autoCreateDiscoverable: "y",
+}
+```
+> **model** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
+<br>
+**autoCreateDiscoverable** &nbsp;&nbsp;&nbsp; 디스커버 기능 지원 여부
+
+#### 2.3.5 게이트웨이 모델 가지고 오기
+Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 게이트웨이 정보에 있는 모델 번호를 사용하여, 게이트웨이 모델을 가지고 옵니다.
+
+#### Resource URL
+`GET https://api.thingplus.net/gatewayModels/<MODEL_NUMBER>`
+> #####**MODEL_NUMBER** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
+
+##### Request Example
+`GET https://api.thingplus.net/gatewayModels/34`
+
+--
+#### Response Body Format and Example
+##### Body Format
+```javascript
+{
+  ctime: "<Gateway Model 생성 시간>",
+  model: "<Gateway Model 이름>",
+  deviceMgmt: {
+    reportInterval: {
+      show: "<리포트 인터벌이 Thing+ Cloud에 표시 여부. y or n>",
+      change: "<리포트 인터벌 변경 가능 여부. y or n>"
+    },
+    DM: {
+      poweroff: {
+        support: "<Thing+를 통해 전원 끄기 기능 지원. y or n>"
+      },
+      reboot: {
+        support: "<Thing+를 통해 재시작 기능 지원. y or n>"
+      },
+      restart: {
+        support: "<Thing+를 통해 어플리케이션 프로그램 재시작 기능 지원. y or n>"
+      },
+      swUpdate: {
+        support: "<Thing+를 통한 소프트웨어 업데이트 기능 지원. y or n"
+      },
+      swInfo: {
+        support: "<Thing+에서 소프트웨어 버전 정보를 읽어가는 기능 지원. y or n"
+      }
+    }
+  },
+  id: "<Model ID>",
+  vendor: "<Vendor Name>",
+  mtime: "<수정된 시간. UTC>",
+  deviceModels: [
+    {
+      id: "<디바이스 모델 아이디>",
+      displayName: "<디바이스 모델 이름>",
+      idTemplate: "<디바이스 아이디 형식>",
+      discoverable: "<디스커버 가능 여부. y or n>",
+      sensors: [
+        {
+          network: "<센서가 사용하는 네트워크>",
+          driverName: "<센서 드라이버 이름>",
+          model: "<센서 모델>",
+          type: "<센서 타입>",
+          category: "<카테고리. sensor or actuator>"
+        },
+        ...,
+      ],
+      max: <사용할 수 있는 디바이스 개수>
+    }
+  ],
+  displayName: "<게이트웨이 이름>"
+}
+
+```
+
+> **deviceModels** : 게이트웨이가 가질 수 있는 디바이스에 대한 모델
+>> **discoverable** : 디바이스 디스커버 가능 여부<br>
+>> **idTemplate** : 디바이스 아이디의 형식 정의<br>
+>>>디바이스 등록 시 idTemplate 형식으로 디바이스 아이디를 만들어서 등록해야 한다.
+
+##### Example
+```javacript
+{
+  ctime: "1456122659103",
+  model: "openHardwareCustom",
+  deviceMgmt: {
+    reportInterval: {
+      show: "y",
+      change: "y"
+    },
+    DM: {
+      poweroff: {
+        support: "n"
+      },
+      reboot: {
+        support: "n"
+      },
+      restart: {
+        support: "y"
+      },
+      swUpdate: {
+        support: "y"
+      },
+      swInfo: {
+        support: "y"
+      }
+    }
+  },
+  id: "34",
+  vendor: "OPEN SOURCE HARDWARE",
+  mtime: "1456122659103",
+  deviceModels: [
+    {
+      id: "jsonrpcFullV1.0",
+      displayName: "Open Source Device",
+      idTemplate: "{gatewayId}-{deviceAddress}",
+      discoverable: "y",
+      sensors: [
+        {
+          network: "jsonrpc",
+          driverName: "jsonrpcSensor",
+          model: "jsonrpcNumber",
+          type: "number",
+          category: "sensor"
+        },
+        {
+          network: "jsonrpc",
+          driverName: "jsonrpcSensor",
+          model: "jsonrpcString",
+          type: "string",
+          category: "sensor"
+        }
+      ],
+      max: 1
+    }
+  ],
+  displayName: "Open Source Gateway"
+}
+```
+
+#### 2.3.6 센서 드라이버 가지고 오기
+Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
+
+#### Resource URL
+`GET https://api.thingplus.net/sensorDrivers/?filter[id]=<driverName>`
+
+> **driverName** 센서 드라이버 이름
+
+##### Request Example
+`GET https://api.thingplus.netsensorDrivers/?filter[id]=jsonrpcSensor`
+
+--
+#### Response Example
+```javascript
+{
+  discoverable: "true",
+  ctime: "1456122653281",
+  id: "jsonrpcSensor",
+  displayName: "jsonrpc Sensor",
+  models: [
+    "jsonrpcNumber",
+    "jsonrpcString",
+    ...,
+    "jsonrpcReader"
+  ],
+  supportedNetworks: [
+    "jsonrpc"
+  ],
+  mtime: "1456122653281",
+  category: "sensor",
+  addressable: "false",
+  dataTypes: {
+    jsonrpcNumber: [
+      "number"
+    ],
+    jsonrpcString: [
+      "string"
+    ],
+    ...,
+    jsonrpcReader: [
+      "reader"
+    ]
+  },
+  driverName: "jsonrpcSensor",
+  idTemplate: "{gatewayId}-{deviceAddress}-{type}-{sequence}"
+}
+```
+> **discoverable** 센서의 디스커버 가능 여부
+
+#### 2.3.7 디바이스 등록하기
+
+#### Resource URL
+`POST https://api.thingplus.net/devices`
+
+#### Post Parameters
+
+|parameter|description|
+|-----|--------|
+|reqId|디바이스 아이디<br>&nbsp;게이트웨이 모델에서 정한 idTemplate 형식으로 생성해야 한다.<br>&nbsp;idTemplate은 게이트웨이 모델의 deviceModels 배열의 사용하는 디바이스의 idTemplate을 사용하면 된다.
+|name|디바이스 이름|
+|model|디바이스가 사용하는 모델 아이디<br>&nbsp;게이트웨이 모델의 deviceModels 배열 중 thing이 사용 할 디바이스의 ID를 넣어준다.|
+
+##### Request Body Example
+```javascript
+{
+  reqId: 'abcdefghijkl-0',
+  name: 'My Device0',
+  model: 'jsonrpcFullV1.0' }
+}
+```
+--
+#### Response Example
+```
+{
+  name: 'My Device0',
+  model: 'jsonrpcFullV1.0',
+  owner: 'abcdefghijkl',
+  mtime: 1456297274619,
+  ctime: 1456297274619,
+  id: 'abcdefghijkl-0'
+}
+```
+
+--
+#### Error
+|Error Code|Description|
+|---|---|
+|401|body의 게이트웨이 아이디 또는, APIKEY가 틀렸음.
+|404|등록이 안된 게이트웨이에 디바이스 추가를 시도 함.
+|471|요금제에 의해 디바이스 추가를 할 수 없음.
+
+#### 2.3.8 센서 등록하기
+
+#### Resource URL
+`POST https://api.thingplus.net/gateways/<GATEWAY_ID>/sensors`
+
+> **GATEAY_ID** 센서가 속한 게이트웨이의 아이디
+
+#### Post Parameter
+|parameter|description|
+|---|---|
+|network|네트워크 이름|
+|driverName|센서가 사용하는 드라이버 이름|
+|type|센서타입|
+|카테고리|센서 or 액츄에이터| 
+|name|센서이름|
+|reqId|센서 아이디<br>센서 드라이버에서 정한 idTemplate 형식으로 생성해야 함|
+|owner|센서가 속한 게이트웨이|
+|ctime|센서가 생성된 시간(UTC)|
+|deviceId|센서가 속한 디바이스의 아이디|
+
+##### Request Body Example
+```javascript
+{ 
+  network: 'jsonrpc',
+  driverName: 'jsonrpcActuator',
+  model: 'jsonrpcCamera',
+  type: 'camera',
+  category: 'actuator',
+  reqId: 'abcdefghijkl-0-camera',
+  name: 'My Camera',
+  owner: 'abcdefghijkl',
+  ctime: 1456297274325,
+  deviceId: 'abcdefghijkl-0' 
+}
+```
+--
+####Response Example
+```
+{ 
+  network: 'jsonrpc',
+  driverName: 'jsonrpcActuator',
+  model: 'jsonrpcCamera',
+  type: 'camera',
+  category: 'actuator',
+  name: 'My Camera',
+  address: '0',
+  options: {},
+  deviceId: 'abcdefghijkl-0',
+  owner: 'abcdefghijkl',
+  mtime: 1456297274458,
+  ctime: 1456297274458,
+  id: 'abcdefghijkl-0-camera' 
+}
+```
+--
+#### Error
+|Error Code|Description|
+|---|---|
+|401|body의 게이트웨이 아이디 또는, APIKEY가 틀렸음.
+|404|등록이 안된 게이트웨이에 디바이스 추가를 시도 함.
+|471|요금제에 의해 디바이스 추가를 할 수 없음.
 
 ## 3. Thing+ Embedded SDK
 준비중
