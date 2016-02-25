@@ -364,7 +364,7 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   {
       reqId: '<Device ID>',
       name: '<Device Name>',
-      model: '<Device Model>
+      model: '<Device Model>'
   }
   ```
   * reqId : 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
@@ -936,7 +936,7 @@ Thing+ Gateway는 이벤트 센서를 받을 준비가 되면 "setNotification"�
 ```
 
 ## 5. How to Test Example Code
-하드웨어에서 구현해야 할 Thing+ 연동에 대한 예제 코드에 대한 설명입니다.
+하드웨어에서 구현해야 할 Thing+ 연동에 대한 예제 코드 설명입니다.
 
 thing에서 선택할 수 있는 연동 방법은 세 가지가 있습니다.
 
