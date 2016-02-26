@@ -407,7 +407,8 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   ctime: 1456297274325,
   deviceId: 'abcdefghijkl-0' 
 }
-``` 
+```
+ 
    * reqId : 센서 드라이버에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}-{type}-{sequence}입니다.
       * gatewayID : 게이트웨이 아이디
@@ -423,7 +424,6 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   * owner : 센서가 속해 있는 게이트웨이 아이디입니다.
   * ctime : 센서가 생성 된 시간입니다. UTC
   * deviceId : 센서가 속해있는 디바이스의 아이디입니다.
-
   
 #### 2.3.3 기본 설정 및 인증
 REST API의 URL은 다음과 같습니다.<br>
