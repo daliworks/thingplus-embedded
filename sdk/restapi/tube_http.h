@@ -15,7 +15,8 @@ enum tube_http_error
 	TUBE_HTTP_ERROR_INVALID_ARGUMENT = -7,
 	TUBE_HTTP_ERROR = -8,
 	TUBE_HTTP_ERROR_DEVICE_MODEL_ID = -9,
-	TUBE_HTTP_ERROR_CURL = -9,
+	TUBE_HTTP_ERROR_READ = -9,
+	TUBE_HTTP_ERROR_POST = -10,
 };
 
 enum tube_http_error tube_http_sensor_register(void* tube_http, char* name, int uid, char* type, char* device_id, char* sensor_id);

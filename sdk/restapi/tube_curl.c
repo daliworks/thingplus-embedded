@@ -7,7 +7,7 @@
 
 #include "tube_curl.h"
 
-#define TUBE_CURL_DEBUG_PAYLOAD_PRINT
+//#define TUBE_CURL_DEBUG_PAYLOAD_PRINT
 
 static size_t _curl_callback (void *contents, size_t size, size_t nmemb, void *userp)
 {
@@ -98,6 +98,8 @@ int tube_curl_read(char* url, void* tube_curl, struct tube_curl_payload* p)
 
 void tube_curl_cleanup(void* tube_curl)
 {
+	curl_global_cleanup();
+
 	struct curl_slist* headers = (struct curl_slist*)tube_curl;
 	if (!headers)
 		return;
@@ -108,6 +110,8 @@ void tube_curl_cleanup(void* tube_curl)
 void* tube_curl_init(char *gateway_id, char *apikey)
 {
 	struct curl_slist* headers = NULL;
+
+	curl_global_init(CURL_GLOBAL_ALL);
 
 	char *curl_header_username = calloc(1, strlen("username:") + strlen(gateway_id) + 1);
 	sprintf(curl_header_username, "%s%s", "username:", gateway_id);

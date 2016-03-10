@@ -72,7 +72,7 @@ static int _gw_info_model_parse(struct json_object* json)
 {
 	json_object *model_object = NULL;
 	if (json_object_object_get_ex(json, "model", &model_object) == false) {
-		printf("json_object_object_get_ex failed\n");
+		fprintf(stderr, "[TUBE_HTTP] json_object_object_get_ex failed\n");
 		return -1;
 	}
 
@@ -105,6 +105,9 @@ static void _gw_info_parse(struct tube_curl_payload *p, struct gateway_info* gw_
 
 static void _gw_info_cleanup(struct gateway_info *gw_info)
 {
+	if (!gw_info)
+		return;
+
 	if (gw_info->devices) {
 		int i;
 		for (i=0; i<gw_info->nr_devices; i++)
@@ -156,7 +159,7 @@ static void _device_model_parse(struct device_model *device_model, struct json_o
 	int nr_sensors = json_object_array_length(sensors_object);
 	device_model->sensors = calloc(nr_sensors, sizeof(struct sensor));
 	if (device_model->sensors == NULL) {
-		printf("calloc failed\n");
+		fprintf(stderr, "[TUBE_HTTP] calloc failed\n");
 		return;
 	}
 
@@ -169,18 +172,35 @@ static void _device_model_parse(struct device_model *device_model, struct json_o
 	device_model->nr_sensors = nr_sensors;
 }
 
+static void _gw_model_cleanup(struct gateway_model* gw_model)
+{
+	if (!gw_model)
+		return;
+
+	int i;
+	for (i=0; i<gw_model->nr_device_models; i++) {
+		if (gw_model->device_models[i].sensors)
+			free(gw_model->device_models[i].sensors);
+	}
+
+	if (gw_model->device_models)
+		free(gw_model->device_models);
+
+	tube_curl_paylaod_free(&gw_model->p);
+}
+
 static int _gw_model_parse(struct tube_curl_payload *p, struct gateway_model *gw_model)
 {
 	json_object *device_models_objects = NULL;
 	if (json_object_object_get_ex(p->json, "deviceModels", &device_models_objects) == false) {
-		printf("json_object_object_get_ex failed\n");
+		fprintf(stderr, "[TUBE_HTTP] json_object_object_get_ex failed\n");
 		return -1;
 	}
 
 	int nr_device_models = json_object_array_length(device_models_objects);
 	gw_model->device_models = calloc(nr_device_models, sizeof(struct device_model));
 	if (gw_model->device_models == NULL) {
-		printf("calloc failed\n");
+		fprintf(stderr, "[TUBE_HTTP] calloc failed\n");
 		return -1;
 	}
 	gw_model->nr_device_models = nr_device_models;
@@ -195,21 +215,11 @@ static int _gw_model_parse(struct tube_curl_payload *p, struct gateway_model *gw
 	return 0;
 }
 
-static void _gateway_model_cleanup(struct device_model *device_models, int nr_models)
-{
-	int i;
-	for (i=0; i<nr_models; i++) {
-		//TODO FIXME
-	}
-
-	free(device_models);
-}
-
 static int _gw_model_read(struct tube_http *t)
 {
 	char *url = tube_http_url_get(TUBE_HTTP_URL_GATEWAY_MODEL, t->gw_info.model);
 	if (url == NULL) {
-		printf("calloc failed\n");
+		fprintf(stderr, "[TUBE_HTTP] calloc failed\n");
 		return -1;
 	}
 
@@ -217,6 +227,8 @@ static int _gw_model_read(struct tube_http *t)
 	_gw_model_parse(&t->gw_model.p,  &t->gw_model);
 
 	tube_http_url_put(url);
+
+	return 0;
 }
 
 static struct device_model* _device_model_get(struct gateway_model *gw_model, char *device_model_id)
@@ -230,7 +242,7 @@ static struct device_model* _device_model_get(struct gateway_model *gw_model, ch
 	return NULL;
 }
 
-static int _device_resigster_response_parse(struct tube_curl_payload *p)
+static int _post_response_parse(struct tube_curl_payload *p)
 {
 	return atoi(p->payload) * -1;
 }
@@ -276,23 +288,26 @@ static int _device_register(struct tube_http* t, struct device_model *device_mod
 
 	char *url = tube_http_url_get(TUBE_HTTP_URL_DEVICE_REGISTER, t->gateway_id);
 	if (url == NULL) {
-		printf("calloc failed\n");
+		fprintf(stderr, "[TUBE_HTTP] tube_http_url_get failed\n");
 		return -1;
 	}
 
 	struct tube_curl_payload p;
 	if (tube_curl_post(url, t->curl, (void*)json_object_to_json_string(postfields_ojbect), &p) < 0) {
-		printf("_curl_exec failed\n");
+		fprintf(stderr, "[TUBE_HTTP] tube_curl_post failed\n");
+		tube_http_url_put(url);
 		return -1;
 	}
 	json_object_put(postfields_ojbect);
 
-	int ret = _device_resigster_response_parse(&p);
+	int ret = _post_response_parse(&p);
 	if (ret < 0) {
 		fprintf(stderr, "[TUBE_HTTP] server response %d\n", ret);
+		tube_http_url_put(url);
 		return -1;
 	}
 
+	tube_http_url_put(url);
 	tube_curl_paylaod_free(&p);
 
 	return 0;
@@ -347,18 +362,25 @@ static int _sensor_register(struct tube_http *t, char* name, int uid, char* devi
 
 	char *url = tube_http_url_get(TUBE_HTTP_URL_SENSOR_REGISTER, t->gateway_id);
 	if (url == NULL) {
-		printf("calloc failed\n");
+		fprintf(stderr, "[TUBE_HTTP] tube_http_url_get failed\n");
 		return -1;
 	}
 
 	struct tube_curl_payload p;
 	if (tube_curl_post(url, t->curl, (void*)json_object_to_json_string(postfields_ojbect), &p) < 0) {
-		printf("_curl_exec failed\n");
+		tube_http_url_put(url);
+		fprintf(stderr, "[TUBE_HTTP] tube_curl_post failed\n");
 		return -1;
 	}
 
-	//_device_resigster_response_parse(&p, NULL);
+	int ret = _post_response_parse(&p);
+	if (ret < 0) {
+		fprintf(stderr, "[TUBE_HTTP] server response %d\n", ret);
+		tube_http_url_put(url);
+		return -1;
+	}
 
+	tube_http_url_put(url);
 	tube_curl_paylaod_free(&p);
 	json_object_put(postfields_ojbect);
 
@@ -388,7 +410,6 @@ static struct device_model* _device_model_get_by_device_id(struct tube_http* t, 
 
 	dev_model = _device_model_get(&t->gw_model, (char*)json_object_get_string(model_object));
 
-err_device_model_get:
 err_json_object_object_get_ex:
 	tube_curl_paylaod_free(&p);
 
@@ -411,7 +432,7 @@ enum tube_http_error tube_http_sensor_register(void* tube_http, char* name, int 
 	if (t->gw_info.model == -1) {
 		if (_gw_info_read(t) < 0) {
 			fprintf(stderr, "[TUBE_HTTP] _gw_info_read failed\n");
-			return TUBE_HTTP_ERROR_CURL;
+			return TUBE_HTTP_ERROR_READ;
 		}
 	}
 
@@ -430,7 +451,7 @@ enum tube_http_error tube_http_sensor_register(void* tube_http, char* name, int 
 	struct device_model *dev_model = _device_model_get_by_device_id(t, device_id);
 	if (dev_model == NULL) {
 		fprintf(stderr, "[TUBE_HTTP] device is not discoverable\n");
-		return TUBE_HTTP_ERROR; //TODO FIXME
+		return TUBE_HTTP_ERROR_READ;
 	}
 
 	if (!dev_model->discoverable) {
@@ -440,10 +461,15 @@ enum tube_http_error tube_http_sensor_register(void* tube_http, char* name, int 
 
 	struct sensor *sensor = _sensor_get(type, dev_model);
 	if (sensor == NULL) {
-		return TUBE_HTTP_ERROR; //TODO FIXME
+		return TUBE_HTTP_ERROR_READ;
 	}
 
-	_sensor_register(t, name, uid, device_id, sensor, sensor_id);
+	if (_sensor_register(t, name, uid, device_id, sensor, sensor_id) < 0) {
+		fprintf(stderr, "[TUBE_HTTP] _sensor_register failed\n");
+		return TUBE_HTTP_ERROR_POST;
+	}
+
+	return TUBE_HTTP_ERROR_NO_ERROR;
 }
 
 enum tube_http_error tube_http_device_register(void* tube_http, char* name, int uid, char* device_model_id, char* device_id)
@@ -458,7 +484,7 @@ enum tube_http_error tube_http_device_register(void* tube_http, char* name, int 
 	if (t->gw_info.model == -1) {
 		if (_gw_info_read(t) < 0) {
 			fprintf(stderr, "[TUBE_HTTP] _gw_info_read failed\n");
-			return TUBE_HTTP_ERROR_CURL;
+			return TUBE_HTTP_ERROR_READ;
 		}
 	}
 
@@ -485,7 +511,11 @@ enum tube_http_error tube_http_device_register(void* tube_http, char* name, int 
 		return TUBE_HTTP_ERROR_NOT_DISCOVERABLE;
 	}
 
-	_device_register(t, device_model, name, uid, device_id);
+	if (_device_register(t, device_model, name, uid, device_id) < 0) {
+		fprintf(stderr, "[TUBE_HTTP] _device_register failed\n");
+		return TUBE_HTTP_ERROR_POST;
+	}
+
 	return TUBE_HTTP_ERROR_NO_ERROR;
 }
 
@@ -505,7 +535,6 @@ void* tube_http_init(char *gateway_id, char *apikey)
 	t->curl = tube_curl_init(t->gateway_id, t->apikey);
 	t->gw_info.model = -1;
 
-	curl_global_init(CURL_GLOBAL_ALL);
 
 	return (void*)t;
 }
@@ -518,7 +547,10 @@ void tube_http_cleanup(void* tube_http)
 		return;
 	}
 
-	curl_global_cleanup();
+	sensor_driver_cleanup();
+
+	_gw_model_cleanup(&t->gw_model);
+	_gw_info_cleanup(&t->gw_info);
 
 	if (t->gateway_id)
 		free(t->gateway_id);

@@ -21,7 +21,7 @@ static struct url_list{
 static struct url_list* _url_search(enum tube_http_url r)
 {
 	int i;
-	for (i=0; i<sizeof(url_list)/sizeof(url_list[0]); i++) {
+	for (i=0; i<(int)(sizeof(url_list)/sizeof(url_list[0])); i++) {
 		if (r == url_list[i].tube_http_url) {
 			return &url_list[i];
 		}
