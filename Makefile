@@ -1,0 +1,4 @@
+
+libs
+
+all: lib example
