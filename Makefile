@@ -1,4 +1,0 @@
-
-libs
-
-all: lib example

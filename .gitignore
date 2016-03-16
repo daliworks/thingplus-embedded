@@ -1,0 +1,8 @@
+a.out
+*.o
+*.log
+*.a
+*.swp
+*.deps
+*config.status
+stamp-h1
