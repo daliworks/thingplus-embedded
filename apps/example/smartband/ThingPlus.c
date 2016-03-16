@@ -414,6 +414,12 @@ int thingplus(char* gw_id, char* apikey, char* band_name, int step, int battery,
 	MQTTMessage msg = {QOS1, 0, 0, 0, NULL, 0};
 	char* hostname = NULL;
 
+	if (gw_id == NULL || apikey == NULL || band_name == NULL || location == NULL) {
+		ERROR_LOG("gw_id, apikey, band_namd or location is NULL\n");
+		return -1;
+	}
+
+
 	_device_sessor_register(gw_id, apikey, band_name);
 
 	struct config _config = {
