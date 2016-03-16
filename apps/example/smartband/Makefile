@@ -1,6 +1,7 @@
 # common
 OBJS_DIR=./build/obj
 UNAME_S := $(shell uname -s)
+CC ?= gcc
 
 ifdef TARGET_PORT
 	CFLAGS += -D ${TARGET_PORT}
@@ -40,19 +41,19 @@ LD_FLAGS= $(DEBUG_FLAGS)
 THINGPLUS_OBJS=$(patsubst %,$(OBJS_DIR)/%,MQTTClient.o ThingPlus.o ThingPlusConfig.o)
 
 all: ${OBJS_DIR} $(OBJS) $(THINGPLUS_OBJS)
-	gcc -o thingplus $(LD_FLAGS) $(OBJS) $(THINGPLUS_OBJS) $(LDLIBS)
+	$(CC) -o thingplus $(LD_FLAGS) $(OBJS) $(THINGPLUS_OBJS) $(LDLIBS)
 
 $(OBJS_DIR)/%.o: $(MQTT_SRC_DIR)/%.c
-	gcc -o $@ $(CFLAGS) -c $<
+	$(CC) -o $@ $(CFLAGS) -c $<
 
 $(OBJS_DIR)/%.o: $(MQTT_PORT_DIR)/%.c
-	gcc -o $@ $(CFLAGS) -c $<
+	$(CC) -o $@ $(CFLAGS) -c $<
 
 $(OBJS_DIR)/%.o: $(CJSON_DIR)/%.c
-	gcc -o $@ $(CFLAGS) -c $<
+	$(CC) -o $@ $(CFLAGS) -c $<
 
 $(OBJS_DIR)/%.o: %.c
-	gcc -o $@ $(CFLAGS) -c $<
+	$(CC) -o $@ $(CFLAGS) -c $<
 
 ${OBJS_DIR}:
 	mkdir -p $@

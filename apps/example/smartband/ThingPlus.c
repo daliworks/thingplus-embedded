@@ -449,11 +449,12 @@ int main(void)
 
 	if (tagging)
 	{
-		int gw_id = "84eb18afeb0c";
-		int apikey = "YHZbDd0n6TQpPJP2MLBKHM7hn7o=";;
+		char* gw_id = "YOUR_MAC_ADDR";
+		char* apikey = "YOUR_APIKEY=";;
 		char* band_name = "Smart Band0";
 		int step = 100;
 		int battery = 38;
+
 		char* location = "Hospital";
 
 		thingplus(gw_id, apikey, band_name, step, battery, location);
