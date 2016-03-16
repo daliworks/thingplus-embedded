@@ -2,6 +2,8 @@ AC_INIT([libtubehttp], [1.0], [dev@dailworks.net])
 AM_INIT_AUTOMAKE([foreign -Wall])
 AM_PROG_AR
 AC_PROG_CC
+AC_CONFIG_MACRO_DIR([m4])
+LT_INIT
 AC_PROG_RANLIB
 AC_CHECK_LIB([json], [json_c_version_num], [],AC_MSG_ERROR([libjson not found]))
 AC_CHECK_LIB([curl], [curl_global_init], [],AC_MSG_ERROR([libcurl not found]))
