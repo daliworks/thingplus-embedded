@@ -1,5 +1,5 @@
 CC ?= gcc
-CFLAGS = -fPIC -Wall -Wextra -O2 -g
+CFLAGS = -fPIC -Wall -Wextra -O2 -g -I../../include
 LDFLAGS = -shared  # linking flags
 RM = rm -f  # rm command
 TARGET_LIB = libtubehttp.so # target lib

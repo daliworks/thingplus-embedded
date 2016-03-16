@@ -1,0 +1,9 @@
+{
+  "gatewayId": "_mac_address_",
+  "hostname": "dmqtt.thingplus.net",
+  "host": "dmqtt.thingplus.net",
+  "port": 8883,
+  "username": "_mac_address_",
+  "password": "_replace_with_api_key_",
+  "caFile": "./cert/ca-cert.pem"
+}
