@@ -1,27 +1,33 @@
+objs += tube_http.o
+
+tube_http.o-objs += sensor_driver.o
+tube_http.o-objs += tube_http.o
+tube_http.o-objs += tube_curl.o
+tube_http.o-objs += tube_url.o
+
+PWD=$(shell pwd)
+
+LIBINC_DIR=$(PWD)/../../include
+
 CC ?= gcc
-CFLAGS = -fPIC -Wall -Wextra -O2 -g -I../../include
-LDFLAGS = -shared  # linking flags
-RM = rm -f  # rm command
-TARGET_LIB = libtubehttp.so # target lib
+CFLAGS += -I$(LIBINC_DIR) -ggdb -Wall
+#LDFLAGS += -lcurl -ljson 
 
 SRCS = tube_http.c tube_curl.c tube_url.c sensor_driver.c# source files
-OBJS = $(SRCS:.c=.o)
+LIBOFILES = $(SRCS:%.c=%.o)       
 
-.PHONY: all
+.PHONY:all clean
 
-all: ${TARGET_LIB}
+# all is the default rule
+all : libtubehttp.a
 
-$(TARGET_LIB): $(OBJS)
-	$(CC) ${LDFLAGS} -o $@ $^
+# remove the old tapestry library and remake the new one
+libtubehttp.a:	$(LIBOFILES)
+	rm -f $@
+	ar rc $@ $(LIBOFILES)
+	ranlib $@
 
-$(SRCS:.c=.d):%.d:%.c
-	$(CC) $(CFLAGS) -MM $< >$@
-
-include $(SRCS:.c=.d)
-
-.PHONY: clean
 clean:
-	-${RM} ${TARGET_LIB} ${OBJS} $(SRCS:.c=.d)
+	rm -f libtubehttp.a
 
-#all:
-#	gcc sensor_driver.c tube_http.c tube_curl.c main.c tube_url.c -lcurl -ljson -g
+FORCE:

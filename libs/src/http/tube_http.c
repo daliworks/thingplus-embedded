@@ -399,11 +399,13 @@ static struct device_model* _device_model_get_by_device_id(struct tube_http* t, 
 
 	struct tube_curl_payload p;
 	if (tube_curl_read(url, t->curl, (void*)&p) < 0) {
+		fprintf(stderr, "[TUBE_HTTP] tube_curl_read failed\n");
 		goto err_tube_curl_read;
 	}
 
 	json_object *model_object = NULL;
 	if (!json_object_object_get_ex(p.json, "model", &model_object)) {
+		fprintf(stderr, "[TUBE_HTTP] json_object_object_get_ex failed\n");
 		goto err_json_object_object_get_ex;
 		return false;
 	}
@@ -450,7 +452,7 @@ enum tube_http_error tube_http_sensor_register(void* tube_http, char* name, int 
 
 	struct device_model *dev_model = _device_model_get_by_device_id(t, device_id);
 	if (dev_model == NULL) {
-		fprintf(stderr, "[TUBE_HTTP] device is not discoverable\n");
+		fprintf(stderr, "[TUBE_HTTP] no device\n");
 		return TUBE_HTTP_ERROR_READ;
 	}
 
