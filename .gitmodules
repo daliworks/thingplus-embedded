@@ -1,0 +1,6 @@
+[submodule "libs/src/log/slog"]
+	path = libs/src/log/slog
+	url = https://github.com/kala13x/slog.git
+[submodule "libs/src/slog"]
+	path = libs/src/slog
+	url = https://github.com/kala13x/slog.git
