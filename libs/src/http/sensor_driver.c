@@ -3,11 +3,13 @@
 #include <string.h>
 #include <stdbool.h>
 #include <curl/curl.h>
-#include <json/json.h>
+#include <json-c/json.h>
 
 #include "tube_curl.h"
 #include "tube_http.h"
 #include "tube_url.h"
+
+#include "log/tube_log.h"
 
 struct sensor_driver {
 	char* driver_name;
@@ -21,13 +23,15 @@ static struct sensor_driver* _sensor_drivers_get(void* curl, char *driver_name)
 {
 	char *url = tube_http_url_get(TUBE_HTTP_URL_SENSOR_DRIVERS, driver_name);
 	if (url == NULL) {
-		fprintf(stderr, "[SENSOR_DRIVER] tube_http_url_get failed. driver_name:%s\n", driver_name);
+		tube_log_error("[SENSOR_DRIVER] tube_http_url_get failed. driver_name:%s\n", driver_name);
 		return NULL;
 	}
 
 	struct tube_curl_payload p;
 	if (tube_curl_read(url, curl, &p) < 0) {
-		fprintf(stderr, "[SENSOR_DRIVER] tube_curl_read_ failed\n");
+		tube_log_error("[SENSOR_DRIVER] tube_curl_read_ failed\n");
+
+		tube_curl_paylaod_free(&p);
 		tube_http_url_put(url);
 		return NULL;
 	}
@@ -35,25 +39,32 @@ static struct sensor_driver* _sensor_drivers_get(void* curl, char *driver_name)
 	json_object *sensor_driver_object = json_object_array_get_idx(p.json, 0);
 	json_object *id_template_object = NULL;
 	if (!json_object_object_get_ex(sensor_driver_object, "idTemplate", &id_template_object)) {
-		fprintf(stderr, "[SENSOR_DRIVER] json_object_object_get_ex failed\n");
-		tube_http_url_put(url);
+		tube_log_error("[SENSOR_DRIVER] json_object_object_get_ex failed\n");
+
 		tube_curl_paylaod_free(&p);
+		tube_http_url_put(url);
 		return NULL;
 	}
 
-	list = realloc(list, sizeof(struct sensor_driver) * (nr_list +1));
+	int realloc_size = sizeof(struct sensor_driver) * (nr_list +1);
+	list = realloc(list, realloc_size);
 	if (list == NULL) {
-		fprintf(stderr, "[SENSOR_DRIVER] realloc failed");
-		tube_http_url_put(url);
+		tube_log_error("[SENSOR_DRIVER] realloc failed. realloc size:%d",
+			realloc_size);
+
 		tube_curl_paylaod_free(&p);
+		tube_http_url_put(url);
+		list = NULL;
+		nr_list = 0;
+
 		return NULL;
 	}
 
 	list[nr_list].driver_name = strdup(driver_name);
 	list[nr_list].id_template = strdup(json_object_get_string(id_template_object));
 
-	tube_http_url_put(url);
 	tube_curl_paylaod_free(&p);
+	tube_http_url_put(url);
 
 	return &list[nr_list++];
 }
@@ -78,7 +89,8 @@ char* sensor_driver_id_template_get(void* tube_curl, char* driver_name)
 
 	sd = _sensor_drivers_get(tube_curl, driver_name);
 	if (sd == NULL) {
-		fprintf(stderr, "[SENSOR_DRIVER] _sensor_drivers_get failed\n");
+		tube_log_error("[SENSOR_DRIVER] _sensor_drivers_get failed. driver_name:%s\n",
+			driver_name);
 		return NULL;
 	}
 
@@ -100,4 +112,7 @@ void sensor_driver_cleanup(void)
 	}
 
 	free(list);
+
+	list = NULL;
+	nr_list = 0;
 }

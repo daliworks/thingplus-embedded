@@ -138,13 +138,14 @@ libtubehttp_a_LIBADD =
 am_libtubehttp_a_OBJECTS = libtubehttp_a-sensor_driver.$(OBJEXT) \
 	libtubehttp_a-tube_curl.$(OBJEXT) \
 	libtubehttp_a-tube_url.$(OBJEXT) \
-	libtubehttp_a-tube_http.$(OBJEXT)
+	libtubehttp_a-tube_http.$(OBJEXT) \
+	libtubehttp_a-tube_log.$(OBJEXT)
 libtubehttp_a_OBJECTS = $(am_libtubehttp_a_OBJECTS)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtubehttp_la_LIBADD =
 am_libtubehttp_la_OBJECTS = libtubehttp_la-sensor_driver.lo \
 	libtubehttp_la-tube_curl.lo libtubehttp_la-tube_url.lo \
-	libtubehttp_la-tube_http.lo
+	libtubehttp_la-tube_http.lo libtubehttp_la-tube_log.lo
 libtubehttp_la_OBJECTS = $(am_libtubehttp_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -353,7 +354,8 @@ libtubehttp_a_SOURCES = sensor_driver.c \
 			tube_curl.h \
 			tube_url.c \
 			tube_url.h \
-			tube_http.c
+			tube_http.c \
+			log/tube_log.c
 
 libtubehttp_a_CPPFLAGS = -I../../include
 include_HEADERS = ../../include/tube_http.h
@@ -364,7 +366,8 @@ libtubehttp_la_SOURCES = sensor_driver.c \
 			 tube_curl.h \
 			 tube_url.c \
 			 tube_url.h \
-			 tube_http.c
+			 tube_http.c \
+			 log/tube_log.c
 
 libtubehttp_la_CPPFLAGS = -I../../include
 all: config.h
@@ -505,10 +508,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_a-sensor_driver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_a-tube_curl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_a-tube_http.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_a-tube_log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_a-tube_url.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_la-sensor_driver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_la-tube_curl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_la-tube_http.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_la-tube_log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtubehttp_la-tube_url.Plo@am__quote@
 
 .c.o:
@@ -588,6 +593,20 @@ libtubehttp_a-tube_http.obj: tube_http.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtubehttp_a-tube_http.obj `if test -f 'tube_http.c'; then $(CYGPATH_W) 'tube_http.c'; else $(CYGPATH_W) '$(srcdir)/tube_http.c'; fi`
 
+libtubehttp_a-tube_log.o: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtubehttp_a-tube_log.o -MD -MP -MF $(DEPDIR)/libtubehttp_a-tube_log.Tpo -c -o libtubehttp_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtubehttp_a-tube_log.Tpo $(DEPDIR)/libtubehttp_a-tube_log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libtubehttp_a-tube_log.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtubehttp_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+
+libtubehttp_a-tube_log.obj: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtubehttp_a-tube_log.obj -MD -MP -MF $(DEPDIR)/libtubehttp_a-tube_log.Tpo -c -o libtubehttp_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtubehttp_a-tube_log.Tpo $(DEPDIR)/libtubehttp_a-tube_log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libtubehttp_a-tube_log.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtubehttp_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
+
 libtubehttp_la-sensor_driver.lo: sensor_driver.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtubehttp_la-sensor_driver.lo -MD -MP -MF $(DEPDIR)/libtubehttp_la-sensor_driver.Tpo -c -o libtubehttp_la-sensor_driver.lo `test -f 'sensor_driver.c' || echo '$(srcdir)/'`sensor_driver.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtubehttp_la-sensor_driver.Tpo $(DEPDIR)/libtubehttp_la-sensor_driver.Plo
@@ -615,6 +634,13 @@ libtubehttp_la-tube_http.lo: tube_http.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tube_http.c' object='libtubehttp_la-tube_http.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtubehttp_la-tube_http.lo `test -f 'tube_http.c' || echo '$(srcdir)/'`tube_http.c
+
+libtubehttp_la-tube_log.lo: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtubehttp_la-tube_log.lo -MD -MP -MF $(DEPDIR)/libtubehttp_la-tube_log.Tpo -c -o libtubehttp_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtubehttp_la-tube_log.Tpo $(DEPDIR)/libtubehttp_la-tube_log.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libtubehttp_la-tube_log.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtubehttp_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtubehttp_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

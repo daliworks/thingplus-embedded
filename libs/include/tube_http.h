@@ -17,6 +17,7 @@ enum tube_http_error
 	TUBE_HTTP_ERROR_DEVICE_MODEL_ID = -9,
 	TUBE_HTTP_ERROR_READ = -10,
 	TUBE_HTTP_ERROR_POST = -11,
+	TUBE_HTTP_ERROR_DUPLICATED = -12,
 };
 
 enum tube_http_error tube_http_sensor_register(void* tube_http, char* name, int uid, char* type, char* device_id, char* sensor_id);
@@ -24,7 +25,7 @@ enum tube_http_error tube_http_device_register(void* tube_http, char* name, int 
 
 char *tube_http_version(void);
 
-void* tube_http_init(char *gateway_id, char *apikey);
+void* tube_http_init(char *gateway_id, char *apikey, char *logfile);
 void tube_http_cleanup(void* tube_http);
 
 #endif  //#ifndef _TUBE_HTTP_H_

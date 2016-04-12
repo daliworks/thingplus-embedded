@@ -7,7 +7,8 @@ libtubehttp_a_SOURCES = sensor_driver.c \
 			tube_curl.h \
 			tube_url.c \
 			tube_url.h \
-			tube_http.c
+			tube_http.c \
+			log/tube_log.c
 libtubehttp_a_CPPFLAGS = -I../../include
 include_HEADERS = ../../include/tube_http.h
 
@@ -18,5 +19,6 @@ libtubehttp_la_SOURCES = sensor_driver.c \
 			 tube_curl.h \
 			 tube_url.c \
 			 tube_url.h \
-			 tube_http.c
+			 tube_http.c \
+			 log/tube_log.c
 libtubehttp_la_CPPFLAGS = -I../../include

@@ -5,12 +5,14 @@
 
 #include "tube_url.h"
 
+#include "log/tube_log.h"
+
 static const char *base_url = "https://api.thingplus.net/";
 static struct url_list{
 	enum tube_http_url tube_http_url;
 	char *url;
 } url_list[] = {
-	{.tube_http_url = TUBE_HTTP_URL_GATEWAY_INFO, .url = "gateways/%s?fields=model&fields=autoCreateDiscoverable&fields=devices"},
+	{.tube_http_url = TUBE_HTTP_URL_GATEWAY_INFO, .url = "gateways/%s?fields=model&fields=autoCreateDiscoverable&fields=devices&fields=sensors"},
 	{.tube_http_url = TUBE_HTTP_URL_GATEWAY_MODEL, .url = "gatewayModels/%d"},
 	{.tube_http_url = TUBE_HTTP_URL_DEVICE_REGISTER, .url = "gateways/%s/devices"},
 	{.tube_http_url = TUBE_HTTP_URL_SENSOR_DRIVERS, .url = "sensorDrivers/?filter[id]=%s"},
@@ -31,17 +33,17 @@ static struct url_list* _url_search(enum tube_http_url r)
 
 char *tube_http_url_get(enum tube_http_url r, ...)
 {
-	char base_url_len = strlen(base_url);
+	int base_url_len = strlen(base_url);
 	struct url_list *u = _url_search(r);
 	if (u == NULL) {
-		fprintf(stderr, "[URL] _url_search failed. tube_http_url is %d\n", r);
+		tube_log_error("[URL] _url_search failed. tube_http_url is %d\n", r);
 		return NULL;
 	}
 
-	char *url = calloc(1, base_url_len + strlen(u->url) * 2);
+	char *url = calloc(1, base_url_len + strlen(u->url) * 4);
 	if (url == NULL) {
-		fprintf(stderr, "[URL] calloc failed. size:%lu\n",
-				base_url_len + strlen(u->url) * 2);
+		tube_log_error("[URL] calloc failed. size:%lu\n",
+			base_url_len + strlen(u->url) * 2);
 		return NULL;
 	}
 
@@ -58,9 +60,8 @@ char *tube_http_url_get(enum tube_http_url r, ...)
 
 void tube_http_url_put(char *url)
 {
-	if (!url) {
+	if (!url)
 		return ;
-	}
 
 	free(url);
 }
