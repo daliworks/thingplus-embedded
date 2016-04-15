@@ -8,6 +8,7 @@
 #include "log/tube_log.h"
 
 #define TUBE_MQTT_MAX_TOPIC 256
+#define TUBE_MQTT_QOS	1
 
 
 struct mqtt_config {
@@ -88,8 +89,42 @@ static char* _payload_add(char* payload, char* format, ...)
 	return payload;
 }
 
+static int __payload_add(char** payload, int payload_size, char* format, ...)
+{
+#define DEFAULT_MESSAGE_LEN 512
+
+	char message_temp[DEFAULT_MESSAGE_LEN] = {0, };
+	va_list args;
+
+	va_start(args, format);
+	vsprintf(message_temp, format, args);
+	va_end(args);
+
+	//tube_log_debug("message_temp:%s\n", message_temp);
+	int message_len = strlen(message_temp);
+	int payload_available_len = 0;
+	if (*payload)
+		payload_available_len = payload_size - strlen(*payload);
+
+	if (message_len + 1 > payload_available_len) {
+		*payload = realloc(*payload, payload_size + DEFAULT_MESSAGE_LEN);
+		if (*payload == NULL) {
+			tube_log_error("[MQTT] realloc failed\n");
+			return -1;
+		}
+		memset(&((*payload)[payload_size]), 0, DEFAULT_MESSAGE_LEN);
+
+		payload_size += DEFAULT_MESSAGE_LEN;
+	}
+
+	strcpy(&((*payload)[strlen(*payload)]), message_temp);
+
+	return payload_size;
+}
+
 static void _payload_del(char* payload)
 {
+	return;
 	if (!payload)
 		return;
 
@@ -203,7 +238,7 @@ enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct 
 
 		tube_log_debug("[MQTT] publish. topic:%s payload:%s\n", topic, payload);
 
-		ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, 1, false);
+		ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, TUBE_MQTT_QOS, false);
 		if (ret != MOSQ_ERR_SUCCESS) 
 			tube_log_error("mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
 
@@ -219,7 +254,7 @@ enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct 
 
 			tube_log_debug("[MQTT] publish. topic:%s payload:%s\n", topic, payload);
 
-			ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, 1, false);
+			ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, TUBE_MQTT_QOS, false);
 			if (ret != MOSQ_ERR_SUCCESS) {
 				tube_log_error("mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
 			}
@@ -257,7 +292,7 @@ enum tube_mqtt_error tube_mqtt_single_value_send(void* instance, char* id, struc
 	payload = _payload_add(NULL, "%lld,%s", value->time_ms, value->value);
 
 	tube_log_debug("[MQTT] publish. topic:%s payload:%s\n", topic, payload);
-	int ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, 1, false);
+	int ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, TUBE_MQTT_QOS, false);
 	if (ret != MOSQ_ERR_SUCCESS) 
 		tube_log_error("mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
 
@@ -292,6 +327,7 @@ enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct 
 
 	char topic[TUBE_MQTT_MAX_TOPIC] = {0,};
 	char* payload = NULL;
+	int payload_size = 0;
 	char* format;
 	int i, j;
 
@@ -300,7 +336,8 @@ enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct 
 
 		format = "%lld,%s";
 		for (i=0; i<values->nr_value; i++) {
-			payload = _payload_add(payload, format, values->value[i].time_ms, values->value[i].value);
+			payload_size = __payload_add(&payload, payload_size, format, values->value[i].time_ms, values->value[i].value);
+			//payload = _payload_add(payload, format, values->value[i].time_ms, values->value[i].value);
 			format = ",%lld,%s";
 		}
 	}
@@ -312,20 +349,20 @@ enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct 
 			if (!values[i].nr_value)
 				continue;
 
-			payload = _payload_add(payload, format, values[i].id);
+			payload_size = __payload_add(&payload, payload_size, format, values[i].id);
 
-			payload = _payload_add(payload, "%lld,%s", values[i].value[0].time_ms, values[i].value[0].value);
+			payload_size = __payload_add(&payload, payload_size, "%lld,%s", values[i].value[0].time_ms, values[i].value[0].value);
 			for (j=1; j < values[i].nr_value; j++)
-				payload = _payload_add(payload, ",%lld,%s", values[i].value[j].time_ms, values[i].value[j].value);
+				payload_size = __payload_add(&payload, payload_size, ",%lld,%s", values[i].value[j].time_ms, values[i].value[j].value);
 
-			payload = _payload_add(payload, "]");
+			payload_size = __payload_add(&payload, payload_size, "]");
 			format = ", \"%s\": [";
 		}
-		payload = _payload_add(payload, "}");
+		payload_size = __payload_add(&payload, payload_size, "}");
 	}
 
 	tube_log_debug("[MQTT] publish. topic:%s payload:%s\n", topic, payload);
-	int ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, 1, false);
+	int ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, TUBE_MQTT_QOS, false);
 	if (ret != MOSQ_ERR_SUCCESS) 
 		tube_log_error("mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
 
@@ -411,6 +448,8 @@ void* tube_mqtt_connect(char* gw_id, char* apikey, char* ca_file, int report_int
 	}
 
 	mosquitto_connect_callback_set(t->mosq, _on_connect);
+	mosquitto_publish_callback_set(t->mosq, _on_publish);
+
 #warning "fix mqtt host"
 	ret = mosquitto_connect(t->mosq, "mqtt.testyh.thingbine.com", port, 60 * 10);
 	if (ret != MOSQ_ERR_SUCCESS) {
