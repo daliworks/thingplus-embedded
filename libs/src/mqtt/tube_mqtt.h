@@ -11,13 +11,14 @@ enum tube_mqtt_error {
 	TUBE_MQTT_ERROR_BROKER = -4,
 	TUBE_MQTT_ERROR_UNKNOWN = -5,
 	TUBE_MQTT_ERROR_MEM_ALLOC = -6,
+	TUBE_MQTT_ERROR_SYSCALL = -7,
 };
 
 struct tube_mqtt_callback {
 	void (*connect)(void* arg, enum tube_mqtt_error result);
-	//void (*disconnect)(void *id);
+	void (*disconnect)(void *arg);
 	//int (*pub)(void* handle, char *topic, char *message);
-	//int (*sub)(void* handle, char *topic, void (*callback)(char *msg, int len));
+	int (*sub)(void* handle, char *topic, void (*callback)(char *msg, int len));
 };
 
 /*
@@ -52,9 +53,16 @@ struct tube_thing_values {
 	struct tube_thing_value *value;
 };
 
-enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct tube_thing_status *things);
-enum tube_mqtt_error tube_mqtt_single_value_send(void* instance, char* id, struct tube_thing_value *value);
-enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct tube_thing_values *values);
+
+enum tube_mqtt_error tube_mqtt_status_publish(void *instance, int nr_thing, struct tube_thing_status *things);
+
+enum tube_mqtt_error tube_mqtt_actuator_subscribe(void *instance, char* id, void (*cb_actuating)(void));
+
+enum tube_mqtt_error tube_mqtt_single_value_publish(void* instance, char* id, struct tube_thing_value *value);
+enum tube_mqtt_error tube_mqtt_values_publish(void* instance, int nr_thing, struct tube_thing_values *values);
+
+
+int tube_mqtt_loop(void* instance, int timeout);
 
 void* tube_mqtt_connect(char* gw_id, char* apikey, char* ca_file, int report_interval, struct tube_mqtt_callback *mqtt_cb, void* cb_arg, char* logfile);
 void tube_mqtt_disconnect(void* t);

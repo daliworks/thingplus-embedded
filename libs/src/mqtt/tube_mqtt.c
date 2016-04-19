@@ -10,7 +10,6 @@
 #define TUBE_MQTT_MAX_TOPIC 256
 #define TUBE_MQTT_QOS	1
 
-
 struct mqtt_config {
 	int version;
 	bool clean_session;
@@ -20,6 +19,13 @@ struct mqtt_config {
 		int qos;
 		bool retained;
 	} will;
+};
+
+static struct mqtt_config tube_default_config = {
+	.version = 3,
+	.will.msg = "err",
+	.will.qos = 1,
+	.will.retained = true,
 };
 
 struct tube_mqtt{ 
@@ -32,21 +38,15 @@ struct tube_mqtt{
 
 	char* gw_id;
 	char* apikey;
+	char topic_subscribe[TUBE_MQTT_MAX_TOPIC];
 
 	struct tube_dm_ops dm_ops;
 	int report_interval;
 
 	struct tube_mqtt_callback callback;
-	void* callbackb_arg;
+	void* callback_arg;
 
 	void* mosq;
-};
-
-static struct mqtt_config tube_default_config = {
-	.version = 3,
-	.will.msg = "err",
-	.will.qos = 1,
-	.will.retained = true,
 };
 
 static unsigned long long _current_time_ms_get(void)
@@ -60,36 +60,7 @@ static unsigned long long _current_time_ms_get(void)
 	return now;
 }
 
-static char* _payload_add(char* payload, char* format, ...)
-{
-#define DEFAULT_MESSAGE_LEN 512
-
-	char message_temp[DEFAULT_MESSAGE_LEN] = {0, };
-	va_list args;
-
-	va_start(args, format);
-	vsprintf(message_temp, format, args);
-	va_end(args);
-
-	//tube_log_debug("message_temp:%s\n", message_temp);
-	int message_size = strlen(message_temp);
-	int payload_size = 0;
-	if (payload)
-		payload_size = strlen(payload);
-
-	payload = realloc(payload, payload_size + message_size + 1);
-	if (payload == NULL) {
-		tube_log_error("[MQTT] realloc failed. size:%d\n", 
-			payload_size + message_size + 1);
-		return NULL;
-	}
-
-	strcpy(&payload[payload_size], message_temp);
-
-	return payload;
-}
-
-static int __payload_add(char** payload, int payload_size, char* format, ...)
+static int _payload_add(char** payload, int payload_size, char* format, ...)
 {
 #define DEFAULT_MESSAGE_LEN 512
 
@@ -124,7 +95,6 @@ static int __payload_add(char** payload, int payload_size, char* format, ...)
 
 static void _payload_del(char* payload)
 {
-	return;
 	if (!payload)
 		return;
 
@@ -139,11 +109,56 @@ static char* _to_string_tube_mqtt_thing_status(enum tube_mqtt_thing_status s)
 		return "off";
 }
 
+static void _connection_publish(struct tube_mqtt *t, bool connected)
+{
+	char topic[TUBE_MQTT_MAX_TOPIC] = {0,};
+	sprintf(topic, "v/a/g/%s/mqtt/status", t->gw_id);
+
+	char* payload = NULL;
+	int payload_size = 0;
+	char *value = connected ? "on" : "off";
+	payload_size = _payload_add(&payload, payload_size, "%s", value);
+
+	int ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, TUBE_MQTT_QOS, false);
+	if (ret != MOSQ_ERR_SUCCESS) 
+		tube_log_error("mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
+
+	_payload_del(payload);
+}
+
+static void _subscribing(struct tube_mqtt *t)
+{
+	int ret = mosquitto_subscribe(t->mosq, NULL, t->topic_subscribe, TUBE_MQTT_QOS);
+	if (ret != MOSQ_ERR_SUCCESS) {
+		tube_log_error("mosquitto_subscribe failed. %s\n", mosquitto_strerror(ret));
+	}
+}
+
+//TODO FIXME DELETE ME
+static void _on_publish(struct mosquitto *mosq,  void *obj, int mid)
+{
+	tube_log_info("published\tmid:%d\n", mid);
+}
 
 //TODO FIXME DELETE ME
 static void on_log(struct mosquitto *mosq, void* obj, int level, const char* str)
 {
 	tube_log_info("%s\n", str);
+}
+
+static void _on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
+{
+	tube_log_info("%s\n", (char*)msg->payload);
+}
+
+static void _on_disconnect(struct mosquitto *mosq, void *obj, int rc)
+{
+	tube_log_info("disconnected. force:%d\n", rc);
+
+	struct tube_mqtt* t = (struct tube_mqtt*)obj;
+
+	if (t->callback.disconnect) 
+		t->callback.disconnect(t->callback_arg);
 }
 
 static void _on_connect(struct mosquitto *mosq, void *obj, int err)
@@ -155,22 +170,22 @@ static void _on_connect(struct mosquitto *mosq, void *obj, int err)
 		switch(err) {
 		case 1:
 			tube_log_error("[MQTT] unacceptable protocol version\n");
-			t->callback.connect(t->callbackb_arg, 
+			t->callback.connect(t->callback_arg, 
 				TUBE_MQTT_ERROR_UNKNOWN);
 			return;
 		case 2:
 			tube_log_error("[MQTT] identifier rejected\n");
-			t->callback.connect(t->callbackb_arg, 
+			t->callback.connect(t->callback_arg, 
 				TUBE_MQTT_ERROR_IDENTIFICATION);
 			return;
 		case 3:
 			tube_log_error("[MQTT] broker unavailable\n");
-			t->callback.connect(t->callbackb_arg, 
+			t->callback.connect(t->callback_arg, 
 				TUBE_MQTT_ERROR_BROKER);
 			return;
 		default:
 			tube_log_error("[MQTT] unknown error\n");
-			t->callback.connect(t->callbackb_arg, 
+			t->callback.connect(t->callback_arg, 
 				TUBE_MQTT_ERROR_UNKNOWN);
 			return;
 		}
@@ -178,13 +193,21 @@ static void _on_connect(struct mosquitto *mosq, void *obj, int err)
 
 	tube_log_info("[MQTT] connected\n");
 
+	_subscribing(t);
+	_connection_publish(t, true);
+
 	t->mqtt_status = MQTT_CONNECTED;
 	if (t->callback.connect) 
-		t->callback.connect(t->callbackb_arg, 
+		t->callback.connect(t->callback_arg, 
 			TUBE_MQTT_ERROR_SUCCESS);
 }
 
-enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct tube_thing_status *things)
+
+enum tube_mqtt_error tube_mqtt_actuator_subscribe(void *instance, char* id, void (*cb_actuating)(void))
+{
+}
+
+enum tube_mqtt_error tube_mqtt_status_publish(void *instance, int nr_thing, struct tube_thing_status *things)
 {
 #define GATEWAY_STATUS_FOUND()		(gateway_status_index != -1)
 
@@ -217,20 +240,21 @@ enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct 
 	}
 
 	char topic[TUBE_MQTT_MAX_TOPIC] = {0,};
-	char* payload;
+	char* payload = NULL;
 	int ret;
+	int payload_size = 0;
 
 	if (GATEWAY_STATUS_FOUND()) {
 		sprintf(topic, "v/a/g/%s/status", t->gw_id);
 
-		payload = _payload_add(NULL, "%s,%ld", 
+
+		payload_size = _payload_add(&payload, payload_size, "%s,%ld", 
 				_to_string_tube_mqtt_thing_status(things[gateway_status_index].status), 
 				now + things[gateway_status_index].valid_duration_sec* 1000);
-
 		for (i=0; i<nr_thing; i++) {
 			if (i == gateway_status_index)
 				continue;
-			payload = _payload_add(payload, ",%s,%s,%ld", 
+			payload_size = _payload_add(&payload, payload_size, ",%s,%s,%ld", 
 				things[i].id, 
 				_to_string_tube_mqtt_thing_status(things[i].status),
 				now + things[i].valid_duration_sec * 1000);
@@ -248,7 +272,7 @@ enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct 
 		for (i=0; i<nr_thing; i++) {
 			memset(topic, 0, sizeof(topic));
 			sprintf(topic, "v/a/g/%s/s/%s/status", t->gw_id, things[i].id);
-			payload = _payload_add(NULL, "%s,%ld", 
+			payload_size = _payload_add(&payload, payload_size, "%s,%ld", 
 				_to_string_tube_mqtt_thing_status(things[i].status),
 				now + things[i].valid_duration_sec * 1000);
 
@@ -258,6 +282,7 @@ enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct 
 			if (ret != MOSQ_ERR_SUCCESS) {
 				tube_log_error("mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
 			}
+
 			_payload_del(payload);
 			payload = NULL;
 		}
@@ -266,7 +291,7 @@ enum tube_mqtt_error tube_mqtt_status_send(void *instance, int nr_thing, struct 
 	return TUBE_MQTT_ERROR_SUCCESS;
 }
 
-enum tube_mqtt_error tube_mqtt_single_value_send(void* instance, char* id, struct tube_thing_value *value)
+enum tube_mqtt_error tube_mqtt_single_value_publish(void* instance, char* id, struct tube_thing_value *value)
 {
 	struct tube_mqtt *t = (struct tube_mqtt*)instance;
 
@@ -286,10 +311,11 @@ enum tube_mqtt_error tube_mqtt_single_value_send(void* instance, char* id, struc
 	}
 
 	char topic[TUBE_MQTT_MAX_TOPIC] = {0,};
-	char* payload;
+	char* payload = NULL;
+	int payload_size = 0;
 
 	sprintf(topic, "v/a/g/%s/s/%s", t->gw_id, id);
-	payload = _payload_add(NULL, "%lld,%s", value->time_ms, value->value);
+	payload_size = _payload_add(&payload, payload_size, "%lld,%s", value->time_ms, value->value);
 
 	tube_log_debug("[MQTT] publish. topic:%s payload:%s\n", topic, payload);
 	int ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, TUBE_MQTT_QOS, false);
@@ -301,7 +327,7 @@ enum tube_mqtt_error tube_mqtt_single_value_send(void* instance, char* id, struc
 	return TUBE_MQTT_ERROR_SUCCESS;
 }
 
-enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct tube_thing_values *values)
+enum tube_mqtt_error tube_mqtt_values_publish(void* instance, int nr_thing, struct tube_thing_values *values)
 {
 	struct tube_mqtt *t = (struct tube_mqtt*)instance;
 
@@ -336,8 +362,7 @@ enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct 
 
 		format = "%lld,%s";
 		for (i=0; i<values->nr_value; i++) {
-			payload_size = __payload_add(&payload, payload_size, format, values->value[i].time_ms, values->value[i].value);
-			//payload = _payload_add(payload, format, values->value[i].time_ms, values->value[i].value);
+			payload_size = _payload_add(&payload, payload_size, format, values->value[i].time_ms, values->value[i].value);
 			format = ",%lld,%s";
 		}
 	}
@@ -349,16 +374,16 @@ enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct 
 			if (!values[i].nr_value)
 				continue;
 
-			payload_size = __payload_add(&payload, payload_size, format, values[i].id);
+			payload_size = _payload_add(&payload, payload_size, format, values[i].id);
 
-			payload_size = __payload_add(&payload, payload_size, "%lld,%s", values[i].value[0].time_ms, values[i].value[0].value);
+			payload_size = _payload_add(&payload, payload_size, "%lld,%s", values[i].value[0].time_ms, values[i].value[0].value);
 			for (j=1; j < values[i].nr_value; j++)
-				payload_size = __payload_add(&payload, payload_size, ",%lld,%s", values[i].value[j].time_ms, values[i].value[j].value);
+				payload_size = _payload_add(&payload, payload_size, ",%lld,%s", values[i].value[j].time_ms, values[i].value[j].value);
 
-			payload_size = __payload_add(&payload, payload_size, "]");
+			payload_size = _payload_add(&payload, payload_size, "]");
 			format = ", \"%s\": [";
 		}
-		payload_size = __payload_add(&payload, payload_size, "}");
+		payload_size = _payload_add(&payload, payload_size, "}");
 	}
 
 	tube_log_debug("[MQTT] publish. topic:%s payload:%s\n", topic, payload);
@@ -368,7 +393,36 @@ enum tube_mqtt_error tube_mqtt_values_send(void* instance, int nr_thing, struct 
 
 	_payload_del(payload);
 
-	return 0;
+	return TUBE_MQTT_ERROR_SUCCESS;
+}
+
+int tube_mqtt_loop(void* instance, int timeout)
+{
+	struct tube_mqtt *t = (struct tube_mqtt*)instance;
+
+	int ret = mosquitto_loop(t->mosq, timeout, 1);
+	if (ret != MOSQ_ERR_SUCCESS) {
+		switch (ret) {
+		case MOSQ_ERR_INVAL:
+			return TUBE_MQTT_ERROR_INVALID_ARGUMENT;
+		case MOSQ_ERR_NOMEM:
+			return TUBE_MQTT_ERROR_MEM_ALLOC;
+		case MOSQ_ERR_PROTOCOL:
+			return TUBE_MQTT_ERROR_BROKER;
+		case MOSQ_ERR_ERRNO:
+			return TUBE_MQTT_ERROR_SYSCALL;
+		case MOSQ_ERR_CONN_LOST:
+			ret = mosquitto_reconnect(t->mosq);
+			if (ret != MOSQ_ERR_SUCCESS) {
+				return TUBE_MQTT_ERROR_NOT_CONNECTED;
+			}
+			return TUBE_MQTT_ERROR_SUCCESS;
+		default:
+			return TUBE_MQTT_ERROR_UNKNOWN;
+		}
+	}
+
+	return TUBE_MQTT_ERROR_SUCCESS;
 }
 
 void* tube_mqtt_connect(char* gw_id, char* apikey, char* ca_file, int report_interval, struct tube_mqtt_callback *mqtt_cb, void* cb_arg, char* logfile)
@@ -397,7 +451,7 @@ void* tube_mqtt_connect(char* gw_id, char* apikey, char* ca_file, int report_int
 	}
 
 	t->callback = *mqtt_cb;
-	t->callbackb_arg = cb_arg;
+	t->callback_arg = cb_arg;
 
 	t->gw_id = strdup(gw_id);
 	t->apikey = strdup(apikey);
@@ -406,12 +460,18 @@ void* tube_mqtt_connect(char* gw_id, char* apikey, char* ca_file, int report_int
 	t->config = tube_default_config;
 	sprintf(t->config.will.topic, "v/a/g/%s/mqtt/status",gw_id);
 
+	sprintf(t->topic_subscribe, "v/a/g/%s/req",gw_id);
+
 	t->mosq = mosquitto_new(t->gw_id, true, (void*)t);
 	if (!t->mosq) {
 		tube_log_error("[MQTT] mosquitto_new failed\n");
 		goto err_mosquitto_new;
 	}
 
+	mosquitto_publish_callback_set(t->mosq, _on_publish);
+	mosquitto_connect_callback_set(t->mosq, _on_connect);
+	mosquitto_message_callback_set(t->mosq, _on_message);
+	mosquitto_disconnect_callback_set(t->mosq, _on_disconnect);
 	mosquitto_log_callback_set(t->mosq, on_log);
 
 	int ret = mosquitto_will_set(t->mosq, t->config.will.topic,
@@ -446,9 +506,6 @@ void* tube_mqtt_connect(char* gw_id, char* apikey, char* ca_file, int report_int
 #warning "fix mqtt port 8889 to 8883"
 		port = 8889;
 	}
-
-	mosquitto_connect_callback_set(t->mosq, _on_connect);
-	mosquitto_publish_callback_set(t->mosq, _on_publish);
 
 #warning "fix mqtt host"
 	ret = mosquitto_connect(t->mosq, "mqtt.testyh.thingbine.com", port, 60 * 10);
@@ -485,10 +542,16 @@ void tube_mqtt_disconnect(void *instance)
 		return;
 	}
 
-	mosquitto_disconnect(t->mosq);
+	if (t->mqtt_status == MQTT_CONNECTED) {
+		_connection_publish(t, false);
+		mosquitto_unsubscribe(t->mosq, NULL, t->topic_subscribe);
+		mosquitto_disconnect(t->mosq);
+	}
+
 	mosquitto_loop_stop(t->mosq, false);
 	mosquitto_will_clear(t->mosq);
 	mosquitto_destroy(t->mosq);
+	mosquitto_lib_cleanup();;
 
 	if (t->gw_id)
 		free(t->gw_id);
