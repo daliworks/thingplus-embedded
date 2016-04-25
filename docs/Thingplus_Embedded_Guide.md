@@ -142,35 +142,60 @@ Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
 하드웨어는 MQTT 접속에 성공한 경우 MQTT의 상태가 정상임을 전송해야합니다.</br>
 > MQTT 접속 상태 전송
 
-```javascript
-{
-    "TOPIC": "v/a/g/{gateway_id}/mqtt/status"
-    "MESSAGE" : "on"
-}
-```
 
+```javascript
+TOPIC: v/a/g/__GATEWAY_ID__/mqtt/status
+MESSAGE: on
+
+__GATEWAY_ID__ : 게이트웨이 아이디
+```
+Example
+
+```
+TOPIC: v/a/g/000011112222/mqtt/status
+MESSAGE: on
+```
 #### 2.2.3 하드웨어 상태 전송
 하드웨어는 주기적으로 하드웨어 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 하드웨어 상태를 재수신하지 못하면 해당 thing에 에러가 발생하였다고 판단합니다.<br> 
 
 >하드웨어 상태 전송
 
 ```javascript
-{
-	"TOPIC": v/a/g/{gateway_id}/status
-	"MESSAGE": {hw_status},{valid_time}
-}
+TOPIC: v/a/g/__GATEWAY_ID__/status
+MESSAGE: __HW_STATUS__,__VALID_TIME__
+
+__HW_STATUS__:게이트웨이의 상태. on|off
+__VALID_TIME__: 상태의 유효시간. UTC기준이며 단위는 msec
+```
+Example
+
+```
+TOPIC: v/a/g/000011112222/status
+MESSAGE: on,146156169505
 ```
 
 </br>
-하드웨어 상태 전송 메시지에 센서의 상태를 붙여서 전송 할 수도 있습니다. 하나의 토픽을 이용하여 하드웨어 상태와 센서의 상태를 같이 전송할 수 있기 때문에, 네트워크 비용이 비싼 thing은 이 방법을 이용하면 네트워크 비용을 줄일 수 있습니다. 만약 이 방법을 사용하였다면, 개별 센서의 상태는 별도로 전송하지 않아도 됩니다.
+하드웨어 상태 전송 메시지에 센서의 상태를 붙여서 전송 할 수도 있습니다. 하나의 토픽을 이용하여 하드웨어 상태와 센서의 상태를 같이 전송하기 때문에, 네트워크 비용이 비싼 thing은 이 방법을 이용하면 네트워크 비용을 줄일 수 있습니다. 만약 이 방법을 사용하였다면, 개별 센서의 상태는 별도로 전송하지 않아도 됩니다.
 
 >하드웨어, 센서 상태 전송
 
 ```javascript
-{
-	"TOPIC": v/a/g/{gateway_id}/status
-	"MESSAGE": {hw_status},{valid_time},{sensor_id},{sensor_status},{valid_time},...,{repeat for sensors}
+TOPIC: v/a/g/__GATEWAY_ID__/status
+MESSAGE: __HW_STATUS__,__VALID_TIME__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_TIME__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID__TIME__
 }
+
+__GATEWAY_ID__ : 게이트웨이 아이디
+__HW_STATUS__ : 게이트웨이의 상태. on|off
+__VALID_TIME__ : 상태의 유효시간. UTC기준이며 단위는 msec
+__SENSOR_ID__ : 센서 아이디
+__SENSOR_STATUS__ : 센서의 상태. on|off
+```
+
+Example
+
+```
+TOPIC: v/a/g/000011112222/status
+MESSAGE: on,146156169505,000011112222-onoff-0,on,146156168403,000011112222-temperature-0,off,146156161192
 ```
 
 #### 2.2.4 센서 상태 전송
@@ -179,131 +204,204 @@ Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
 > 센서 상태 전송
 
 ```javascript
-{
-	"TOPIC": v/a/g/{gateway_id|/s/{sensor_id}
-	"MESSAGE": {sensor_status},{valid_time}
-}
+TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
+MESSAGE: __SENSOR_STATUS__,__VALID_TIME__
+
+__GATEWAY_ID__ : 게이트웨이 아이디
+__SENSOR_ID__ : 센서 아이디
+__SENSOR_STATUS__ : 센서의 상태. on|off
+__VALID_TIME__ : 상태의 유효시간. UTC기준이며 단위는 msec
+```
+
+Example
+
+```
+TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
+MESSAGE: on,146156161192
 ```
 
 #### 2.2.5 센서값 전송
-하드웨어는 개별 센서의 값을 전송할 수 있습니다. 하드웨어는 센서값과 값을 읽은 시간을 쌍으로 전송해야하며, 한개의 센서에 대해 여러개의 센서값을 한꺼번에 전송할 수도 있습니다. 여러개의 센서값 전송 시 시간순으로 정렬이 되어있어야 합니다. 센서값과 시간을 배열로 묶은 형태도 전송이 가능합니다. </br>
+하드웨어는 개별 센서의 값을 전송할 수 있습니다. 하드웨어는 센서값과 시간을 쌍으로 전송해야하며, 한개의 센서에 대해 여러개의 센서값을 한꺼번에 전송할 수도 있습니다. 여러개의 센서값 전송 시 시간순으로 정렬이 되어있어야 합니다. 센서값과 시간을 배열로 묶은 형태도 전송이 가능합니다. </br>
 > 센서 값 전송
 
 ```javascript
-{
-	"TOPIC": v/a/g/{gateway_id}/s/{sensor_id}
-	"MESSAGE": {time},{value},{time},{value},...,{repeats}
-}
+TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
+MESSAGE: __TIME__,__VALUE__, ...(REPEAT FOR VALUES), __TIME__,__VALUE__
+
+__GATEWAY_ID__ : 게이트웨이 아이디
+__SENSOR_ID__ : 센서 아이디
+__TIME__ : 센싱 시간. UTC기준이며 단위는 msec
+__VALUE__ : 센서값
+```
+
+Example
+
+```
+TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
+MESSAGE: 146156161000,26.5,146156162000,27.5,146156163000,30
 ```
 
 > 센서 값 전송 (시간, 값을 배열로 묶음)
 
 ```javascript
-{
-	"TOPIC": v/a/g/{gateway_id}/s/{sensor_id}
-	"MESSAGE": [{time},{value},{time},{vaule},...,{repeats}]
-}
+TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
+MESSAGE: [__TIME__,__VALUE__, ...(REPEAT FOR VALUES)__TIME__,__VALUE__]
+```
+Example
+
+```
+TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
+MESSAGE: [146156161000,26.5,146156162000,27.5,146156163000,30]
 ```
 
 
 #### 2.2.6 N개 센서의 센서값 전송
-하드웨어에 연결된 여러개의 센서 값을 한꺼번에 전송할 수 있습니다. 각각의 센서에 대해서 여러개의 센서값을 한꺼번에 전송할 수 있으며, 센서값은 시간순으로 정렬이 되어있어야 합니다.
+하드웨어에 연결된 여러개의 센서 값을 한꺼번에 전송합니다. 각각의 센서에 대해서 여러개의 센서값을 한꺼번에 전송할 수도 있습니다. 센서값은 시간순으로 정렬이 되어있어야 합니다.
 
 > N개 센서의 센서값 전송
 
 ```javascript
-{
-	"TOPIC": v/a/g/{gateway_id}
-	"MESSAGE": {"{sensor_id}":[{time},{value},...,(repeats)],"{sensor_id}":[{time},{value},...,(repeats)],...  }
-}
+TOPIC: v/a/g/__GATEWAY_ID__
+MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__],"__SENSOR_ID__":[__TIME__,__VALUE__,...,__TIME__,__VALUE__], ...(REPEAT FOR SENSORS), "__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__]}
+
+__GATEWAY_ID__ : 게이트웨이 아이디
+__SENSOR_ID__ : 센서 아이디
+__TIME__ : 센싱 시간. UTC기준이며 단위는 msec
+__VALUE__ : 센서값
+
+메시지에 {, }, [, ], "가 포함됩니다.
+```
+Example
+
+```
+TOPIC: v/a/g/000011112222
+MESSAGE: {"000011112222-temperature-0":[1461563978000,27.5,1461563978000,28.5],"000011112222-humidity-0":[146156161000,30,146156162000,35,146156163000,40]}
 ```
 
-#### 2.2.7 Thing+가 요청한 작업 결과 전송
-Thing+는 액추에이터 명령어, 하드웨어 환경 설정 등을 위해 MQTT 메시지를 전송합니다. IoT 기기는 Thing+가 요청한 작업을 수행해야하며 수행결과를 Thing+에게 알려줘야 합니다.<br>
+#### 2.2.7 Thing+가 하드웨어에게 작업을 요청하는 메시지
 
-> Thing+ 요청 작업 결과
+Thing+는 액추에이터 실행, 하드웨어 환경 설정 등의 작업을 요청(Request)할 수 있으며, 하드웨어는 주어진 포멧에 따라 응답(Reponse)을 해야합니다.
+
+하드웨어는 서버의 작업 요청을 받기 위해 토픽을 구독해야 하여, Thing+가 요청하는 메시지 포멧은 아래와 같습니다.
+
+> Thing+가 하드웨어에게 작업 요청
+
+```
+TOPIC : v/a/g/__GATEWAY_ID__/req
+MESSAGE: {"id": __MESSAGE_ID__, "method": __METHOD__, "params": __PARAMS__}
+
+__GATEWAY_ID__ : 게이트웨이 아이디
+__MESSAGE_ID__ : 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
+__METHOD__ : 수행해야 할 작업 이름
+__PARAMS__ : 파라미터
+
+메시지에 {, }, "가 포함됩니다.
+
+```
+
+Example
+
+```
+TOPIC: v/a/g/000011112222/req
+
+```
+
+#### 2.2.8 Thing+가 요청한 작업 결과 전송
+하드웨어는 Thing+가 요청한 작업을 수행한 후 결과를 Thing+에게 알려줘야 합니다.
+하드웨어가 응답하는 메시지 포멧은 작업의 성공, 실패에 따라 달라집니다.
+
+> Thing+ 요청 작업의 결과
 
 ```javascritp
-{
-	"TOPIC": v/a/g/{gateway_id}/res
-	"MESSAGE IF SUCCESS": {"id":{message_id},"result":"{result}"}
-	"MESSAGE IF FAILED ": {"id":{message_id},"error":{"code":{err_code}, "message":{error_message}}}
-}
-```
+TOPIC: v/a/g/__GATEWAY_ID__/res
+MESSAGE IF SUCCESS": {"id":__MESSAGE_ID__,"result":__RESULT__}
+MESSAGE IF FAILED ": {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__}}
+__GATEWAY_ID__ : 게이트웨이 아이디
+__MESSAGE_ID__ : 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
+__RESULT__ : 작업의 결과
+__ERR_CODE__ : 실패일 경우의 에러코드
+__ERR_MSG__ : 실패 이유
 
-메시지 아이디는 작업을 요청한 메시지의 아이디로 자세한 내용은 다음절을 참고하시며 됩니다.<br>
-Thing+는 작업 성공 시에 수신해야 될 값을 사전에 정의하고 있으며, [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인하실 수 있습니다. 작업 성공 시 IoT 기기는 성공값을 {result} 에 적어주면 됩니다.<br>
+메시지에 {, }, "가 포함됩니다.
+```
 에러코드는 [JSONRPC의 에러코드 규칙](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php)을 따르며, 자세한 에러원인은 {error_message} 에 적어주면 됩니다.
 
-#### 2.2.8 하드웨어가 수신하는 메시지
-하드웨어는 Thing+가 발행하는 MQTT 메시지 수신을 위하여 아래 토픽을 구독해야합니다. 각 하드웨어는 자신에게 오는 MQTT 메시지만 구독할 수 있습니다.
-
-> 하드웨어가 구독하는 토픽, 전송받는 메시지
-
-```javascript
-{
-	"TOPIC": v/a/g/{gateway_id}/req
-	"MESSAGE": "id":"{msg_id}","method":"{method}","params":"{params}"
-}
-```
-
-메시지는 메시지 아이디(msg_id), 메쏘드(method), 파라미터(params)로 구성되어 있습니다.</br>
-메시지 아이디는 Thing+에서 정의하는 값으로 메시지마다 고유의 값을 가집니다. 하드웨어가 명령어 수행 후 수행결과를 Thing+에 알려줄 때 이 메시지 아이디를 사용해야합니다.</br>
-메쏘드는 IoT 기기가 수행해야 할 일의 목록이며, 파라미터는 메쏘드에 따라 달라집니다.
-메쏘드는 다음과 같이 정의하고 있습니다.
-
+#### 2.2.9 Thing+가 요청하는 작업 목록
 > Method List
 
-Method|Description
-:---|:---
-timeSync|시간 동기화
-controlActuator|액추에이터 실행
-setProperty|Thing+와 연관된 하드웨어 환경 설정
-poweroff|하드웨어 종료
-reboot|하드웨어 재시작
-restart|소프트웨어 재시작
-swUpdate|소프트웨어 버전 업그레이드
-swInfo|소프트웨어 버전 정보
+Method|Description|Parameters|Param Description
+:---|:---|:---|:---
+timeSync|시간 동기|{"time":\_\_TIME\_\_}|\_\_TIME\_\_ : 서버시간(UTC)
+controlActuator|액추에이터 실행|{"id":\_\_SENSOR_ID\_\_,"cmd":\_\_CMD\_\_,"options",\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : 액추에이터 아이디<br>\_\_CMD\_\_ : 명령어<br>\_\_OPTIONS\_\_ : 명령어 옵션<br>
+setProperty|리포트 인터벌 변경|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_ : 리포트 인터벌
+poweroff|하드웨어 종료|None|None
+reboot|하드웨어 재시작|None|None
+restart|소프트웨어 재시작|None|None
+swUpdate|소프트웨어 버전 업그레이드|None|None
+swInfo|소프트웨어 버전 정보|None|None
 
 위 메쏘드 중 timeSync, setProperty는 의무적으로 구현해야 하며, 나머지는 필요한 것들만 구현하시면 됩니다.
 
-timeSync 메쏘드는 Thing+에서 하드웨어 시간을 설정할 때 사용합니다. thing의 로컬시간이 틀릴 경우, 센서값을 읽은 시간에 오류가 발생합니다. 하드웨어가 MQTT 접속 상태를 전송하면, Thing+는 하드웨어가 현재 시간을 동기화 할 수 있도록 서버시간을 전송합니다. 하드웨어는 수신한 시간을 기준으로 로컬시간을 재설정해야합니다.
+##### timeSync
+timeSync 메쏘드는 Thing+에서 하드웨어 시간을 설정할 때 사용합니다. thing의 로컬시간이 틀릴 경우, 센서값을 읽은 시간에 오류가 발생합니다. 따라서, Thing+는 하드웨어 시간을 서버시간에 맞출 수 있도록 서버시간을 전송합니다.
 
 > timeSync params
 
 ```javascript
-{
-	params:{"time":{UTC}}
-}
+TOPIC: v/a/g/__GATEWAY_ID__/req
 
-Example) 
-{
-	"TOPIC": v/a/g/1928dbc93871/req
-	"REQUEST MESSAGE": {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
-	"SUCCESS RESPONSE MESSAGE" : {"id":"e1kcs13b9","result":""}
-	"ERROR REPONSE MESSAGE" : {"id":"e1kcs13b9","error":{"code": -32000, "message": "invalid options"}}
-}
+REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"timeSync","params":{"time":__SERVER_TIME__}}
+
+RESPONSE IF SUCCESS : {"id":"__MESSAGE_ID__","result":""}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+
+__GATEWAY_ID__ : 게이트웨이 아이디
+__MESSAGE_ID__ : 메시지 아이디
+__SERVER_TIME__ : 서버시간. UTC
+__ERR_CODE__ : 에러코드
+__ERR_MSG__ : 에러 메시지
 ```
 
+Example
+
+```
+TOPIC: v/a/g/1928dbc93871/req
+
+REQUEST MESSAGE : {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
+
+RESPONSE IF SUCCESS : {"id":"e1kcs13b9","result":""}
+REPONSE IF FAILED : {"id":"e1kcs13b9","error":{"code": -32000, "message": "invalid options"}}
+```
+
+##### setProperty
 setProperty 메쏘드는 리포트 인터벌을 전달할 때 사용합니다. 리포트 인터벌의 단위는 msec입니다. Thing+ 포털에서 리포트 인터벌을 변경할 수 있습니다.
 
 >setProperty params
 
 ```javascript
-{
-	params:{"reportInterval":{interval}
-}
+TOPIC : v/a/g/__GATEWAY_ID__/req
+
+REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"setProperty","params":{"reportInterval":__INTERVAL__}}
+
+RESPONSE IF SUCCESS : {"id" : "__MESSAGE_ID__", "result""}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+```
 
 Example
-{
-	"TOPIC": v/a/g/1928dbc93781/req	
-	"REQUEST MESSAGE": {"id":"e1kcs13bb","method":"setProperty","params":{"reportInterval":"60000"}}
-	"SUCCESS RESPONSE MESSAGE": {"id":"e1kcs13bb","result":""}
-	"ERROR RESPONSE MESSAGE": {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid interval"}}
+
+```
+TOPIC: v/a/g/1928dbc93781/req	
+REQUEST MESSAGE : {"id":"e1kcs13bb","method":"setProperty","params":{"reportInterval":"60000"}}
+
+RESPONSE IF SUCCESS : {"id":"e1kcs13bb","result":""}
+RESPONSE IF ERROR : {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid interval"}}
 }
 ```
 
-controlActuator 메쏘드는 액추에이터에 명령을 내릴 때 사용합니다. Thing+ 포털, 규칙에서 액추에이터 명령을 내릴 수 있으며, 각 하드웨어는 명령에 맞는 동작을 해야합니다. 각 액추에이터의 명령어 및 옵션는 Thing+에서 정의하고 있으며, 메시지의 파라미터로 전송이 됩니다.
+##### controlActuator
+controlActuator 메쏘드는 액추에이터에 명령을 내릴 때 사용합니다. 액추에이터의 명령어 및 옵션는 Thing+에서 정의하고 있으며, 메시지의 파라미터로 전송이 됩니다.<br>
+액추에이터 명령어 및 옵션의 목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인하실 수 있습니다.
+
 
 > 대표적인 액추에이터 명령어 및 명령어 옵션
 
@@ -312,35 +410,28 @@ Actuator|Command|Option
 led|on|duration
 led|off|
 led|blink|duration <br> interval
-
-Actuator|Command|Option
-:---|:---|:---
 powerSwitch|on|duration
-powerSwitch|off|
-
-전체목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인하실 수 있습니다.
+powerSwitch|off|None
 
 > controlActuator params
 
 ```javascript
-{
-	params:{"id":{actuator_id},"cmd":{cmd},"options": {"cmd options"}}
-}
+TOPIC: v/a/g/__GATEWAY_ID__/req
+REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"controlActuator", "params":{"id":__SENSOR_ID__,"cmd":__CMD__, "options":{__OPTIONS__}}
 
-Example : Led On
-{
-	"TOPIC": v/a/g/1928dbc93781/req
-	"REQUEST MESSAGE": {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
-	"SUCCESS RESPONSE MESSAGE": {"id":"46h6f8xp3","result":""}
-	"ERROR RESPONSE MESSAGE": {"id":"46h6f8xp3","error": {"code":-32000,"message":"invalid options"}}
-}
+RESPONSE IF SUCCESS : {"id": "__MESSAGE_ID__", "result":""}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
-powerOff는 하드웨어 종료시키는 메쏘드로 파라미터는 없습니다.</br>
-reboot은 하드웨어를 재시작하는 메쏘드로 파리미터는 없습니다.<br>
-restart은 IoT 기기의 소프트웨어를 재시작하는 메쏘드로 파리미터는 없습니다.<br>
-swUpdate은 IoT 기기의 소프트웨어를 업데이트 시키는 메쏘드로 파리미터는 없습니다.<br>
-swInfo은 IoT 기기의 소프트웨어 버전 정표를 가져가는 메쏘드로 파리미터는 없습니다.<br>
+Example: LED ON
+
+```
+TOPIC: v/a/g/1928dbc93781/req
+REQUEST MESSAGE : {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
+RESPONSE IF SUCCESS: {"id":"46h6f8xp3","result":""}
+RESPONSE IF FAILED: {"id":"46h6f8xp3","error": {"code":-32000,"message":"invalid options"}}
+}
+```
 
 ### 2.3 Thing+ HTTP Protocol
 Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입니다. 디스커버 기능 구현 시 IoT 기기는 자신에게 연결된 디바이스와 센서의 정보를 REST API를 통해 Thing+에게 알려줍니다. 디스커버 기능은 사용하기 위해선 Thing+ HTTP Protocol은 구현은 필수입니다.
@@ -764,7 +855,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 
 
 ## 4 Thing+ Gateway
-Thing+ gateway는  Daliworks에서 만든 Thing+ MQTT 프로토콜을 따르는 소프트웨어입니다. Thing+ Gateway는 하드웨어를 Thing+ Cloud에 연결하며, 게이트웨이 상태 및 센서값을 전송하고, 시간 동기, 센서값 재전송, 연결된 센서/액추에이터 탐색, 원격 업데이트 기능을 제공합니다.<br>
+Thing+ Gateway는  Daliworks에서 만든 Thing+ MQTT 프로토콜을 따르는 소프트웨어입니다. Thing+ Gateway는 하드웨어를 Thing+ Cloud에 연결하며, 게이트웨이 상태 및 센서값을 전송하고, 시간 동기, 센서값 재전송, 연결된 센서/액추에이터 탐색, 원격 업데이트 기능을 제공합니다.<br>
 
 디바이스 에이전트(Device Agent)는 센서값, 액추에이터 동작을 시키는 소프트웨어 모듈로 이 부분은 하드웨어 업체가 직접 작성해야 합니다. Thing+ Gateway는 디바이스 에이전트에게 센서값 읽기, 액추에이터 동작을 요청하며, [JSONRPC](http://www.jsonrpc.org/specification) 프로토콜을 사용합니다.
 
@@ -773,7 +864,7 @@ Thing+ Gateway를 사용하면 Thing+ MQTT 프로토콜을 직접 구현하는 �
 ![Cloud_Gateway_DeviceAgent](./image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png)
 
 ### 4.1 Hardware Requirement
-Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며, Node.js로 작성되어 있습니다. **Node.js가 동작하지 않는 시스템에서는 사용할 수 없습니다.**
+Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며, Node.js로 작성했습니다. **Node.js가 동작하지 않는 시스템에서는 사용할 수 없습니다.**
 
 > Node.js 실행 환경<br>
 
@@ -821,118 +912,178 @@ thing의 시간이 서버시간과 다를경우 thing의 로컬시간은 서버�
 
 ### 4.3 Device Agent
 
-디바이스 에이전트는 센서값, 액추에이터를 구동하는 소프트웨어로 Thing+ Gateway 독립적으로 실행되는 프로그램입니다. 하드웨어 구성에 맞게 작성되어야 하며, 이 부분은 하드웨어 업체가 직접 작성을 해야합니다.<br>
-디바이스 에이전트는 Thing+ Gateway에게 센서값을 읽기, 액추에이터 동작, 연결된 센서 탐색 서비스를 제공해야 합니다.
+디바이스 에이전트는 하드웨어의 센서값을 읽고, 액추에이터를 구동하는 프로그램입니다. 이 프로그램은 하드웨어 업체에서 하드웨어의 구성에 맞게 작성을 해야합니다. Thing+ 게이트웨이와 Device Agent사이에는 JSONRPC로 연결합니다. JSONRPC 서버는 Device Agent가 맡게 되며 사용하는 포트는 50800입니다.
 
-#### 4.3.1 JSON RPC 연결
-Thing+ Gateway와 디바이스 에이전트는 JSONRPC 프로토콜을 사용합니다. 디바이스 에이전트는 JSONRPC 서버이며, 포트 50800를 열어두어야 합니다. 또한, Thing+ Gateway에서 사용할 서비스를 공개(expose)해야합니다. Thing+ Gateway는 JSONRPC 클라이언트며 해당 포트로 접속하여, 디바이스 에이전트가 제공하는 서비스를 사용합니다.
+Server|Device Agent
+:---|:---
+**PORT**|**50800**
+Client|Thing+ Gateway
 
-![Gateway_DeviceAgent](./image/Thingplus_Embedded_Guide/Gateway_DeviceAgent.png)
 
-#### 4.3.2 Device Agent Services
-디바이스 에이전트는 Thing+ Gateway를 위해 두 개의 서비스를 제공해야 합니다. 첫번째는 센서상태, 센서값을 읽고 엑추에이터를 구동시키는 서비스로 서비스 이름은 "sensor"로 정의되어야 합니다. 두 번째는 와 하드웨어에 연결된 센서, 액추에이터를 탐색하는 서비스로 "discover"로 정의되어야 합니다.<br>
+#### 4.3.1 JSONRPC 프로토콜
+JSONRPC는 두 프로세스간의 동신을 위한 프로토콜로 JSON 형식의 메시지를 주고 받습니다.([WIKI](http://www.jsonrpc.org/ "Title"))
 
-#### 4.3.3 "sensor" Service
+- Request 형식
 
-"sensor" 서비스는 세 가지 함수가 있어야 합니다. 첫 번째는 Thing+ Gateway가 센서값을 읽어갈 수 있는 "get", 두 번째는 Thing+ Gateway에서 액추에이터를 동작시킬 수 있는 "set", 마지막은 Thing+ Gateway가 이벤트 센서를 받을 준비가 되었을 때 호출하는 "setNotification" 입니다.
+property|description
+:---|:---|
+method|실행해야 할 서비스 또는 메쏘드 이름
+params|파라미터
+id|Request ID. Response 할 때 돌려줘야 한다.
 
-Thing+ Gateway는 시리즈 센서의 값을 읽기 위하여 리포트 인터벌 주기마다 "get"함수를 호출합니다. Thing+ Gateway는 값을 읽을 센서의 아이디와 디바이스 에이전트에서 센서값을 전달할 수 있는 콜백함수를 "get"함수의 인자로 전달합니다. 디바이스 에이전트는 센서값을 읽은 후 콜백함수를 호출해야하며, 콜백함수에 센서값과 센서의 상태를 인자로 전달해야 합니다.
+- Response
 
-```
-"sensor" 서비스의 "get" 함수
+property|description
+:---|:---|
+result|서비스 또는 메쏘드 실행 결과
+error|에러 오브젝트. 에러가 없으면 null로 표기
+id|Request 시 받은 ID
 
- - Description : Thing+ Gateway가 센서값을 읽을 때 사용한다.
- - Parameter 
- 	- id : 센서 아이디
-  	- result(err, {value: {value}, status: 'on'}) : 센서값을 읽은 후 호출 할 콜백함수
-  		- err: 에러 발생 시 'err', 에러 없으면 null
-  	  	- {value:{value}, status: 'on'} : {value}에 센서값을 적는다.
- - Return value : None
+###**모든 메시지의 끝에는 NEW LINE(\n)이 있어야 합니다.**
 
-```
+#### 4.3.2 Device Agent services
 
-Thing+ Gateway가 액추에이터 명령어를 Thing+ Cloud로 부터 받으면 "set"함수를 호출하여 액추에이터를 구동시킵니다. 액추에이터 명령어와 옵션, 수행 결과를 전달할 수 있는 콜백함수를 인자로 전달합니다. 디바이스 에이전트는 액추에이터를 구동한 후, 콜백함수를 호출해야하며, 수행한 명령어를 인자로 전달해야 합니다. 
+Method|Description
+:---|:---
+discover|하드웨어에 연결된 센서, 액츄에이터 목록을 요청
+sensor.get|시리즈 센서값 요청
+sensor.set|액추에이터 실행
+sensor.setNotification|이벤트 센서로 설정
+sensor.notification|이벤트 센서의 값, 상태 전송
 
-```
-"sensor" 서비스의 "set"함수
+##### 4.3.2.1 "discover" Service
 
- - Description : Thing+ Gateway가 액추에이터를 구동시킬 때 사용한다.
- - Parameter
- 	-  id : 액추에이터 아이디
-  	-  cmd : 액추에이터 명령어
-  	-  options : 명령어 옵션
-  	-  result(err, cmd} : 액추에이터 동작 후 호출 할 콜백함수
-  		- err: 에러 발생 시 'err', 에러 없으면 null 
-  		- cmd : 액추에이터를 구동 시킨 명령어
-	- Return value : None
-```
-
-Thing+ Gateway는 이벤트 센서를 받을 준비가 되면 "setNotification"함수를 호출하여 디바이스 에이전트에게 알려줍니다. 디바이스 에이전트는 "setNotification" 함수가 호출된 이후 이벤트 센서의 값을 전송하면 됩니다.
+Thing+ Gateway가 센서, 액추에이터 목록을 요청
 
 ```
-"sensor" 서비스의 "setNotificatin" 함수
+Device Agent <-- Thing+ Gateway
+- Request Method : discover
+- Request params : 없음
 
- - Description : Thing+ Gateway가 이벤트 센서값을 받을 준비가 되었을 때 호출한다.
- - Parameter
- 	- id : 센서 아이디
- 	- result(err) : 처리 결과 전송
- 		- err : 에러 발생 시 'err', 에러 없으면 null
-- Return value : None  
+Device Agent --> Thing+ Gateway
+- Response Result : [{"deviceAddress": DEV_ID, "sensors":["id":ID, "type":TYPE, "notification": TRUE or FALSE}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}]
+  - deviceAddress: 디바이스 아이디. 디바이스별로 가지는 고유값으로 디바이스 에이전트에서 정하면 됩니다.
+  - sensors: 센서 리스트
+    - id: 센서 아이디
+    - type : Thing+에서 정의한 센서 타입
+    - notification : 이벤트 센서일 경우 true
 ```
 
-#### 4.3.4 "discover" Service
-
-"discover" 서비스는 단일 함수로 구성됩니다. Thing+ Gateway가 디바이스 에이전트의 JSONRPC 서버에 접속하면 "discover" 서비스를 이용해 하드웨어가 사용하는 센서, 액추에이터 목록을 얻어 옵니다. 디바이스 에이전트가 목록을 전달할 수 있도록 콜백함수를 인자로 전달합니다.
+- Request Example (Thing+ Gateway)
 
 ```
-"discover" 서비스
-
- - Description : Thing+ Gateway가 센서, 액추에이터 목록을 가지고 올때 사용한다.
- - Parameter
- 	- result(err, {sensor list}): 디바이스 에이전트에서 목록을 전달할 때 호출하는 콜백함수
- 		- err : 에러 발생 시 'err', 에러 없으면 null
- 		- {sensor list} : 센서 목록
- - Return Value : None
+{"id":1,"method":"discover","params":[]}\n
+```
+- Response Example (Device Agent)
+ 
+```
+{"id":1,"result":[{"deviceAddress":"0a0b0c0d0e00","sensors":[{"id":"0a0b0c0d0e00-temperature-0","type":"temperature","name":"temp0"},{"id":"0a0b0c0d0e00-temperature-1","type":"temperature","name":"temp1", "notification": true},{"id":"0a0b0c0d0e00-humidity-0","type":"humidity","name":"humi0"},{"id":"0a0b0c0d0e00-onoff-0","type":"onoff","name":"di0"},{"id":"0a0b0c0d0e00-powerSwitch-0","type":"powerSwitch","name":"do0"}]}],"error":null}\n
 ```
 
-> 센서 목록
+##### 4.3.2.2 "sensor.get" Service
+시리즈 센서값 요청
 
-```javasrcipt
-{
-	deviceAddress: {device address},
-	{deviceAddress}: {
-		"sensors": [{
-			"id":{sensor id},
-			"type":{sensor type},
-			"name":{sensor name},
-			"notification":{true if event sensor}
-		},
-		...
-		{
-		}]
-	}
-}
+```
+Device Agent <-- Thing+ Gateway
+- Request Method : sensor.get
+- Request params : [센서 아이디]
+
+Device Agent --> Thing+ Gateway
+- Response Result : 
+                    {"value": VALUE} or
+                    {"status": "on"|"off"|"err"} or
+                    {"status": "err", "message": ERROR REASONE}
+                    
+  - value : 센서값
+  - status : 센서 상태("on"|"off"|"err"). 센서값이 있으면 "on"으로 간주.
+  - message : 센서 상태가 err일 때의 추가 메시지(선택사항)
 ```
 
-#### 4.3.5 Event sensor 전송
-시리즈 센서는 리포트 인터벌에 맞쳐 Thing+ Gateway가 센서값과 상태를 읽어가지만, 이벤트 센서는 센서값이 바뀔 때 마다 디바이스 에이전트에서 전송해야 합니다. 또한, 리포트 인터벌 주기로 센서 상태도 전송해야합니다.
+- Request Example (Thing+ Gateway)
 
-센서값과 상태를 전송할 때 사용하는 JSON 형식은 다음과 같습니다.
-> 센서값 전송
-
-```javascript
-{
-  "method": "sensor.notification",
-  "params": [{sensor_id}, {"value": {value}}] 
-}
 ```
->센서 상태 전송
+{"id":2,"method":"sensor.get","params":["0a0b0c0d0e00-
+temperature-0"]}\n
+```
 
-```javascript
-{
-  "method": "sensor.notification",
-  "params": [{sensor_id}, {"status": {status}}] 
-}
+- Response Example (Device Agent)
+
+```
+{"id":2,"result":{"value":5.63},"error":null}\n
+{"id":2,"result":{"status":"off"},"error":null}\n
+{"id":2,"result":{"status":"err","message":"initializing"},"error":null}\n
+```
+
+##### 4.3.2.3 "sensor.set" Service
+액추에이터 실행
+
+```
+Device Agent <-- Thing+ Gateway
+- Request Method : sensor.set
+- Request Params : [액추에이터 아이디, 명령어, 명령어 옵션]
+
+Device Agent --> Thing+ Gateway
+- Response Result : 실행 결과
+```
+- Request Example(Thing+ Gateway)
+
+```
+{"id":3,"method":"sensor.set","params":["0a0b0c0d0e00-powerSwitch-0","on",null]}\n
+```
+
+- Response Example (Device Agent)
+
+```
+{"id":3,"result":"on","error":null}\n
+```
+
+##### 4.3.2.4 "sensor.setNotification" service
+이벤트 센서로 설정
+
+```
+Device Agent <-- Thing+ Gateway
+- Request Method : sensor.setNotification
+- Request Params : [센서 아이디]
+
+Device Agent --> Thing+ Gateway
+- Response Result : 성공일 경우 "success"
+```
+
+- Request Example (Thing+ Gateway)
+
+```
+{"id":5,"method":"sensor.setNotification","params":["0a0b0c0d0e00-onoff-0"]}\n
+```
+- Response Example(Device Agent)
+
+```
+{"id":5,"result":"success","error":null}\n
+```
+
+**이벤트 센서로 설정이 되면 Device Agent에서는 리포트 인터벌마다 이벤트 센서의 상태를 전송해야 합니다.**
+
+##### 4.3.2.5 "sensor.notification" service
+이벤트 센서의 값, 상태를 전송
+
+```
+Device Agent --> Thing+ Gateway
+- Request Method : sensor.notificaion
+- Request Params : 
+                   [센서 아이디, {"value": 값}]
+                   [센서 아이디, {"status": "on"|"off"|"err"}]
+                   [센서 아이디, {"status": "err", "message":"ERROR REASON"}]
+- Request Id : 없음              
+
+Device Agent <-- Thing+ Gateway
+- Response : NONE
+
+```
+- Request Example (Device Agent)
+
+```
+{"method":"sensor.notification","params":["0a0b0c0d0e00-onoff-0",{"value": 1}]}
+{"method":"sensor.notification","params":["0a0b0c0d0e00-onoff-0",{"status": "off"}]}
+{"method":"sensor.notification","params":["0a0b0c0d0e00-onoff-0",{"status": "err","message":"initializing"}]}
 ```
 
 ## 5. How to Test Example Code
