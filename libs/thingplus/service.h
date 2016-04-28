@@ -1,7 +1,7 @@
 #ifndef _SERVICE_H_
 #define _SERVICE_H_
 
-#include "tube_mqtt.h"
+#include "thingplus.h"
 
 char *service_do(void *s, char *payload);
 void *service_init(struct thingplus_callback *cb, void *cb_arg);

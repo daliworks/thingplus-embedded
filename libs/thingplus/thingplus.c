@@ -8,7 +8,7 @@
 
 #include "reassemble.h"
 #include "service.h"
-#include "tube_mqtt.h"
+#include "thingplus.h"
 #include "log/tube_log.h"
 
 #define THINGPLUS_MAX_TOPIC 	256

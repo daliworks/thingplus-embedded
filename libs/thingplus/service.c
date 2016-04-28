@@ -7,7 +7,7 @@
 #include "service.h"
 
 #include "log/tube_log.h"
-#include "tube_mqtt.h"
+#include "thingplus.h"
 
 struct service {
 	struct thingplus_callback cb;
