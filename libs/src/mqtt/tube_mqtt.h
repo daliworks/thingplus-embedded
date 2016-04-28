@@ -1,72 +1,73 @@
 #ifndef _TUBE_MQTT_H_
 #define _TUBE_MQTT_H_
 
-#include <time.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-enum tube_mqtt_error {
-	TUBE_MQTT_ERROR_SUCCESS = 0,
-	TUBE_MQTT_ERROR_INVALID_ARGUMENT = -1,
-	TUBE_MQTT_ERROR_NOT_CONNECTED = -2,
-	TUBE_MQTT_ERROR_IDENTIFICATION = -3,
-	TUBE_MQTT_ERROR_BROKER = -4,
-	TUBE_MQTT_ERROR_UNKNOWN = -5,
-	TUBE_MQTT_ERROR_MEM_ALLOC = -6,
-	TUBE_MQTT_ERROR_SYSCALL = -7,
-};
-
-struct tube_mqtt_callback {
-	void (*connect)(void* arg, enum tube_mqtt_error result);
-	void (*disconnect)(void *arg);
-	//int (*pub)(void* handle, char *topic, char *message);
-	int (*sub)(void* handle, char *topic, void (*callback)(char *msg, int len));
-};
-
-/*
- * dm operation
- */
-struct tube_dm_ops {
-	void (*report_interval_update)(int report_interval);
-	void (*time_update)(int time);
-};
-
-
-enum tube_mqtt_thing_status{
-	TUBE_STATUS_ON,
-	TUBE_STATUS_OFF,
-};
+typedef enum thingplus_error {
+	THINGPLUS_ERR_SUCCESS = 0,
+	THINGPLUS_ERR_INVALID_ARGUMENT = -1,
+	THINGPLUS_ERR_NOT_CONNECTED = -2,
+	THINGPLUS_ERR_IDENTIFICATION = -3,
+	THINGPLUS_ERR_SERVER = -4,
+	THINGPLUS_ERR_NOMEM = -5,
+	THINGPLUS_ERR_SYSCALL = -6,
+	THINGPLUS_ERR_MQTT_PROTOCOL = -7,
+	THINGPLUS_ERR_AUTHORIZATION = -8,
+	THINGPLUS_ERR_UNKNOWN = -99,
+} thingplus_error_e;
 
 /* gateway or sensor */
-struct tube_thing_status {
+struct thingplus_status {
 	char* id;
-	enum tube_mqtt_thing_status status;
+	enum { 
+		THINGPLUS_STATUS_ON,
+		THINGPLUS_STATUS_OFF,
+	}status;
 	int valid_duration_sec;
 };
 
-struct tube_thing_value {
+struct thingplus_value {
 	char* value;
-	unsigned long long time_ms;
+	uint64_t time_ms;
 };
 
-struct tube_thing_values {
+struct thingplus_values {
 	char* id;
+
 	int nr_value;
-	struct tube_thing_value *value;
+	struct thingplus_value *value;
 };
 
+struct thingplus_callback_result {
+	bool error;
+	char *message; /*error message or result */
+};
 
-enum tube_mqtt_error tube_mqtt_status_publish(void *instance, int nr_thing, struct tube_thing_status *things);
+struct thingplus_callback {
+	void (*connected)(void *cb_arg, thingplus_error_e err);
+	void (*disconnected)(void *cb_arg, bool force);
 
-enum tube_mqtt_error tube_mqtt_actuator_subscribe(void *instance, char* id, void (*cb_actuating)(void));
+	bool (*actuating)(void *cb_arg, const char *id, const char *cmd, const char *options, char **return_message);
+	bool (*timesync)(void *cb_arg, uint64_t time, char **return_message);
+	bool (*property_set)(void *cb_arg, int report_interval, char **return_message);
+	bool (*poweroff)(void *cb_arg, char **return_message);
+	bool (*reboot)(void *cb_arg, char **return_message);
+	bool (*restart)(void *cb_arg, char **return_message);
+	bool (*upgrade)(void *cb_arg, char **return_message);
+	bool (*version)(void *cb_arg, char **return_message);
+};
 
-enum tube_mqtt_error tube_mqtt_single_value_publish(void* instance, char* id, struct tube_thing_value *value);
-enum tube_mqtt_error tube_mqtt_values_publish(void* instance, int nr_thing, struct tube_thing_values *values);
+thingplus_error_e thingplus_values_publish(void* instance, int nr_thing, struct thingplus_values *values);
+thingplus_error_e thingplus_single_value_publish(void* instance, char* id, struct thingplus_value *value);
+thingplus_error_e thingplus_status_publish(void *instance, int nr_thing, struct thingplus_status *things);
 
+thingplus_error_e thingplus_mqtt_loop(void *instance);
 
-int tube_mqtt_loop(void* instance, int timeout);
+thingplus_error_e thingplus_connect(void *intance);
+thingplus_error_e thingplus_disconnect(void *intance);
 
-void* tube_mqtt_connect(char* gw_id, char* apikey, char* ca_file, int report_interval, struct tube_mqtt_callback *mqtt_cb, void* cb_arg, char* logfile);
-void tube_mqtt_disconnect(void* t);
-
-//bool tube_mqtt_value_send()
+void* thingplus_init(char* gw_id, char* apikey, char* ca, int keepalive_sec, struct thingplus_callback* callback, void* cb_arg);
+void thingplus_cleanup(void *instance);
 
 #endif //#ifndef _TUBE_MQTT_H_
