@@ -135,16 +135,17 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libtdiscover_a_AR = $(AR) $(ARFLAGS)
 libtdiscover_a_LIBADD =
+am__dirstamp = $(am__leading_dot)dirstamp
 am_libtdiscover_a_OBJECTS = libtdiscover_a-sensor_driver.$(OBJEXT) \
 	libtdiscover_a-tcurl.$(OBJEXT) libtdiscover_a-url.$(OBJEXT) \
 	libtdiscover_a-tdiscover.$(OBJEXT) \
-	libtdiscover_a-tube_log.$(OBJEXT)
+	log/libtdiscover_a-tube_log.$(OBJEXT)
 libtdiscover_a_OBJECTS = $(am_libtdiscover_a_OBJECTS)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libtdiscover_la_LIBADD =
 am_libtdiscover_la_OBJECTS = libtdiscover_la-sensor_driver.lo \
 	libtdiscover_la-tcurl.lo libtdiscover_la-url.lo \
-	libtdiscover_la-tdiscover.lo libtdiscover_la-tube_log.lo
+	libtdiscover_la-tdiscover.lo log/libtdiscover_la-tube_log.lo
 libtdiscover_la_OBJECTS = $(am_libtdiscover_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -270,6 +271,7 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -354,7 +356,8 @@ libtdiscover_a_SOURCES = sensor_driver.c \
 			url.c \
 			url.h \
 			tdiscover.c \
-			log/tube_log.c
+			log/tube_log.c \
+			log/tube_log.h 
 
 libtdiscover_a_CPPFLAGS = -I../include
 include_HEADERS = ../include/tdiscover.h
@@ -366,7 +369,8 @@ libtdiscover_la_SOURCES = sensor_driver.c \
 			 url.c \
 			 url.h \
 			 tdiscover.c \
-			 log/tube_log.c
+			 log/tube_log.c \
+			 log/tube_log.h
 
 libtdiscover_la_CPPFLAGS = -I../include
 all: config.h
@@ -376,7 +380,7 @@ all: config.h
 .SUFFIXES: .c .lo .o .obj
 am--refresh: Makefile
 	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -403,9 +407,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	$(am__cd) $(srcdir) && $(AUTOCONF)
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
 
@@ -416,7 +420,7 @@ config.h: stamp-h1
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in:  $(am__configure_deps) 
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
@@ -454,6 +458,14 @@ uninstall-libLIBRARIES:
 
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
+log/$(am__dirstamp):
+	@$(MKDIR_P) log
+	@: > log/$(am__dirstamp)
+log/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) log/$(DEPDIR)
+	@: > log/$(DEPDIR)/$(am__dirstamp)
+log/libtdiscover_a-tube_log.$(OBJEXT): log/$(am__dirstamp) \
+	log/$(DEPDIR)/$(am__dirstamp)
 
 libtdiscover.a: $(libtdiscover_a_OBJECTS) $(libtdiscover_a_DEPENDENCIES) $(EXTRA_libtdiscover_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libtdiscover.a
@@ -494,12 +506,16 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
+log/libtdiscover_la-tube_log.lo: log/$(am__dirstamp) \
+	log/$(DEPDIR)/$(am__dirstamp)
 
 libtdiscover.la: $(libtdiscover_la_OBJECTS) $(libtdiscover_la_DEPENDENCIES) $(EXTRA_libtdiscover_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(LINK) -rpath $(libdir) $(libtdiscover_la_OBJECTS) $(libtdiscover_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f log/*.$(OBJEXT)
+	-rm -f log/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -507,31 +523,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_a-sensor_driver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_a-tcurl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_a-tdiscover.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_a-tube_log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_a-url.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_la-sensor_driver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_la-tcurl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_la-tdiscover.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_la-tube_log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtdiscover_la-url.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@log/$(DEPDIR)/libtdiscover_a-tube_log.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@log/$(DEPDIR)/libtdiscover_la-tube_log.Plo@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
@@ -592,19 +611,19 @@ libtdiscover_a-tdiscover.obj: tdiscover.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtdiscover_a-tdiscover.obj `if test -f 'tdiscover.c'; then $(CYGPATH_W) 'tdiscover.c'; else $(CYGPATH_W) '$(srcdir)/tdiscover.c'; fi`
 
-libtdiscover_a-tube_log.o: log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtdiscover_a-tube_log.o -MD -MP -MF $(DEPDIR)/libtdiscover_a-tube_log.Tpo -c -o libtdiscover_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtdiscover_a-tube_log.Tpo $(DEPDIR)/libtdiscover_a-tube_log.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libtdiscover_a-tube_log.o' libtool=no @AMDEPBACKSLASH@
+log/libtdiscover_a-tube_log.o: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log/libtdiscover_a-tube_log.o -MD -MP -MF log/$(DEPDIR)/libtdiscover_a-tube_log.Tpo -c -o log/libtdiscover_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) log/$(DEPDIR)/libtdiscover_a-tube_log.Tpo log/$(DEPDIR)/libtdiscover_a-tube_log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libtdiscover_a-tube_log.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtdiscover_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libtdiscover_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
 
-libtdiscover_a-tube_log.obj: log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtdiscover_a-tube_log.obj -MD -MP -MF $(DEPDIR)/libtdiscover_a-tube_log.Tpo -c -o libtdiscover_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtdiscover_a-tube_log.Tpo $(DEPDIR)/libtdiscover_a-tube_log.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libtdiscover_a-tube_log.obj' libtool=no @AMDEPBACKSLASH@
+log/libtdiscover_a-tube_log.obj: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log/libtdiscover_a-tube_log.obj -MD -MP -MF log/$(DEPDIR)/libtdiscover_a-tube_log.Tpo -c -o log/libtdiscover_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) log/$(DEPDIR)/libtdiscover_a-tube_log.Tpo log/$(DEPDIR)/libtdiscover_a-tube_log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libtdiscover_a-tube_log.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtdiscover_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libtdiscover_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
 
 libtdiscover_la-sensor_driver.lo: sensor_driver.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtdiscover_la-sensor_driver.lo -MD -MP -MF $(DEPDIR)/libtdiscover_la-sensor_driver.Tpo -c -o libtdiscover_la-sensor_driver.lo `test -f 'sensor_driver.c' || echo '$(srcdir)/'`sensor_driver.c
@@ -634,18 +653,19 @@ libtdiscover_la-tdiscover.lo: tdiscover.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtdiscover_la-tdiscover.lo `test -f 'tdiscover.c' || echo '$(srcdir)/'`tdiscover.c
 
-libtdiscover_la-tube_log.lo: log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libtdiscover_la-tube_log.lo -MD -MP -MF $(DEPDIR)/libtdiscover_la-tube_log.Tpo -c -o libtdiscover_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtdiscover_la-tube_log.Tpo $(DEPDIR)/libtdiscover_la-tube_log.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libtdiscover_la-tube_log.lo' libtool=yes @AMDEPBACKSLASH@
+log/libtdiscover_la-tube_log.lo: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log/libtdiscover_la-tube_log.lo -MD -MP -MF log/$(DEPDIR)/libtdiscover_la-tube_log.Tpo -c -o log/libtdiscover_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) log/$(DEPDIR)/libtdiscover_la-tube_log.Tpo log/$(DEPDIR)/libtdiscover_la-tube_log.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libtdiscover_la-tube_log.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libtdiscover_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libtdiscover_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libtdiscover_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf log/.libs log/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -926,6 +946,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f log/$(DEPDIR)/$(am__dirstamp)
+	-rm -f log/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -937,7 +959,7 @@ clean-am: clean-generic clean-libLIBRARIES clean-libLTLIBRARIES \
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) log/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -985,7 +1007,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) log/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

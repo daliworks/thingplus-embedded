@@ -411,7 +411,7 @@ enum thingplus_error thingplus_connect(void *instance)
 		return THINGPLUS_ERR_SUCCESS;
 	}
 
-	int ret = mosquitto_connect(t->mosq, "mqtt.testyh.thingbine.com", t->config.port, t->config.keepalive);
+	int ret = mosquitto_connect(t->mosq, "dmqtt.thingplus.net", t->config.port, t->config.keepalive);
 	if (ret != MOSQ_ERR_SUCCESS) {
 		tube_log_error("[MQTT] mosquitto_connect failed. %s\n", mosquitto_strerror(ret));
 		return THINGPLUS_ERR_SERVER;
@@ -515,8 +515,7 @@ void* thingplus_init(char *gw_id, char *apikey, char *ca_file, int keepalive, st
 			goto err_mosquitto_tls_set;
 		}
 
-#warning "fix mqtt port 8889 to 8883"
-		t->config.port = 8889;
+		t->config.port = 8883;
 	}
 	else
 		t->config.port = 1883;

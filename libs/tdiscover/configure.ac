@@ -1,6 +1,7 @@
 AC_INIT([libtdiscover], [1.0], [dev@dailworks.net])
-AM_INIT_AUTOMAKE([foreign -Wall])
+AM_INIT_AUTOMAKE([foreign -Wall subdir-objects])
 AM_PROG_AR
+AM_MAINTAINER_MODE([disable])
 AC_PROG_CC
 AC_CONFIG_MACRO_DIR([m4])
 LT_INIT

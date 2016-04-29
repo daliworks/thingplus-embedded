@@ -86,7 +86,10 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/config.h.in depcomp $(include_HEADERS) ar-lib \
 	compile config.guess config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -132,16 +135,17 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libthingplus_a_AR = $(AR) $(ARFLAGS)
 libthingplus_a_LIBADD =
+am__dirstamp = $(am__leading_dot)dirstamp
 am_libthingplus_a_OBJECTS = libthingplus_a-reassemble.$(OBJEXT) \
 	libthingplus_a-service.$(OBJEXT) \
 	libthingplus_a-thingplus.$(OBJEXT) \
-	libthingplus_a-tube_log.$(OBJEXT)
+	log/libthingplus_a-tube_log.$(OBJEXT)
 libthingplus_a_OBJECTS = $(am_libthingplus_a_OBJECTS)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libthingplus_la_LIBADD =
 am_libthingplus_la_OBJECTS = libthingplus_la-reassemble.lo \
 	libthingplus_la-service.lo libthingplus_la-thingplus.lo \
-	libthingplus_la-tube_log.lo
+	log/libthingplus_la-tube_log.lo
 libthingplus_la_OBJECTS = $(am_libthingplus_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -267,6 +271,7 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -349,7 +354,8 @@ libthingplus_a_SOURCES = reassemble.c \
 			service.c \
 			service.h \
 			thingplus.c \
-			log/tube_log.c
+			log/tube_log.c \
+			log/tube_log.h
 
 libthingplus_a_CPPFLAGS = -I.
 include_HEADERS = thingplus.h
@@ -359,7 +365,8 @@ libthingplus_la_SOURCES = reassemble.c \
 			service.c \
 			service.h \
 			thingplus.c \
-			log/tube_log.c
+			log/tube_log.c \
+			log/tube_log.h
 
 libthingplus_la_CPPFLAGS = -I../../include
 all: config.h
@@ -369,7 +376,7 @@ all: config.h
 .SUFFIXES: .c .lo .o .obj
 am--refresh: Makefile
 	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -396,9 +403,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	$(am__cd) $(srcdir) && $(AUTOCONF)
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
 
@@ -409,7 +416,7 @@ config.h: stamp-h1
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in:  $(am__configure_deps) 
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
@@ -447,6 +454,14 @@ uninstall-libLIBRARIES:
 
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
+log/$(am__dirstamp):
+	@$(MKDIR_P) log
+	@: > log/$(am__dirstamp)
+log/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) log/$(DEPDIR)
+	@: > log/$(DEPDIR)/$(am__dirstamp)
+log/libthingplus_a-tube_log.$(OBJEXT): log/$(am__dirstamp) \
+	log/$(DEPDIR)/$(am__dirstamp)
 
 libthingplus.a: $(libthingplus_a_OBJECTS) $(libthingplus_a_DEPENDENCIES) $(EXTRA_libthingplus_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libthingplus.a
@@ -487,12 +502,16 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
+log/libthingplus_la-tube_log.lo: log/$(am__dirstamp) \
+	log/$(DEPDIR)/$(am__dirstamp)
 
 libthingplus.la: $(libthingplus_la_OBJECTS) $(libthingplus_la_DEPENDENCIES) $(EXTRA_libthingplus_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(LINK) -rpath $(libdir) $(libthingplus_la_OBJECTS) $(libthingplus_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f log/*.$(OBJEXT)
+	-rm -f log/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -500,29 +519,32 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_a-reassemble.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_a-service.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_a-thingplus.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_a-tube_log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_la-reassemble.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_la-service.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_la-thingplus.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_la-tube_log.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@log/$(DEPDIR)/libthingplus_a-tube_log.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@log/$(DEPDIR)/libthingplus_la-tube_log.Plo@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
@@ -569,19 +591,19 @@ libthingplus_a-thingplus.obj: thingplus.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_a-thingplus.obj `if test -f 'thingplus.c'; then $(CYGPATH_W) 'thingplus.c'; else $(CYGPATH_W) '$(srcdir)/thingplus.c'; fi`
 
-libthingplus_a-tube_log.o: log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libthingplus_a-tube_log.o -MD -MP -MF $(DEPDIR)/libthingplus_a-tube_log.Tpo -c -o libthingplus_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libthingplus_a-tube_log.Tpo $(DEPDIR)/libthingplus_a-tube_log.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libthingplus_a-tube_log.o' libtool=no @AMDEPBACKSLASH@
+log/libthingplus_a-tube_log.o: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log/libthingplus_a-tube_log.o -MD -MP -MF log/$(DEPDIR)/libthingplus_a-tube_log.Tpo -c -o log/libthingplus_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) log/$(DEPDIR)/libthingplus_a-tube_log.Tpo log/$(DEPDIR)/libthingplus_a-tube_log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libthingplus_a-tube_log.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libthingplus_a-tube_log.o `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
 
-libthingplus_a-tube_log.obj: log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libthingplus_a-tube_log.obj -MD -MP -MF $(DEPDIR)/libthingplus_a-tube_log.Tpo -c -o libthingplus_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libthingplus_a-tube_log.Tpo $(DEPDIR)/libthingplus_a-tube_log.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libthingplus_a-tube_log.obj' libtool=no @AMDEPBACKSLASH@
+log/libthingplus_a-tube_log.obj: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log/libthingplus_a-tube_log.obj -MD -MP -MF log/$(DEPDIR)/libthingplus_a-tube_log.Tpo -c -o log/libthingplus_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) log/$(DEPDIR)/libthingplus_a-tube_log.Tpo log/$(DEPDIR)/libthingplus_a-tube_log.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libthingplus_a-tube_log.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libthingplus_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
 
 libthingplus_la-reassemble.lo: reassemble.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libthingplus_la-reassemble.lo -MD -MP -MF $(DEPDIR)/libthingplus_la-reassemble.Tpo -c -o libthingplus_la-reassemble.lo `test -f 'reassemble.c' || echo '$(srcdir)/'`reassemble.c
@@ -604,18 +626,19 @@ libthingplus_la-thingplus.lo: thingplus.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_la-thingplus.lo `test -f 'thingplus.c' || echo '$(srcdir)/'`thingplus.c
 
-libthingplus_la-tube_log.lo: log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libthingplus_la-tube_log.lo -MD -MP -MF $(DEPDIR)/libthingplus_la-tube_log.Tpo -c -o libthingplus_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libthingplus_la-tube_log.Tpo $(DEPDIR)/libthingplus_la-tube_log.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='libthingplus_la-tube_log.lo' libtool=yes @AMDEPBACKSLASH@
+log/libthingplus_la-tube_log.lo: log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log/libthingplus_la-tube_log.lo -MD -MP -MF log/$(DEPDIR)/libthingplus_la-tube_log.Tpo -c -o log/libthingplus_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) log/$(DEPDIR)/libthingplus_la-tube_log.Tpo log/$(DEPDIR)/libthingplus_la-tube_log.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libthingplus_la-tube_log.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libthingplus_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf log/.libs log/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -896,6 +919,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f log/$(DEPDIR)/$(am__dirstamp)
+	-rm -f log/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -907,7 +932,7 @@ clean-am: clean-generic clean-libLIBRARIES clean-libLTLIBRARIES \
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) log/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -955,7 +980,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) log/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -8,7 +8,8 @@ libtdiscover_a_SOURCES = sensor_driver.c \
 			url.c \
 			url.h \
 			tdiscover.c \
-			log/tube_log.c
+			log/tube_log.c \
+			log/tube_log.h 
 libtdiscover_a_CPPFLAGS = -I../include
 include_HEADERS = ../include/tdiscover.h
 
@@ -20,5 +21,6 @@ libtdiscover_la_SOURCES = sensor_driver.c \
 			 url.c \
 			 url.h \
 			 tdiscover.c \
-			 log/tube_log.c
+			 log/tube_log.c \
+			 log/tube_log.h
 libtdiscover_la_CPPFLAGS = -I../include

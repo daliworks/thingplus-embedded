@@ -6,7 +6,8 @@ libthingplus_a_SOURCES = reassemble.c \
 			service.c \
 			service.h \
 			thingplus.c \
-			log/tube_log.c
+			log/tube_log.c \
+			log/tube_log.h
 libthingplus_a_CPPFLAGS = -I.
 include_HEADERS = thingplus.h
 
@@ -16,5 +17,6 @@ libthingplus_la_SOURCES = reassemble.c \
 			service.c \
 			service.h \
 			thingplus.c \
-			log/tube_log.c
+			log/tube_log.c \
+			log/tube_log.h
 libthingplus_la_CPPFLAGS = -I../../include
