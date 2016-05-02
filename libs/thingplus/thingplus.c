@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #include "reassemble.h"
 #include "service.h"
@@ -14,6 +16,10 @@
 #define THINGPLUS_MAX_TOPIC 	256
 #define THINGPLUS_MQTT_QOS	1
 #define THINGPLUS_KEEPALIVE_MAX	(60 * 10)
+#define RECONNECTION_DELAY	2
+#define RECONNECTION_DELAY_MAX	(60 * 5)
+
+
 
 #define min(x, y) (((x)  > (y)) ? (y) : (x))
 
@@ -55,6 +61,7 @@ struct thingplus {
 	struct thingplus_callback cb;
 	void *cb_arg;
 
+	pthread_t connection_tid;
 	void *service;
 	void *mosq;
 };
@@ -68,6 +75,23 @@ static unsigned long long _now_ms(void)
 	now = (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
 
 	return now;
+}
+
+static void* _connect_forever(void* arg)
+{
+	struct thingplus *t = (struct thingplus *)arg;
+	int ret;
+	int retry = 0;
+
+	while (1) {
+		if (thingplus_connect((void*)t) == 0) {
+			break;
+		}
+		sleep(1);
+		//sleep(min(RECONNECTION_DELAY * retry++, RECONNECTION_DELAY_MAX));
+	}
+
+	pthread_exit(0);
 }
 
 static void _subscribing(struct thingplus *t)
@@ -105,43 +129,46 @@ static void _on_connect(struct mosquitto *mosq, void *obj, int err)
 	struct thingplus* t = (struct thingplus*)obj;
 
 	if (err != 0) {
-		tube_log_error("[MQTT] connection failed\n");
+		tube_log_error("[MQTT] connection failed. err:%d\n", err);
+
 		switch(err) {
 		case 1:
 			tube_log_error("[MQTT] unacceptable protocol version\n");
 			t->cb.connected(t->cb_arg, 
 				THINGPLUS_ERR_MQTT_PROTOCOL);
-			return;
+			break;
 		case 2:
 			tube_log_error("[MQTT] identifier rejected\n");
 			t->cb.connected(t->cb_arg, 
 				THINGPLUS_ERR_IDENTIFICATION);
-			return;
+			break;
 		case 3:
 			tube_log_error("[MQTT] broker unavailable\n");
 			t->cb.connected(t->cb_arg, THINGPLUS_ERR_SERVER);
-			return;
+			break;
 		case 4:
 			tube_log_error("[MQTT] bad user name or password");
 			t->cb.connected(t->cb_arg, THINGPLUS_ERR_IDENTIFICATION);
-			return;
+			break;
 		case 5:
 			tube_log_error("[MQTT] not authorized");
 			t->cb.connected(t->cb_arg, THINGPLUS_ERR_AUTHORIZATION);
-			return;
+			break;
 		default:
 			tube_log_error("[MQTT] unknown error. %d\n", err);
 			t->cb.connected(t->cb_arg, THINGPLUS_ERR_UNKNOWN);
-			return;
+			break;
 		}
+		return;
 	}
+	else {
+		t->state = MQTT_STATE_CONNECTED;
+		_mqtt_status_publish(t, true);
+		_subscribing(t);
 
-	t->state = MQTT_STATE_CONNECTED;
-	_mqtt_status_publish(t, true);
-	_subscribing(t);
-
-	if (t->cb.connected) 
-		t->cb.connected(t->cb_arg, THINGPLUS_ERR_SUCCESS);
+		if (t->cb.connected) 
+			t->cb.connected(t->cb_arg, THINGPLUS_ERR_SUCCESS);
+	}
 }
 
 static void _on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg)
@@ -168,6 +195,8 @@ static void _on_disconnect(struct mosquitto *mosq, void *obj, int force)
 	tube_log_info("disconnected. force:%d\n", force);
 
 	struct thingplus* t = (struct thingplus*)obj;
+
+	t->state = MQTT_STATE_DISCONNECTED;
 
 	if (t->cb.disconnected) 
 		t->cb.disconnected(t->cb_arg, force);
@@ -328,7 +357,7 @@ enum thingplus_error thingplus_status_publish(void *instance, int nr_thing, stru
 
 		payload_size = reassemble_payload(&payload, payload_size, "%s,%ld", 
 				things[gateway_status_index].status == THINGPLUS_STATUS_ON ? "on" : "off",
-				now + things[gateway_status_index].valid_duration_sec* 1000);
+				now + things[gateway_status_index].valid_duration_sec * 1000);
 		for (i=0; i<nr_thing; i++) {
 			if (i == gateway_status_index)
 				continue;
@@ -411,14 +440,59 @@ enum thingplus_error thingplus_connect(void *instance)
 		return THINGPLUS_ERR_SUCCESS;
 	}
 
-	int ret = mosquitto_connect(t->mosq, "dmqtt.thingplus.net", t->config.port, t->config.keepalive);
+	int ret = mosquitto_connect_async(t->mosq, "dmqtt.thingplus.net", t->config.port, t->config.keepalive);
 	if (ret != MOSQ_ERR_SUCCESS) {
-		tube_log_error("[MQTT] mosquitto_connect failed. %s\n", mosquitto_strerror(ret));
-		return THINGPLUS_ERR_SERVER;
+		tube_log_error("[MQTT] mosquitto_connect_async failed. %s\n", mosquitto_strerror(ret));
+		return THINGPLUS_ERR_NETWORK;
+	}
+
+	mosquitto_loop_start(t->mosq);
+
+	return THINGPLUS_ERR_SUCCESS;
+}
+
+enum thingplus_error thingplus_connect_forever(void *instance)
+{
+	if (instance == NULL) {
+		tube_log_error("instance is NULL");
+		return THINGPLUS_ERR_INVALID_ARGUMENT;
+	}
+
+	struct thingplus *t = (struct thingplus*)instance;
+
+	if (thingplus_connect(instance) != THINGPLUS_ERR_SUCCESS) {
+		if (pthread_create(&t->connection_tid, NULL, _connect_forever, t) < 0) {
+			return THINGPLUS_ERR_THREAD;
+		}
 	}
 
 	return THINGPLUS_ERR_SUCCESS;
 }
+
+#if 0
+enum thingplus_error thingplus_connect(void *instance)
+{
+	if (instance == NULL) {
+		tube_log_error("instance is NULL");
+		return THINGPLUS_ERR_INVALID_ARGUMENT;
+	}
+
+	struct thingplus *t = (struct thingplus*)instance;
+
+	if (t->state == MQTT_STATE_CONNECTING || t->state == MQTT_STATE_CONNECTED) {
+		tube_log_warn("[MQTT] already connected");
+		return THINGPLUS_ERR_SUCCESS;
+	}
+
+	int ret = mosquitto_connect(t->mosq, "dmqtt.thingplus.net", t->config.port, t->config.keepalive);
+	if (ret != MOSQ_ERR_SUCCESS) {
+		tube_log_error("[MQTT] mosquitto_connect failed. %s\n", mosquitto_strerror(ret));
+		return THINGPLUS_ERR_NETWORK;
+	}
+
+	return THINGPLUS_ERR_SUCCESS;
+}
+#endif
 
 enum thingplus_error thingplus_disconnect(void *instance)
 {
@@ -429,9 +503,14 @@ enum thingplus_error thingplus_disconnect(void *instance)
 
 	struct thingplus *t = (struct thingplus*)instance;
 
+	if (t->connection_tid) {
+		pthread_cancel(t->connection_tid);
+	}
+
 	_mqtt_status_publish(t, false);
 	mosquitto_unsubscribe(t->mosq, NULL, t->topic_subscribe);
 	mosquitto_disconnect(t->mosq);
+	mosquitto_loop_stop(t->mosq, false);
 
 	return THINGPLUS_ERR_SUCCESS;
 }
@@ -479,6 +558,9 @@ void* thingplus_init(char *gw_id, char *apikey, char *ca_file, int keepalive, st
 		tube_log_error("[MQTT] mosquitto_new failed\n");
 		goto err_mosquitto_new;
 	}
+
+	mosquitto_reconnect_delay_set(t->mosq, RECONNECTION_DELAY, 
+		RECONNECTION_DELAY_MAX, true);
 
 	mosquitto_publish_callback_set(t->mosq, _on_publish);
 	mosquitto_connect_callback_set(t->mosq, _on_connect);

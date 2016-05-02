@@ -613,7 +613,7 @@ enum tdiscover_error tdiscover_device_register(void* instance, char* name, int u
 
 	struct device_model *device_model = _device_model_get(&t->gw_model, device_model_id);
 	if (device_model == NULL) {
-		tube_log_error("[TDISCOVER] _gw_model_get failed\n");
+		tube_log_error("[TDISCOVER] _device_model_get failed\n");
 		return TDISCOVER_ERROR_DEVICE_MODEL_ID;
 	}
 

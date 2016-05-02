@@ -1,5 +1,5 @@
-#ifndef _TUBE_MQTT_H_
-#define _TUBE_MQTT_H_
+#ifndef _THINGPLUS_H_
+#define _THINGPLUS_H_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -14,6 +14,8 @@ typedef enum thingplus_error {
 	THINGPLUS_ERR_SYSCALL = -6,
 	THINGPLUS_ERR_MQTT_PROTOCOL = -7,
 	THINGPLUS_ERR_AUTHORIZATION = -8,
+	THINGPLUS_ERR_NETWORK = -9,
+	THINGPLUS_ERR_THREAD = -10,
 	THINGPLUS_ERR_UNKNOWN = -99,
 } thingplus_error_e;
 
@@ -62,12 +64,14 @@ thingplus_error_e thingplus_values_publish(void* instance, int nr_thing, struct 
 thingplus_error_e thingplus_single_value_publish(void* instance, char* id, struct thingplus_value *value);
 thingplus_error_e thingplus_status_publish(void *instance, int nr_thing, struct thingplus_status *things);
 
-thingplus_error_e thingplus_mqtt_loop(void *instance);
+//thingplus_error_e thingplus_mqtt_loop(void *instance);
 
 thingplus_error_e thingplus_connect(void *intance);
+//enum thingplus_error thingplus_connect_async(void *instance);
 thingplus_error_e thingplus_disconnect(void *intance);
 
 void* thingplus_init(char* gw_id, char* apikey, char* ca, int keepalive_sec, struct thingplus_callback* callback, void* cb_arg);
 void thingplus_cleanup(void *instance);
 
-#endif //#ifndef _TUBE_MQTT_H_
+#endif //#ifndef _THINGPLUS_H_
+

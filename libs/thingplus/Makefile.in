@@ -143,9 +143,8 @@ am_libthingplus_a_OBJECTS = libthingplus_a-reassemble.$(OBJEXT) \
 libthingplus_a_OBJECTS = $(am_libthingplus_a_OBJECTS)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libthingplus_la_LIBADD =
-am_libthingplus_la_OBJECTS = libthingplus_la-reassemble.lo \
-	libthingplus_la-service.lo libthingplus_la-thingplus.lo \
-	log/libthingplus_la-tube_log.lo
+am_libthingplus_la_OBJECTS = reassemble.lo service.lo thingplus.lo \
+	log/tube_log.lo
 libthingplus_la_OBJECTS = $(am_libthingplus_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -357,8 +356,8 @@ libthingplus_a_SOURCES = reassemble.c \
 			log/tube_log.c \
 			log/tube_log.h
 
-libthingplus_a_CPPFLAGS = -I.
-include_HEADERS = thingplus.h
+libthingplus_a_CPPFLAGS = -I../include/
+include_HEADERS = ../include/thingplus.h
 lib_LTLIBRARIES = libthingplus.la
 libthingplus_la_SOURCES = reassemble.c \
 			reassemble.h \
@@ -368,7 +367,6 @@ libthingplus_la_SOURCES = reassemble.c \
 			log/tube_log.c \
 			log/tube_log.h
 
-libthingplus_la_CPPFLAGS = -I../../include
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -502,8 +500,7 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
-log/libthingplus_la-tube_log.lo: log/$(am__dirstamp) \
-	log/$(DEPDIR)/$(am__dirstamp)
+log/tube_log.lo: log/$(am__dirstamp) log/$(DEPDIR)/$(am__dirstamp)
 
 libthingplus.la: $(libthingplus_la_OBJECTS) $(libthingplus_la_DEPENDENCIES) $(EXTRA_libthingplus_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(LINK) -rpath $(libdir) $(libthingplus_la_OBJECTS) $(libthingplus_la_LIBADD) $(LIBS)
@@ -519,11 +516,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_a-reassemble.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_a-service.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_a-thingplus.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_la-reassemble.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_la-service.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libthingplus_la-thingplus.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reassemble.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/service.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/thingplus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@log/$(DEPDIR)/libthingplus_a-tube_log.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@log/$(DEPDIR)/libthingplus_la-tube_log.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@log/$(DEPDIR)/tube_log.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -604,34 +601,6 @@ log/libthingplus_a-tube_log.obj: log/tube_log.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libthingplus_a-tube_log.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libthingplus_a-tube_log.obj `if test -f 'log/tube_log.c'; then $(CYGPATH_W) 'log/tube_log.c'; else $(CYGPATH_W) '$(srcdir)/log/tube_log.c'; fi`
-
-libthingplus_la-reassemble.lo: reassemble.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libthingplus_la-reassemble.lo -MD -MP -MF $(DEPDIR)/libthingplus_la-reassemble.Tpo -c -o libthingplus_la-reassemble.lo `test -f 'reassemble.c' || echo '$(srcdir)/'`reassemble.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libthingplus_la-reassemble.Tpo $(DEPDIR)/libthingplus_la-reassemble.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='reassemble.c' object='libthingplus_la-reassemble.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_la-reassemble.lo `test -f 'reassemble.c' || echo '$(srcdir)/'`reassemble.c
-
-libthingplus_la-service.lo: service.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libthingplus_la-service.lo -MD -MP -MF $(DEPDIR)/libthingplus_la-service.Tpo -c -o libthingplus_la-service.lo `test -f 'service.c' || echo '$(srcdir)/'`service.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libthingplus_la-service.Tpo $(DEPDIR)/libthingplus_la-service.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='service.c' object='libthingplus_la-service.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_la-service.lo `test -f 'service.c' || echo '$(srcdir)/'`service.c
-
-libthingplus_la-thingplus.lo: thingplus.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libthingplus_la-thingplus.lo -MD -MP -MF $(DEPDIR)/libthingplus_la-thingplus.Tpo -c -o libthingplus_la-thingplus.lo `test -f 'thingplus.c' || echo '$(srcdir)/'`thingplus.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libthingplus_la-thingplus.Tpo $(DEPDIR)/libthingplus_la-thingplus.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='thingplus.c' object='libthingplus_la-thingplus.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libthingplus_la-thingplus.lo `test -f 'thingplus.c' || echo '$(srcdir)/'`thingplus.c
-
-log/libthingplus_la-tube_log.lo: log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log/libthingplus_la-tube_log.lo -MD -MP -MF log/$(DEPDIR)/libthingplus_la-tube_log.Tpo -c -o log/libthingplus_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) log/$(DEPDIR)/libthingplus_la-tube_log.Tpo log/$(DEPDIR)/libthingplus_la-tube_log.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='log/tube_log.c' object='log/libthingplus_la-tube_log.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libthingplus_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log/libthingplus_la-tube_log.lo `test -f 'log/tube_log.c' || echo '$(srcdir)/'`log/tube_log.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1022,6 +991,7 @@ uninstall-am: uninstall-includeHEADERS uninstall-libLIBRARIES \
 	uninstall-am uninstall-includeHEADERS uninstall-libLIBRARIES \
 	uninstall-libLTLIBRARIES
 
+#libthingplus_la_CPPFLAGS = -I../include/
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

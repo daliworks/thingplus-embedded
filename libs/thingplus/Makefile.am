@@ -8,8 +8,8 @@ libthingplus_a_SOURCES = reassemble.c \
 			thingplus.c \
 			log/tube_log.c \
 			log/tube_log.h
-libthingplus_a_CPPFLAGS = -I.
-include_HEADERS = thingplus.h
+libthingplus_a_CPPFLAGS = -I../include/
+include_HEADERS = ../include/thingplus.h
 
 lib_LTLIBRARIES = libthingplus.la
 libthingplus_la_SOURCES = reassemble.c \
@@ -19,4 +19,4 @@ libthingplus_la_SOURCES = reassemble.c \
 			thingplus.c \
 			log/tube_log.c \
 			log/tube_log.h
-libthingplus_la_CPPFLAGS = -I../../include
+#libthingplus_la_CPPFLAGS = -I../include/
