@@ -236,13 +236,15 @@ enum thingplus_error thingplus_values_publish(void* instance, int nr_thing, stru
 	int payload_size = 0;
 	char* format;
 	int i, j;
+	uint64_t time_ms;
 
 	if (nr_thing == 1) {
 		sprintf(topic, "v/a/g/%s/s/%s", t->gw_id, values[0].id);
 
 		format = "%lld,%s";
 		for (i=0; i<values->nr_value; i++) {
-			payload_size = reassemble_payload(&payload, payload_size, format, values->value[i].time_ms, values->value[i].value);
+			time_ms = values->value[i].time_ms ? values->value[i].time_ms : _now_ms();
+			payload_size = reassemble_payload(&payload, payload_size, format, time_ms, values->value[i].value);
 			format = ",%lld,%s";
 		}
 	}
@@ -256,9 +258,12 @@ enum thingplus_error thingplus_values_publish(void* instance, int nr_thing, stru
 
 			payload_size = reassemble_payload(&payload, payload_size, format, values[i].id);
 
-			payload_size = reassemble_payload(&payload, payload_size, "%lld,%s", values[i].value[0].time_ms, values[i].value[0].value);
-			for (j=1; j < values[i].nr_value; j++)
-				payload_size = reassemble_payload(&payload, payload_size, ",%lld,%s", values[i].value[j].time_ms, values[i].value[j].value);
+			time_ms = values[i].value[0].time_ms ? values[i].value[0].time_ms : _now_ms();
+			payload_size = reassemble_payload(&payload, payload_size, "%lld,%s", time_ms, values[i].value[0].value);
+			for (j=1; j < values[i].nr_value; j++) {
+				time_ms = values[i].value[j].time_ms ? values[i].value[j].time_ms : _now_ms();
+				payload_size = reassemble_payload(&payload, payload_size, ",%lld,%s", time_ms, values[i].value[j].value);
+			}
 
 			payload_size = reassemble_payload(&payload, payload_size, "]");
 			format = ", \"%s\": [";
@@ -303,9 +308,10 @@ enum thingplus_error thingplus_single_value_publish(void* instance, char* id, st
 	char topic[THINGPLUS_MAX_TOPIC] = {0,};
 	char* payload = NULL;
 	int payload_size = 0;
+	uint64_t time_ms = value->time_ms ? value->time_ms : _now_ms();
 
 	sprintf(topic, "v/a/g/%s/s/%s", t->gw_id, id);
-	payload_size = reassemble_payload(&payload, payload_size, "%lld,%s", value->time_ms, value->value);
+	payload_size = reassemble_payload(&payload, payload_size, "%lld,%s", time_ms, value->value);
 
 	tube_log_debug("[MQTT] publish. topic:%s payload:%s\n", topic, payload);
 	int ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, THINGPLUS_MQTT_QOS, false);
