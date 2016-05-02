@@ -6,6 +6,8 @@
 #include <time.h>
 
 #include "config.h"
+#include "pir.h"
+#include "sht20.h"
 
 struct sensor {
 	char *name;
@@ -14,7 +16,7 @@ struct sensor {
 
 	char sensor_id[TDISCOVER_MAX_ID];
 	struct {
-		void* (*init)(void);
+		void* (*init)(void *, void (*ops)(void*, char*));
 		int (*get)(void*);
 		int (*set)(void*, char *, char *);
 	} ops;
@@ -36,9 +38,9 @@ struct thing {
 };
 
 static struct sensor hbe_sensors[] = {
-	{.name = "PIR", .uid = 0, .type = "motion"},
-	{.name = "TEMPERATURE", .uid = 1, .type = "temperature"},
-	{.name = "HUMIDITY", .uid = 2, .type = "humidity"},
+	{.name = "PIR", .uid = 0, .type = "motion", .ops.init = pir_init, .ops.get = pir_get},
+	{.name = "TEMPERATURE", .uid = 1, .type = "temperature", .ops.init = sht20_init, .ops.get = sht20_temperature_get},
+	{.name = "HUMIDITY", .uid = 2, .type = "humidity", .ops.get = sht20_humidity_get},
 };
 
 static struct device hbe_device = {
@@ -62,6 +64,17 @@ struct hbe {
 	int report_interval;
 };
 
+static unsigned long long _now_ms(void)
+{
+        struct timeval tv;
+        unsigned long long now;
+
+        gettimeofday(&tv, NULL);
+        now = (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
+
+        return now;
+}
+
 static void _value_status_publish(union sigval sigval)
 {
 	struct hbe *h = sigval.sival_ptr;
@@ -72,11 +85,41 @@ static void _value_status_publish(union sigval sigval)
 		{.id = hbe_sensors[1].sensor_id, .status = THINGPLUS_STATUS_ON, .valid_duration_sec = h->report_interval * 2},
 		{.id = hbe_sensors[2].sensor_id, .status = THINGPLUS_STATUS_ON, .valid_duration_sec = h->report_interval * 2},
 	};
-	thingplus_status_publish(h->t, 4, thing_status);
 
+	thingplus_status_publish(h->t, 4, thing_status);
+	int v = hbe_sensors[0].ops.get(NULL);
+	
+	struct thingplus_value t;
+	int temp = hbe_sensors[1].ops.get(NULL);
+	t.value = calloc(1, 10);
+	sprintf(t.value, "%d", temp);
+	t.time_ms = _now_ms();
+	thingplus_single_value_publish(h->t, hbe_sensors[1].sensor_id, &t);
+	free(t.value);
+
+	struct thingplus_value hu;
+	int humidity = hbe_sensors[2].ops.get(NULL);
+	hu.value = calloc(1, 10);
+	sprintf(hu.value, "%d", humidity);
+	hu.time_ms = _now_ms();
+	thingplus_single_value_publish(h->t, hbe_sensors[2].sensor_id, &hu);
+	free(hu.value);
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+static void hbe_event_trigger(void *arg, char *value)
+{
+	struct hbe *h = (struct hbe *)arg;
+	printf("%s\n", __func__);
+	int _value = (int)value;
+	struct thingplus_value v;
+	if (_value) 
+		v.value = "1";
+	else
+		v.value = "0";
+	v.time_ms = _now_ms();
+	
+	thingplus_single_value_publish(h->t, hbe_sensors[0].sensor_id, &v);
+}
 
 static void _connected(void *cb_arg, thingplus_error_e err)
 {
@@ -150,7 +193,7 @@ int main(int argc, char *argv[])
 	for (i=0; i<hbe.nr_device; i++) {
 		for (j=0; j<hbe.devices[i].nr_sensor; j++) {
 			if (hbe.devices[i].sensors[j].ops.init)
-				hbe.devices[i].sensors[j].s = hbe.devices[i].sensors[j].ops.init();
+				hbe.devices[i].sensors[j].s = hbe.devices[i].sensors[j].ops.init((void*)h, hbe_event_trigger);
 		}
 	}
 
