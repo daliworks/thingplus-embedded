@@ -706,7 +706,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 > **driverName** 센서 드라이버 이름
 
 ##### Request Example
-`GET https://api.thingplus.netsensorDrivers/?filter[id]=jsonrpcSensor`
+`GET https://api.thingplus.net/sensorDrivers/?filter[id]=jsonrpcSensor`
 
 --
 #### Response Example
