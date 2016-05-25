@@ -961,7 +961,7 @@ Device Agent <-- Thing+ Gateway
 - Request params : 없음
 
 Device Agent --> Thing+ Gateway
-- Response Result : [{"deviceAddress": DEV_ID, "sensors":["id":ID, "type":TYPE, "notification": TRUE or FALSE}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}]
+- Response Result : [{"deviceAddress": DEV_ID, deviceModelId: DEVICE_MODEL_ID, "sensors":["id":ID, "type":TYPE, "notification": TRUE or FALSE}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}]
   - deviceAddress: 디바이스 아이디. 디바이스별로 가지는 고유값으로 디바이스 에이전트에서 정하면 됩니다.
   - sensors: 센서 리스트
     - id: 센서 아이디
@@ -977,7 +977,7 @@ Device Agent --> Thing+ Gateway
 - Response Example (Device Agent)
  
 ```
-{"id":1,"result":[{"deviceAddress":"0a0b0c0d0e00","sensors":[{"id":"0a0b0c0d0e00-temperature-0","type":"temperature","name":"temp0"},{"id":"0a0b0c0d0e00-temperature-1","type":"temperature","name":"temp1", "notification": true},{"id":"0a0b0c0d0e00-humidity-0","type":"humidity","name":"humi0"},{"id":"0a0b0c0d0e00-onoff-0","type":"onoff","name":"di0"},{"id":"0a0b0c0d0e00-powerSwitch-0","type":"powerSwitch","name":"do0"}]}],"error":null}\n
+{"id":1,"result":[{"deviceAddress":"0a0b0c0d0e00", "deviceModelId": "PowerOutlet", "sensors":[{"id":"0a0b0c0d0e00-temperature-0","type":"temperature","name":"temp0"},{"id":"0a0b0c0d0e00-temperature-1","type":"temperature","name":"temp1", "notification": true},{"id":"0a0b0c0d0e00-humidity-0","type":"humidity","name":"humi0"},{"id":"0a0b0c0d0e00-onoff-0","type":"onoff","name":"di0"},{"id":"0a0b0c0d0e00-powerSwitch-0","type":"powerSwitch","name":"do0"}]}],"error":null}\n
 ```
 
 ##### 4.3.2.2 "sensor.get" Service
