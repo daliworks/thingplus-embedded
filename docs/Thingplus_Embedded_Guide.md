@@ -921,7 +921,7 @@ Client|Thing+ Gateway
 
 
 #### 4.3.1 JSONRPC 프로토콜
-JSONRPC는 두 프로세스간의 동신을 위한 프로토콜로 JSON 형식의 메시지를 주고 받습니다.([WIKI](http://www.jsonrpc.org/ "Title"))
+JSONRPC는 두 프로세스간의 통신을 위한 프로토콜로 JSON 형식의 메시지를 주고 받습니다.([WIKI](http://www.jsonrpc.org/ "Title"))
 
 - Request 형식
 
