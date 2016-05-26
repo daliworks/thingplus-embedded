@@ -383,7 +383,7 @@ TOPIC : v/a/g/__GATEWAY_ID__/req
 
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"setProperty","params":{"reportInterval":__INTERVAL__}}
 
-RESPONSE IF SUCCESS : {"id" : "__MESSAGE_ID__", "result""}
+RESPONSE IF SUCCESS : {"id" : "__MESSAGE_ID__", "result"}
 RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
