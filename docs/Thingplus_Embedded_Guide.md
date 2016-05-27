@@ -963,10 +963,12 @@ Device Agent <-- Thing+ Gateway
 Device Agent --> Thing+ Gateway
 - Response Result : [{"deviceAddress": DEV_ID, deviceModelId: DEVICE_MODEL_ID, "sensors":["id":ID, "type":TYPE, "notification": TRUE or FALSE}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}]
   - deviceAddress: 디바이스 아이디. 디바이스별로 가지는 고유값으로 디바이스 에이전트에서 정하면 됩니다.
+  - deviceModelId : Thing+에서 정의한 디바이스 모델 아이디
   - sensors: 센서 리스트
     - id: 센서 아이디
+    - name: 센서 이름
     - type : Thing+에서 정의한 센서 타입
-    - notification : 이벤트 센서일 경우 true
+    - notification : 이벤트 센서일 경우 true. 이벤트 센서가 아니면 false, 또는 전송 안함.
 ```
 
 - Request Example (Thing+ Gateway)
