@@ -43,30 +43,63 @@ Thing+는 센서의 종류에 따라 이벤트(Event) 센서와 시리즈(Series
 Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. 센서, 액추에이터 타입은 Thing+에서 정한 고유의 문자열이며 IoT 기기 제조사들은 Thing+에서 정한 타입을 사용해야 합니다. 만약 잘못된 타입을 사용하면, Thing+ Portal에 아이콘, 그래프 등이 잘못 표시될 수 있습니다.
 
 대표적인 센서의 목록은 아래와 같습니다.<br>
-> **센서목록**
-> 
-Type|Category|Type|Category
-:---|:---|:---|:---
-number|series|onoff|event
-string|series|motion|event
-percent|series|countEvent|event
-temperature|series|door|event
-humidity|series|accelerometer|series
+##### 1.1.2.1 시리즈 센서
+- 숫자를 값으로 가지는 센서
 
-액추에이터는 타입뿐만 아니라 명령어도 Thing+가 정의하고 있습니다.
-<br>
-> **액추에이터 목록**
-> 
-Type|Command|Type|Command
-:---|:---|:---|:---
-led|on</br>off</br>blink|lcd|print</br>clear
-powerSwitch|on</br>off|buzzer|on</br>off
-camera|snapPicture
+|센서|Type|단위|센서|Type|단위
+|:---|:---|:---|:---|:---|:---
+|숫자센서|number|없음|문자센서|string|없음
+|온도|temperature|°C|습도|humidity|%
+|조도|light|lux|소음|noise|dB
+|이산화탄소|co2|ppm|일산화탄소|co|ppm
+|VOC|voc|ppm|전력량|power|kWh
+|먼지|dust|µg/m³|개수|count|ea
+|전압|voltage|V|전류|current|A
+|무게|weight|g|진동|vibration|V
+|속도|speed|m/s|압력|pressure|bar
+|각도|rotaryAngle|°|퍼센트|percent|%
+|걸음수|stepCount|walks|베터리량|batteryGauge|%
+|풍속|windSpeed|m/s|강수량|rain|mm/min
+|토양온도|soilTemperature|°C|토양습도|soilMoisture|%
+|자외선(B)|ultraviolet-b|W/m²|기간|timeDuration|sec
+|일조량|solarRadiation|µmol/m²/s"|전력|wattage|kW
+
+
+- 특정한 값을 가지는 센서
+
+|센서|Type|단위|값|비고
+|:---|:---|:---|:---|:---
+|색|color|없음|{r:[0~255],g:[0~255],b:[0~255]}
+|가속도|m/s²|accelerometer|{x:값,y:값,z:값}
+|수면상태|없음|sleepStage|0<br>1<br>2<br>3|AWAKE<br>REM <br> LIGHT <br>DEEP
+|테그|tag|없음|"in", "out" or "tagged"
+|풍향|windVane|없음|0<br>22.5<br>45<br>67.5<br>90<br>112.5<br>135<br>157.5<br>180<br>202.5<br>225<br>247.5<br>270<br>292.5<br>315<br>337.5<br>|N<br>NNE<br>NE<br>ENE<br>E<br>ESE<br>SE<br>SSE<br>S<br>SSW<br>SW<br>WSW<br>W<br>WNW<br>NW<br>NNW<br>
+
+##### 1.1.2.2 이벤트 센서
+|센서|Type|값|단위|센서|Type|값|단위
+|:---|:---|:---|:---|:---|:---|:---|:---
+|토글센서|onoff|0 또는 1|lvl|움직임감지|motion|0, 1|없음
+|문열림|door|0 또는 1|없음|개수|countEvent|숫자|ea
+
+##### 1.1.2.3 액추에이터
+
+|액추에이터|Type|명령어|명령어 설명|파라미터|파라미터 설명
+|:---|:---|:---|:---|:---|:---|:---
+|LED|led|on|켜기|duration|지속시간. 단위:ms
+|||blink|깜빡임|duration<br>interval|지속시간. 단위:ms<br>깜빡이는 주기. 단위:ms
+|||off|끄기|없음
+|파워스위치|powerSwitch|on|켜기|duration|지속시간. 단위:ms
+|||off|끄기|없음
+|부저|buzzer|on|켜기|없음
+|||off|끄기|없음
+|LCD|lcd|print|출력|text<br>row<br>column|출력할 문자열<br>x좌표<br>y좌표
+|||clear|문자열 삭제|row|삭제할 줄<br> -1이면 전체 삭제
+|카메라|camera|snapPicture|사진찍기|없음
+|문자열 액추에이터|stringActuator|send|액추에이터 실행|text|사용자 정의 문자열
 
 Thing+가 지원하는 센서, 액추에이터의 전체 목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인할 수 있습니다.
 
-만약 사용하시는 센서, 액추에이터가 목록에 빠져있으면 아래 사이트에 가셔서 양식을 작성하시기 바랍니다.</br>
-<font color="red"> TODO : 센서 등록 폼 링크 삽입 </font>
+만약 사용하시는 센서, 액추에이터가 목록에 빠져있으면 Appendix A의 게이트웨이, 센서 등록 양식을 작성하여 contact@thingplus.net으로 보내주시기 바랍니다.
  
 #### 1.1.3 Gateway ID, APIKEY
 게이트웨이 아이디(Gateway ID)는 thing을 구분하기 위한 12자리 문자열입니다. 모든 IoT 기기는 고유의 게이트웨이 아이디를 정의해야하며, 일반적으로 유선랜의 MAC어드레스를 사용합니다. </br>
@@ -522,7 +555,7 @@ REST API의 URL은 다음과 같습니다.<br>
 https://api.thingplus.net
 ```
 
-인증을 위해 BODY에 username과 apikey를 채워주시면 됩니다.
+인증을 위해 Header에 username과 apikey를 채워주시면 됩니다.
 
 ``` javascript
 {
@@ -532,6 +565,12 @@ https://api.thingplus.net
 ```
 > GATEWAY_ID: 게이트웨이 아이디<br>
 > APIKEY: Thing+ Portal에서 발급받은 APIKEY
+
+컨텐츠의 type은 application/json을 해주셔야 합니다.
+
+```
+content-type: application/json
+```
 
 #### 2.3.3 에러코드
 |Error Code|Description|
@@ -941,7 +980,18 @@ id|Request 시 받은 ID
 
 ###**모든 메시지의 끝에는 NEW LINE(\n)이 있어야 합니다.**
 
-#### 4.3.2 Device Agent services
+- Error 코드
+
+Code|message
+:---|:---
+-32700|Parse error
+-32600|Invald Request
+-32601|Method not found
+-32602|Invald params
+-32603|Internal Error
+-32000 to -32099|Server error
+
+#### 4.3.2 Device Agent method
 
 Method|Description
 :---|:---
@@ -951,7 +1001,7 @@ sensor.set|액추에이터 실행
 sensor.setNotification|이벤트 센서로 설정
 sensor.notification|이벤트 센서의 값, 상태 전송
 
-##### 4.3.2.1 "discover" Service
+##### 4.3.2.1 "discover" method
 
 Thing+ Gateway가 센서, 액추에이터 목록을 요청
 
@@ -982,7 +1032,7 @@ Device Agent --> Thing+ Gateway
 {"id":1,"result":[{"deviceAddress":"0a0b0c0d0e00", "deviceModelId": "PowerOutlet", "sensors":[{"id":"0a0b0c0d0e00-temperature-0","type":"temperature","name":"temp0"},{"id":"0a0b0c0d0e00-temperature-1","type":"temperature","name":"temp1", "notification": true},{"id":"0a0b0c0d0e00-humidity-0","type":"humidity","name":"humi0"},{"id":"0a0b0c0d0e00-onoff-0","type":"onoff","name":"di0"},{"id":"0a0b0c0d0e00-powerSwitch-0","type":"powerSwitch","name":"do0"}]}],"error":null}\n
 ```
 
-##### 4.3.2.2 "sensor.get" Service
+##### 4.3.2.2 "sensor.get" method
 시리즈 센서값 요청
 
 ```
@@ -1016,7 +1066,7 @@ temperature-0"]}\n
 {"id":2,"result":{"status":"err","message":"initializing"},"error":null}\n
 ```
 
-##### 4.3.2.3 "sensor.set" Service
+##### 4.3.2.3 "sensor.set" method
 액추에이터 실행
 
 ```
@@ -1039,7 +1089,7 @@ Device Agent --> Thing+ Gateway
 {"id":3,"result":"on","error":null}\n
 ```
 
-##### 4.3.2.4 "sensor.setNotification" service
+##### 4.3.2.4 "sensor.setNotification" method
 이벤트 센서로 설정
 
 ```
@@ -1064,7 +1114,7 @@ Device Agent --> Thing+ Gateway
 
 **이벤트 센서로 설정이 되면 Device Agent에서는 리포트 인터벌마다 이벤트 센서의 상태를 전송해야 합니다.**
 
-##### 4.3.2.5 "sensor.notification" service
+##### 4.3.2.5 "sensor.notification" method
 이벤트 센서의 값, 상태를 전송
 
 ```
@@ -1086,6 +1136,27 @@ Device Agent <-- Thing+ Gateway
 {"method":"sensor.notification","params":["0a0b0c0d0e00-onoff-0",{"value": 1}]}
 {"method":"sensor.notification","params":["0a0b0c0d0e00-onoff-0",{"status": "off"}]}
 {"method":"sensor.notification","params":["0a0b0c0d0e00-onoff-0",{"status": "err","message":"initializing"}]}
+```
+
+##### 4.3.2.6 "ping" method
+Device Agent의 구동 여부 확인
+
+```
+Device Agent <-- Thingp+ Gateway
+- Request Method : sensor.setNotification
+- Request Params : 없음
+
+Device Agent --> Thing+ Gateway
+- Response Result : "success"
+```
+- Request Example(Thing+ Gateway)
+```
+{"id":6,"method":"ping","params":[]}\n
+```
+
+- Response Example(Device Agent)
+```
+{"id":6,"result":"success","error":null}\n
 ```
 
 ## 5. How to Test Example Code
@@ -1190,10 +1261,10 @@ $ ./thingplus
 
 ## Appendix
 
-### A. Gateway Registration Request Form
-Thing+에 게이트웨이 모델 등록이 필요하시면 아래 문서 폼을 작성하여 당사로 보내주시기 바랍니다.
+### A. Gateway, Sensor Registration Request Form
+Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서 폼을 작성하여 당사로 보내주시기 바랍니다.
 
-#### 게이트웨이 등록 요청 폼
+#### 게이트웨이, 센서 등록 요청 폼
 ```
 * 게이트웨이 정보
 1. 업체 이름 :
@@ -1280,3 +1351,15 @@ Thing+에 게이트웨이 모델 등록이 필요하시면 아래 문서 폼을 
        - 파라미터 : 없음
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
