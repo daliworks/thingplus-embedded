@@ -1,0 +1,6 @@
+[submodule "paho"]
+	path = paho
+	url = http://git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.embedded-c.git
+[submodule "cjson"]
+	path = cjson
+	url = https://github.com/kbranigan/cJSON.git
