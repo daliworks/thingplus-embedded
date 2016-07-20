@@ -237,7 +237,7 @@ MESSAGE: on,146156169505,000011112222-onoff-0,on,146156168403,000011112222-tempe
 > 센서 상태 전송
 
 ```javascript
-TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
+TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
 MESSAGE: __SENSOR_STATUS__,__VALID_TIME__
 
 __GATEWAY_ID__ : 게이트웨이 아이디
@@ -249,7 +249,7 @@ __VALID_TIME__ : 상태의 유효시간. UTC기준이며 단위는 msec
 Example
 
 ```
-TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
+TOPIC: v/a/g/000011112222/s/000011112222-temperature-0/status
 MESSAGE: on,146156161192
 ```
 
@@ -839,10 +839,11 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 |---|---|
 |network|네트워크 이름|
 |driverName|센서가 사용하는 드라이버 이름|
+|model|센서모델|
 |type|센서타입|
-|카테고리|센서 or 액츄에이터| 
-|name|센서이름|
+|category|센서 or 액츄에이터| 
 |reqId|센서 아이디<br>센서 드라이버에서 정한 idTemplate 형식으로 생성해야 함|
+|name|센서이름|
 |owner|센서가 속한 게이트웨이|
 |ctime|센서가 생성된 시간(UTC)|
 |deviceId|센서가 속한 디바이스의 아이디|
