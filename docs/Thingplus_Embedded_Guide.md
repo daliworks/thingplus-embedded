@@ -589,7 +589,7 @@ content-type: application/json
 > ##### **GATEWAY_ID** &nbsp;&nbsp;&nbsp; 게이트웨이 아이디
 
 ##### Request Example
-`GET https://api.thingpus.net/gateways/abcdefghijkl?fields=model&fields=autoCreateDiscoverable`
+`GET https://api.thingplus.net/gateways/abcdefghijkl?fields=model&fields=autoCreateDiscoverable`
 
 --
 #### Response Example
