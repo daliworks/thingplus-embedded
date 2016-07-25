@@ -14,12 +14,12 @@ Thing+와 하드웨어를 연동하는 방법은 3가지가 있습니다.
 
 1. Thing+ MQTT 프로토콜을 참고하여 소프트웨어 작성
  - 하드웨어 업체는 Thing+ MQTT 프로토콜 문서와 C로 작성된 예제 코드를 참고하여 IoT 기기에 구동되는 Thing+ 연동 소프트웨어를 개발하실 수 있습니다. 개발해야 할 항목은 Thing+ Cloud 연결 및 데이터 송수신, MQTT 메시지 생성 및 분석, 시간동기 등이 있습니다. 개발 자유도가 가장 높으며, 하드웨어에 최적화 된 소프트웨어를 작성하실 수 있습니다.
-2. Thing+ Embedded SDK 라이브러리 이용하며 소프트웨어 작성 
+2. Thing+ Embedded SDK 라이브러리 이용하며 소프트웨어 작성
  - (**준비중**)
 3. Thing+ Gateway를 사용하고, Device Agent 작성
  - Thing+ Gateway는 Thing+ Cloud와의 연결을 담당하고, Device Agent는 센서값을 읽고 액추에이터를 동작시키는 일을 합니다. 하드웨어 업체든 Device Agent 부분을 작성하시면 됩니다. **단, Thing+ Gatweay를 사용하기 위해선 하드웨어에 Node.js가 설치되어야 하며, RTOS, Micro OS, Firmware를 이용하는 하드웨어는 사용할 수 없습니다.** Thing+ Gateway와 Device Agent 사이의 프로토콜 문서와 예제코드를 참고하실 수 있습니다.
 
- 
+
 ### 1.0 Guidelines for things
 
 Thing+와 연동하는 IoT 기기(thing)는 다음사항을 충족시켜야 합니다.
@@ -35,15 +35,31 @@ Thing+와 연동하는 IoT 기기(thing)는 다음사항을 충족시켜야 합�
 
 ### 1.1 Thing+ Embedded에서 정의한 개념 설명
 
-#### 1.1.1 Event Sensor, Series Sensor, Report Interval
+#### 1.1.1 Gateway, Device, Sensor
+![Gateway_Device_Sensor](./image/Thingplus_Embedded_Guide/Gateway_Device_Sensor.png)
+
+게이트웨이(Gateway) : Thing+가 정의한 게이트웨이는 MQTT 또는, HTTP 연결이 가능한 하드웨어로 Thing+ 서버에 접속하여, 센서 데이터를 전송하고, 액추에이터 명령어를 받는 역할을 하는 장비입니다.
+
+디바이스(Device) : Thing+가 정의한 디바이스는 게이트웨이 안에 연결된 센서의 집합을 의미합니다. 예를 들어, 게이트웨이 내부에, 블루투스로 연결되는 온도, 습도 센서가 있다면, 블루투스 기기가 하나의 디바이스로 정의할 수 있습니다. 디바이스는 물리적인 하드웨어 일 수도 있고, 가상의 센서 집합이 될 수 도 있습니다.
+
+센서(Sensor) : Thing+ 정의한 센서는 온도, 습도 등을 측정하는 하드웨어로 일반적으로 사용하는 센서의 의미와 동일합니다. 또한, 액추에이터도 센서의 한 종류에 포함이 됩니다. 모든 센서는 하나의 게이트웨이에만 속해 있으며,
+
+#### 1.1.2 Gateway ID, APIKEY, Sensor ID
+게이트웨이 아이디(Gateway ID): Thing+에 연결된 각 게이트웨이가 가지는 고유의 ID를 의미합니다. 12자리 문자열로 구성이 되며, 일반적으로 유선랜의 MAC어드레스를 사용합니다. </br>
+
+APIKEY : Thing+에서 발급하는 KEY로 MQTT 인증에 사용됩니다. Thing+ 포털에 게이트웨이 아이디를 등록하면 APIKEY를 발급하실 수 있으며, **발급된 APIKEY는 해당 게이트웨이에만 유효합니다. 게이트웨이는 발급받은 APIKEY를 저장하고 있어야하며, MQTT 접속 시 인증 비밀번호로 APIKEY를 사용해야 합니다.**
+
+센서 아이디(Sensor ID) : 각 센서가 가지는 고유의 ID를 의미합니다. 일반적으로 센서 아이디는 게이트웨이 아이디와 센서 타입의 조합으로 만들 수 있습니다. 센서 아이디는 게이트웨이 관리 페이지에서 확인할 수 있습니다.
+
+#### 1.1.3 Event Sensor, Series Sensor, Report Interval
 Thing+는 센서의 종류에 따라 이벤트(Event) 센서와 시리즈(Series) 센서로 구분하고 있습니다. 이벤트 센서는 센서값이 변할 때 센서값을 즉시 Thing+에 전송하는 센서입니다. 시리즈 센서는 하드웨어에서 센서값을 주기적으로 전송하는 센서입니다. <br>
 리포트 인터벌(Report Interval)은 시리즈 센서의 전송 주기를 의미하며, 최소 리포트 인터벌은 60초입니다.
 
-#### 1.1.2 Sensor, Actuator lists
+#### 1.1.4 Sensor, Actuator lists
 Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. 센서, 액추에이터 타입은 Thing+에서 정한 고유의 문자열이며 IoT 기기 제조사들은 Thing+에서 정한 타입을 사용해야 합니다. 만약 잘못된 타입을 사용하면, Thing+ Portal에 아이콘, 그래프 등이 잘못 표시될 수 있습니다.
 
 대표적인 센서의 목록은 아래와 같습니다.<br>
-##### 1.1.2.1 시리즈 센서
+##### 1.1.4.1 시리즈 센서
 - 숫자를 값으로 가지는 센서
 
 |센서|Type|단위|센서|Type|단위
@@ -75,13 +91,13 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 |테그|tag|없음|"in", "out" or "tagged"
 |풍향|windVane|없음|0<br>22.5<br>45<br>67.5<br>90<br>112.5<br>135<br>157.5<br>180<br>202.5<br>225<br>247.5<br>270<br>292.5<br>315<br>337.5<br>|N<br>NNE<br>NE<br>ENE<br>E<br>ESE<br>SE<br>SSE<br>S<br>SSW<br>SW<br>WSW<br>W<br>WNW<br>NW<br>NNW<br>
 
-##### 1.1.2.2 이벤트 센서
+##### 1.1.4.2 이벤트 센서
 |센서|Type|값|단위|센서|Type|값|단위
 |:---|:---|:---|:---|:---|:---|:---|:---
 |토글센서|onoff|0 또는 1|lvl|움직임감지|motion|0, 1|없음
 |문열림|door|0 또는 1|없음|개수|countEvent|숫자|ea
 
-##### 1.1.2.3 액추에이터
+##### 1.1.4.3 액추에이터
 
 |액추에이터|Type|명령어|명령어 설명|파라미터|파라미터 설명
 |:---|:---|:---|:---|:---|:---|:---
@@ -100,10 +116,7 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 Thing+가 지원하는 센서, 액추에이터의 전체 목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인할 수 있습니다.
 
 만약 사용하시는 센서, 액추에이터가 목록에 빠져있으면 Appendix A의 게이트웨이, 센서 등록 양식을 작성하여 contact@thingplus.net으로 보내주시기 바랍니다.
- 
-#### 1.1.3 Gateway ID, APIKEY
-게이트웨이 아이디(Gateway ID)는 thing을 구분하기 위한 12자리 문자열입니다. 모든 IoT 기기는 고유의 게이트웨이 아이디를 정의해야하며, 일반적으로 유선랜의 MAC어드레스를 사용합니다. </br>
-APIKEY는 Thing+에서 발급하는 KEY로 MQTT 인증에 사용됩니다. Thing+ 포털에 게이트웨이 아이디를 등록하면 APIKEY를 발급하실 수 있으며, **발급된 APIKEY는 해당 thing에만 유효합니다. 하드웨어는 발급받은 APIKEY를 저장하고 있어야하며, MQTT 접속 시 인증 비밀번호로 APIKEY를 사용해야 합니다.**
+
 
 
 ## 2. Thing+ Embedded 프로토콜
@@ -189,7 +202,7 @@ TOPIC: v/a/g/000011112222/mqtt/status
 MESSAGE: on
 ```
 #### 2.2.3 하드웨어 상태 전송
-하드웨어는 주기적으로 하드웨어 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 하드웨어 상태를 재수신하지 못하면 해당 thing에 에러가 발생하였다고 판단합니다.<br> 
+하드웨어는 주기적으로 하드웨어 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 하드웨어 상태를 재수신하지 못하면 해당 thing에 에러가 발생하였다고 판단합니다.<br>
 
 >하드웨어 상태 전송
 
@@ -232,7 +245,7 @@ MESSAGE: on,146156169505,000011112222-onoff-0,on,146156168403,000011112222-tempe
 ```
 
 #### 2.2.4 센서 상태 전송
-하드웨어는 주기적으로 센서 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 센서 상태를 재수신하지 못하면 해당 센서에 에러가 발생하였다고 판단합니다.<br> 
+하드웨어는 주기적으로 센서 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 센서 상태를 재수신하지 못하면 해당 센서에 에러가 발생하였다고 판단합니다.<br>
 
 > 센서 상태 전송
 
@@ -423,7 +436,7 @@ RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "messa
 Example
 
 ```
-TOPIC: v/a/g/1928dbc93781/req	
+TOPIC: v/a/g/1928dbc93781/req
 REQUEST MESSAGE : {"id":"e1kcs13bb","method":"setProperty","params":{"reportInterval":"60000"}}
 
 RESPONSE IF SUCCESS : {"id":"e1kcs13bb","result":""}
@@ -512,14 +525,14 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   * 디바이스 모델의 sensors 배열은 디바이스에서 사용할 수 있는 센서 모델 목록 입니다.
   * 사용할 수 있는 센서 모델 중 network, driverName, model, type, category는 센서 등록 시 사용이 됩니다.
   * 또한, driverName은 센서 드라이버를 얻어올 때 필요합니다.
-3. 센서 드라이버를 가지고 옵니다. 
+3. 센서 드라이버를 가지고 옵니다.
   * 센서 드라이버에서 정의한 idTemplate은 센서 등록 시 사용됩니다.
 4. 등록할 센서 정보를 만들어 전송합니다. (2.3.7절 참고)
  <br>
   데이터 포멧은 아래와 같습니다.
-  
+
 ```javascript
-{ 
+{
   reqId: 'abcdefghijkl-0-humidity',
   category: 'sensor',
   type: 'humidity',
@@ -529,10 +542,10 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   name: 'My Camera',
   owner: 'abcdefghijkl',
   ctime: 1456297274325,
-  deviceId: 'abcdefghijkl-0' 
+  deviceId: 'abcdefghijkl-0'
 }
 ```
- 
+
    * reqId : 센서 드라이버에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}-{type}-{sequence}입니다.
       * gatewayID : 게이트웨이 아이디
@@ -548,7 +561,7 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   * owner : 센서가 속해 있는 게이트웨이 아이디입니다.
   * ctime : 센서가 생성 된 시간입니다. UTC
   * deviceId : 센서가 속해있는 디바이스의 아이디입니다.
-  
+
 #### 2.3.3 기본 설정 및 인증
 REST API의 URL은 다음과 같습니다.<br>
 ```
@@ -841,7 +854,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 |driverName|센서가 사용하는 드라이버 이름|
 |model|센서모델|
 |type|센서타입|
-|category|센서 or 액츄에이터| 
+|category|센서 or 액츄에이터|
 |reqId|센서 아이디<br>센서 드라이버에서 정한 idTemplate 형식으로 생성해야 함|
 |name|센서이름|
 |owner|센서가 속한 게이트웨이|
@@ -850,7 +863,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 
 ##### Request Body Example
 ```javascript
-{ 
+{
   network: 'jsonrpc',
   driverName: 'jsonrpcActuator',
   model: 'jsonrpcCamera',
@@ -860,13 +873,13 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
   name: 'My Camera',
   owner: 'abcdefghijkl',
   ctime: 1456297274325,
-  deviceId: 'abcdefghijkl-0' 
+  deviceId: 'abcdefghijkl-0'
 }
 ```
 --
 ####Response Example
 ```
-{ 
+{
   network: 'jsonrpc',
   driverName: 'jsonrpcActuator',
   model: 'jsonrpcCamera',
@@ -879,7 +892,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
   owner: 'abcdefghijkl',
   mtime: 1456297274458,
   ctime: 1456297274458,
-  id: 'abcdefghijkl-0-camera' 
+  id: 'abcdefghijkl-0-camera'
 }
 ```
 --
@@ -1028,7 +1041,7 @@ Device Agent --> Thing+ Gateway
 {"id":1,"method":"discover","params":[]}\n
 ```
 - Response Example (Device Agent)
- 
+
 ```
 {"id":1,"result":[{"deviceAddress":"0a0b0c0d0e00", "deviceModelId": "PowerOutlet", "sensors":[{"id":"0a0b0c0d0e00-temperature-0","type":"temperature","name":"temp0"},{"id":"0a0b0c0d0e00-temperature-1","type":"temperature","name":"temp1", "notification": true},{"id":"0a0b0c0d0e00-humidity-0","type":"humidity","name":"humi0"},{"id":"0a0b0c0d0e00-onoff-0","type":"onoff","name":"di0"},{"id":"0a0b0c0d0e00-powerSwitch-0","type":"powerSwitch","name":"do0"}]}],"error":null}\n
 ```
@@ -1042,11 +1055,11 @@ Device Agent <-- Thing+ Gateway
 - Request params : [센서 아이디]
 
 Device Agent --> Thing+ Gateway
-- Response Result : 
+- Response Result :
                     {"value": VALUE} or
                     {"status": "on"|"off"|"err"} or
                     {"status": "err", "message": ERROR REASONE}
-                    
+
   - value : 센서값
   - status : 센서 상태("on"|"off"|"err"). 센서값이 있으면 "on"으로 간주.
   - message : 센서 상태가 err일 때의 추가 메시지(선택사항)
@@ -1121,7 +1134,7 @@ Device Agent --> Thing+ Gateway
 ```
 Device Agent --> Thing+ Gateway
 - Request Method : sensor.notificaion
-- Request Params : 
+- Request Params :
                    [센서 아이디, {"value": 값}]
                    [센서 아이디, {"status": "on"|"off"|"err"}]
                    [센서 아이디, {"status": "err", "message":"ERROR REASON"}]
@@ -1187,8 +1200,8 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
      * Series : 온도, 습도
      * Event : 온오프
   * 액츄에이터 : LED
-  
-센서는 시뮬레이션 하였습니다. 온도, 습도 센서는 랜덤한 값을 생성하도록 하였으며, 온오프 센서는 랜덤한 시간에 센서 값이 변하도록 하였습니다. 
+
+센서는 시뮬레이션 하였습니다. 온도, 습도 센서는 랜덤한 값을 생성하도록 하였으며, 온오프 센서는 랜덤한 시간에 센서 값이 변하도록 하였습니다.
 
 #### 5.1.1 예제 프로그램 실행 방법
 1. 예제 코드를 실행 시킬 하드웨어를 Thing+ Portal에서 게이트웨이로 등록합니다.
@@ -1221,7 +1234,7 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
 #### 5.1.3 소스의 config.json 설정
 ```
 {
-  "gatewayId": "<HW_MAC_ADDRESS>", 
+  "gatewayId": "<HW_MAC_ADDRESS>",
   "host": "dmqtt.thingplus.net",
   "port": 8883,
   "username": "<HW_MAC_ADDRESS>",
@@ -1241,7 +1254,7 @@ $ git submodule update
 $ make
 ```
   * 디버깅 모드 빌드
-  
+
      ```
   $ make ENABLE_DEBUG=1
   ```
@@ -1252,11 +1265,11 @@ $ ./thingplus
 ```
 
 * 클린
-  
+
    ```
   $ make clean
   ```
- 
+
 
 
 
@@ -1276,16 +1289,16 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
 5. 전송주기(최소 60초) :
    5.1. Thing+ Portal에서 전송주기 표시 여부 : Yes or No
    5.1. 전송주기 변경 가능 여부 : Yes or No
-6. 최대 디바이스 개수 : 
+6. 최대 디바이스 개수 :
 
-* 디바이스 정보 
-1. 디바이스 이름 : 
+* 디바이스 정보
+1. 디바이스 이름 :
 2. 디스커버 사용 여부 : Yes or No
    (디스커버란 하드웨어에 설치된 센서를 찾아서 등록하는 기능입니다.)
 3. 센서정보
-   - 타입 : 
-   - 데이터 형식 : 
-   - 단위 : 
+   - 타입 :
+   - 데이터 형식 :
+   - 단위 :
 4. 액츄에이터 타입
    - 명령어 :
      - 파라미터 :
@@ -1293,7 +1306,7 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
 ```
 
 ##### 예제
- 
+
 ```
 1. 업체 이름 : Libelium
 2. 게이트웨이 이름 : Meshlium
@@ -1303,7 +1316,7 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
    5.1. 전송주기 변경 가능 여부 : Yes
 6. 최대 연결할 수 있는 디바이스 개수 : 3
 
-- 디바이스 정보 
+- 디바이스 정보
 1. 디바이스 이름 : Plug and Sensor
 2. 디스커버기능 사용 여부 : Yes
 3. 센서정보
@@ -1316,16 +1329,16 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
      - 명령어 : 켜기
        - 파라미터
          1. 지속시간. 단위 : 초. 필수아님.
-            설명 : 지속시간만큼 지난 후 LED가 꺼집니다. 파라미터는 선택사항이며, 없으면 LED는 계속 켜저있습니다. 
+            설명 : 지속시간만큼 지난 후 LED가 꺼집니다. 파라미터는 선택사항이며, 없으면 LED는 계속 켜저있습니다.
      - 명령어 : 깜빡임
-       - 파라미터 
+       - 파라미터
          - 1. 인터벌. 단위 : 초. 필수
               설명 : LED 깜빡이는 빠르기를 조절하는 값입니다. 인터벌 시간동안 켜졌다가, 인터벌 시간만큼 꺼집니다.
-         - 2. 지속시간. 단위 : 초. 필수아님 
+         - 2. 지속시간. 단위 : 초. 필수아님
      - 명령어 : 끄기
        - 파라미터 : 없음
 ```
- 
+
 ```
 1. 벤더 이름 : Dell
 2. 게이트웨이 이름 : Edge 5000
@@ -1335,7 +1348,7 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
    5.1. 전송주기 변경 가능 여부 : No
 6. 최대 디바이스 개수 : 5
 
-- 디바이스 정보 
+- 디바이스 정보
 1. 디바이스 이름 : Temerature Monitor
 2. 디스커버기능 사용 여부 : Yes
 3. 센서정보
@@ -1352,15 +1365,3 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
        - 파라미터 : 없음
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
