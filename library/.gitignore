@@ -1,0 +1,6 @@
+CMakeFiles
+*.cmake
+CMakeCache.txt
+CTestCostData.txt
+Makefile
+tags
