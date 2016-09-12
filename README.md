@@ -25,15 +25,16 @@ Thing+ Embedded covers two kinds of device category. Choose Thing+ Gateway or Th
   - Click the + button in the upper right corner
   - Click `Register with Gateway certificates or API Key` button
 
-  ![register gateway with gateway model](./docs/image/1.register_gateway_with_gateway_model_thingplus.png)
+![register gateway with gateway model](./docs/image/1.%20register_gateway_with_gateway_model_thingplus.png)
 
+* 
   - Fill form
     - Gateway ID, Gateway Name, Site Code(default or other site)
     - Select `API Key` (Authentication Type)
   - Register and get API Key
   - Copy the `API Key`
 
-  ![register gateway with apikey](./docs/image/2.%20register_gateway_with_apikey_thingplus.png)
+![register gateway with apikey](./docs/image/2.%20register_gateway_with_apikey_thingplus.png)
 
 ## Step 3: Put "API Key" to your system. 
   - Thing+ Device,
@@ -43,7 +44,7 @@ Thing+ Embedded covers two kinds of device category. Choose Thing+ Gateway or Th
     - Fill the `API Key` copied at the previous step.
     - Click `Upload API Key` button (applied after restarting Thing+ Gateway)
 
-  ![input apikey](./docs/image/3.%20input_apikey_mms.png)
+![input apikey](./docs/image/3.%20input_apikey_mms.png)
 
 
 ## Step 4: Register Sensors
@@ -60,7 +61,7 @@ Thing+ Embedded covers two kinds of device category. Choose Thing+ Gateway or Th
   - Click `Register Gateway, Device and Sensors` button
     - Thing+ Gateway app will restart and send the sensor data in a few minutes.  You can see the sensor data at Dashboard or Sensor page
 
-  ![register_sensors_with_gateway_model_thingplus](./docs/image/5.%20register_sensors_with_gateway_model_thingplus.png)
+![register_sensors_with_gateway_model_thingplus](./docs/image/5.%20register_sensors_with_gateway_model_thingplus.png)
 
 
 
