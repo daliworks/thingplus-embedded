@@ -58,9 +58,6 @@
         - SIM pass: 1234
         - check enabled
      - Press "Change Configuration" button
-
-![modem setting](/docs/image/bbb_modem_setting.png "modem setting")
-
    * Step 3 Gateway side: remember mac adress
      - HOME->Cloud Connection->Mac address
    * Step 4 PC side: [gateway registration to server](#gateway-registration-to-server)
