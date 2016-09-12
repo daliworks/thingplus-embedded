@@ -9,7 +9,4 @@ set (MOCK_INCLUDE_DIRECTORIES
 	${THINGPLUS_LIBRARY_SOURCE_DIRECTORY}
 	${THINGPLUS_LIBRARY_INCLUDE_DIRECTORY})
 
-add_subdirectory(init)
-add_subdirectory(connect)
-add_subdirectory(pubsub)
-add_subdirectory(values)
+add_subdirectory(mock)
