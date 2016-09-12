@@ -60,7 +60,7 @@ Thing+ Embedded covers two kinds of device category. Choose Thing+ Gateway or Th
   - Click `Register Gateway, Device and Sensors` button
     - Thing+ Gateway app will restart and send the sensor data in a few minutes.  You can see the sensor data at Dashboard or Sensor page
 
-  ![register_sensors_with_gateway_model_thingplus](./docs/image/5.%20register_sensors_with_gateway_model_thingplus.png)
+![register_sensors_with_gateway_model_thingplus](./docs/image/5.%20register_sensors_with_gateway_model_thingplus.png)
 
 
 
