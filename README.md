@@ -25,7 +25,7 @@ Thing+ Embedded covers two kinds of device category. Choose Thing+ Gateway or Th
   - Click the + button in the upper right corner
   - Click `Register with Gateway certificates or API Key` button
 
-  ![register gateway with gateway model](./docs/image/1.%20register_gateway_with_gateway_model_thingplus.png)
+  ![register gateway with gateway model](./docs/image/1.register_gateway_with_gateway_model_thingplus.png)
 
   - Fill form
     - Gateway ID, Gateway Name, Site Code(default or other site)
