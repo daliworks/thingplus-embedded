@@ -20,6 +20,29 @@ struct thingplus {
 	void *rest;
 };
 
+int thingplus_gatewayinfo(void *_t, struct thingplus_gatewayinfo* gwinfo)
+{
+	if (gwinfo == NULL) {
+		fprintf(stdout, "[ERR] gwinfo is NULL\n");
+		return THINGPLUS_ERR_INVALID_ARGUMENT;
+	}
+
+	if (_t == NULL) {
+		fprintf(stdout, "[ERR] invalid thingplus instance\n");
+		return THINGPLUS_ERR_INVALID_ARGUMENT;
+	}
+	struct thingplus *t = _t;
+
+	return rest_gatewayinfo(t->rest, gwinfo);
+}
+
+int thingplus_deviceinfo(void *_t, char *dev_id, struct thingplus_device *dev_info)
+{
+	return 0;
+	struct thingplus *t = _t;
+	return rest_deviceinfo(t->rest, dev_id, dev_info);
+}
+
 int thingplus_sensor_register(void *_t, char *name, int uid, char* type, char* device_id, char* sensor_id)
 {
 	if (!name || !type || !device_id) {

@@ -26,6 +26,35 @@ enum thingplus_error {
 	THINGPLUS_ERR_UNKNOWN = -99,
 };
 
+#define THINGPLUS_NAME_LENGTH	512
+struct thingplus_sensor {
+	char id[THINGPLUS_NAME_LENGTH];//
+	char network[THINGPLUS_NAME_LENGTH];//
+	char driver_name[THINGPLUS_NAME_LENGTH];//
+	char model[THINGPLUS_NAME_LENGTH];//
+	char type[THINGPLUS_NAME_LENGTH];//
+	char category[THINGPLUS_NAME_LENGTH];//
+	char name[THINGPLUS_NAME_LENGTH];//
+	char device_id[THINGPLUS_NAME_LENGTH];//
+	char owner[THINGPLUS_NAME_LENGTH];//
+	time_t mtime;//
+	time_t ctime;//
+};
+
+struct thingplus_device {
+	char name[THINGPLUS_NAME_LENGTH];
+	char model[THINGPLUS_NAME_LENGTH];
+	char owner[THINGPLUS_NAME_LENGTH];
+	time_t mtime;
+	time_t ctime;
+	char id[THINGPLUS_NAME_LENGTH];
+};
+
+struct thingplus_gatewayinfo {
+	int dummy;
+};
+
+
 struct thingplus_value {
 	char *id;
 	char *value;

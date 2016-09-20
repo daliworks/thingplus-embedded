@@ -134,6 +134,7 @@ static int _gw_info_sensors_parse(struct json_object* json, char*** sensors)
 	return nr_sensors;
 }
 
+//static void _gw_info_parse(json_object *json, struct gateway_info* gw_info)
 static void _gw_info_parse(struct tcurl_payload *p, struct gateway_info* gw_info)
 {
 	gw_info->discoverable = _discoverable_parse(p->json, "autoCreateDiscoverable");
@@ -482,6 +483,230 @@ err_tcurl_read:
 
 err_url_get:
 	return dev_model;
+}
+
+int rest_gatewayinfo(void *instance, struct thingplus_gatewayinfo *gw_info)
+{
+	return 1;
+}
+
+
+static bool _deviceinfo_name_parse(json_object *json, char *name)
+{
+	json_object *name_object = NULL;
+	if (!json_object_object_get_ex(json, "name", &name_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : name\n");
+		return false;
+	}
+
+	strncpy(name, json_object_get_string(name_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static bool _deviceinfo_model_parse(json_object *json, char* model)
+{
+	json_object *model_object = NULL;
+	if (!json_object_object_get_ex(json, "model", &model_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : model\n");
+		return false;
+	}
+
+	strncpy(model, json_object_get_string(model_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static bool _deviceinfo_owner_parse(json_object *json, char *owner)
+{
+	json_object *owner_object = NULL;
+	if (!json_object_object_get_ex(json, "owner", &owner_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : owner\n");
+		return false;
+	}
+
+	strncpy(owner, json_object_get_string(owner_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static time_t _deviceinfo_mtime_parse(json_object *json) 
+{
+	json_object *mtime_object = NULL;
+	if (!json_object_object_get_ex(json, "mtime", &mtime_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : mtime\n");
+		return false;
+	}
+	return json_object_get_int64(mtime_object);
+}
+
+static time_t _deviceinfo_ctime_parse(json_object* json)
+{
+	json_object *ctime_object = NULL;
+	if (!json_object_object_get_ex(json, "ctime", &ctime_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : ctime\n");
+		return false;
+	}
+	return json_object_get_int64(ctime_object);
+}
+
+static bool _deviceinfo_id_parse(json_object* json, char *id)
+{
+	json_object *dev_id_object = NULL;
+	if (!json_object_object_get_ex(json, "id", &dev_id_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : id\n");
+		return false;
+	}
+
+	strncpy(id, json_object_get_string(dev_id_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static void _deviceinfo_parse(json_object *json, struct thingplus_device *dev_info)
+{
+	memset(dev_info, 0, sizeof(struct thingplus_device));
+
+	_deviceinfo_name_parse(json, dev_info->name);
+	_deviceinfo_model_parse(json, dev_info->model);
+	_deviceinfo_owner_parse(json, dev_info->owner);
+	dev_info->mtime = _deviceinfo_mtime_parse(json);
+	dev_info->ctime = _deviceinfo_ctime_parse(json);
+	_deviceinfo_id_parse(json, dev_info->id);
+}
+
+static bool _sensorinfo_network_parse(json_object *json, char *network)
+{
+	json_object *network_object = NULL;
+	if (!json_object_object_get_ex(json, "network", &network_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : network\n");
+		return false;
+	}
+
+	strncpy(network, json_object_get_string(network_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static bool _sensorinfo_driver_name_parse(json_object *json, char *driver_name)
+{
+	json_object *driver_name_object = NULL;
+	if (!json_object_object_get_ex(json, "driverName", &driver_name_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : driver_name\n");
+		return false;
+	}
+
+	strncpy(driver_name, json_object_get_string(driver_name_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static bool _sensorinfo_type_parse(json_object *json, char *type)
+{
+	json_object *type_object = NULL;
+	if (!json_object_object_get_ex(json, "type", &type_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : type\n");
+		return false;
+	}
+
+	strncpy(type, json_object_get_string(type_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static bool _sensorinfo_category_parse(json_object *json, char *category)
+{
+	json_object *category_object = NULL;
+	if (!json_object_object_get_ex(json, "category", &category_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : category\n");
+		return false;
+	}
+
+	strncpy(category, json_object_get_string(category_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static bool _sensorinfo_device_id_parse(json_object *json, char *device_id)
+{
+	json_object *device_id_object = NULL;
+	if (!json_object_object_get_ex(json, "device_id", &device_id_object)) {
+		fprintf(stdout, "[ERR] json_object_object_get_exa failed. key : device_id\n");
+		return false;
+	}
+
+	strncpy(device_id, json_object_get_string(device_id_object), THINGPLUS_NAME_LENGTH);
+
+	return true;
+}
+
+static void _sensorinfo_parse(json_object *json, struct thingplus_sensor *sensor_info)
+{
+	memset(sensor_info, 0, sizeof(struct thingplus_device));
+
+	_deviceinfo_name_parse(json, sensor_info->name);
+	_deviceinfo_model_parse(json, sensor_info->model);
+	_deviceinfo_owner_parse(json, sensor_info->owner);
+	sensor_info->mtime = _deviceinfo_mtime_parse(json);
+	sensor_info->ctime = _deviceinfo_ctime_parse(json);
+	_deviceinfo_id_parse(json, sensor_info->id);
+	_sensorinfo_network_parse(json, sensor_info->network);
+	_sensorinfo_driver_name_parse(json, sensor_info->driver_name);
+	_sensorinfo_type_parse(json, sensor_info->type);
+	_sensorinfo_category_parse(json, sensor_info->category);
+	_sensorinfo_device_id_parse(json, sensor_info->device_id);
+}
+
+int rest_deviceinfo(void *instance, char *id, struct thingplus_device *dev_info)
+{
+	int ret = -1;
+	struct rest *r =  (struct rest *)instance;
+
+	char *url = url_get(URL_INDEX_DEVICE_INFO, r->gw_id, id);
+	if (url == NULL) {
+		fprintf(stdout, "[ERR] url get failed\n");
+		return ret;
+	}
+
+	struct tcurl_payload p;
+	if (tcurl_read(url, r->curl, (void*)&p) < 0) {
+		fprintf(stdout, "[ERR] tcurl_read(URL_INDEX_DEVICE_INFO) failed\n");
+		goto err_tcurl_read;
+	}
+
+	ret = 0;
+	_deviceinfo_parse(p.json, dev_info);
+
+err_tcurl_read:
+	url_put(url);
+
+	return ret;
+}
+
+int rest_sensorinfo(void *instance, char *id, struct thingplus_sensor *sensor_info)
+{
+	int ret = -1;
+	struct rest *r =  (struct rest *)instance;
+
+	char *url = url_get(URL_INDEX_SENSOR_INFO, r->gw_id, id);
+	if (url == NULL) {
+		fprintf(stdout, "[ERR] url get failed\n");
+		return ret;
+	}
+
+	struct tcurl_payload p;
+	if (tcurl_read(url, r->curl, (void*)&p) < 0) {
+		fprintf(stdout, "[ERR] tcurl_read(URL_INDEX_DEVICE_INFO) failed\n");
+		goto err_tcurl_read;
+	}
+
+	ret = 0;
+	_sensorinfo_parse(p.json, sensor_info);
+
+err_tcurl_read:
+	url_put(url);
+
+	return ret;
 }
 
 int rest_sensor_register(void* instance, char* name, int uid, char* type, char* device_id, char* sensor_id)

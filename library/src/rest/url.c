@@ -16,6 +16,7 @@ static struct url_list{
 	{.url_index = URL_INDEX_SENSOR_DRIVERS, .url = "sensorDrivers/?filter[id]=%s"},
 	{.url_index = URL_INDEX_SENSOR_REGISTER, .url ="gateways/%s/sensors"},
 	{.url_index = URL_INDEX_DEVICE_INFO, .url ="gateways/%s/devices/%s"},
+	{.url_index = URL_INDEX_SENSOR_INFO, .url ="gateways/%s/sensors/%s"},
 };
 
 static struct url_list* _url_search(enum url_index r)

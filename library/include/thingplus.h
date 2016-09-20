@@ -13,6 +13,9 @@ extern "C"
 
 #define THINGPLUS_ID_LENGTH 128
 
+int thingplus_gatewayinfo(void *t, struct thingplus_gatewayinfo*);
+int thingplus_deviceinfo(void *t, char *, struct thingplus_device *);
+
 int thingplus_sensor_register(void *t, char *name, int uid, char* type, char* device_id, 
 		char sensor_id[THINGPLUS_ID_LENGTH]);
 int thingplus_device_register(void* instance, char* name, int uid, char* device_model_id, 

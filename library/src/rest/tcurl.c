@@ -50,9 +50,9 @@ static int _curl_exec(char* url, void* tube_curl, void *postfields, struct tcurl
 
 	ret = curl_easy_perform(curl);
 	if (ret != CURLE_OK || p->payload == NULL) {
-		ret *= -1;
-		fprintf(stdout, "[CURL] curl_easy_perform failed\n");
+		fprintf(stdout, "[CURL] curl_easy_perform failed. ret:%d\n", ret);
 		fprintf(stdout,  "[CURL] url:%s\n", url);
+		ret *= -1;
 		goto err_curl_easy_perform;
 	}
 
@@ -119,7 +119,6 @@ int tcurl_read(char* url, void* tube_curl, struct tcurl_payload* p)
 		return -1;
 	}
 
-
 	json_object *status_object = NULL;
 	if (json_object_object_get_ex(p->json, "statusCode", &status_object)) {
 		fprintf(stdout, "[TUBE_CURL] server response %d. \n", json_object_get_int(status_object));
@@ -139,6 +138,9 @@ int tcurl_read(char* url, void* tube_curl, struct tcurl_payload* p)
 
 void tcurl_cleanup(void* tube_curl)
 {
+	if (tube_curl == NULL)
+		return;
+
 	curl_global_cleanup();
 
 	struct curl_slist* headers = (struct curl_slist*)tube_curl;
@@ -150,6 +152,14 @@ void tcurl_cleanup(void* tube_curl)
 
 void* tcurl_init(char *gateway_id, char *apikey)
 {
+	if (gateway_id == NULL) {
+		return NULL;
+	}
+
+	if (apikey == NULL) {
+		return NULL;
+	}
+
 	struct curl_slist* headers = NULL;
 
 	curl_global_init(CURL_GLOBAL_ALL);

@@ -7,7 +7,6 @@ set (MOCK_SRC
 add_executable (mock ${MOCK_SRC})
 target_link_libraries(mock
 	json-c
-	curl
 	gcov
 	CppUTest 
 	CppUTestExt)
