@@ -1,10 +1,13 @@
 #include <CppUTest/TestHarness.h>
 #include <CppUTestExt/MockSupport.h>
 
+#include "mock_expect_tcurl.h"
+
 extern "C" {
 #include <stdio.h>
 #include <string.h>
 }
+
 
 void mock_expect_thingplus_init(char *gw_id, char *apikey)
 {
@@ -18,12 +21,14 @@ void mock_expect_thingplus_init(char *gw_id, char *apikey)
 	mock().expectOneCall("mosquitto_username_pw_set")
 		.withParameter("username", gw_id)
 		.withParameter("password", apikey);
+	mock_expect_tcurl_init();
 }
 
 void mock_expect_thingplus_cleanup(void)
 {
 	mock().expectOneCall("mosquitto_destroy");
 	mock().expectOneCall("mosquitto_lib_cleanup");
+	mock_expect_tcurl_cleanup();
 }
 
 void mock_expect_thingplus_connect_ssl(char *ca_file, char *mqtt_url, int keepalive)

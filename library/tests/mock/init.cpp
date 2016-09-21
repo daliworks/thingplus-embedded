@@ -4,30 +4,22 @@
 #include <CppUTestExt/MockSupport.h>
 
 #include "mock_expect_thingplus.h"
+#include "fixture.h"
 
 extern "C" {
-#include "config.h"
 #include "thingplus.h"
 }
-
-static char *gw_id;
-static char *apikey;
-static char *mqtt_url;
-static char *restapi_url;
 
 TEST_GROUP(init)
 {
 	void setup()
 	{
-		gw_id = "012345012345";
-		apikey = "D_UoswsKC-v4BHgAk6X4-2i61Zg=";
-		mqtt_url = "mqtt.thingplus.net";
-		restapi_url = "api.thingplus.net";
+		fixture_setup();
 	}
 
 	void teardown()
 	{
-		mock().clear();
+		fixture_teardown();
 	}
 };
 

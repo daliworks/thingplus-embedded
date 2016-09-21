@@ -6,58 +6,36 @@
 #include <CppUTestExt/MockSupport.h>
 
 #include <mock_expect_thingplus.h>
+#include "fixture.h"
 
 extern "C" {
-#include "config.h"
 #include "mock_mosquitto.h"
 #include "mqtt/packetize.h"
 #include "thingplus.h"
 }
 
-static char *gw_id;
-static char *apikey;
-static char *mqtt_url;
-static char *restapi_url;
-static char *ca_file;
-static int keepalive;
 static void *t;
 static struct thingplus_callback callback;
-
-static void fixture_setup()
-{
-	gw_id = "012345012345";
-	apikey = "D_UoswsKC-v4BHgAk6X4-2i61Zg=";
-	mqtt_url = "mqtt.thingplus.net";
-	restapi_url = "api.thingplus.net";
-	ca_file = CERT_FILE;
-	keepalive = 60;
-
-	mock_expect_thingplus_init(gw_id, apikey);
-	mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
-	mock_expect_thingplus_connected(gw_id);
-
-	t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
-	thingplus_connect(t, ca_file, keepalive);
-	mock_mosquitto_connected(0);
-}
-
-static void fixture_teardown()
-{
-	mock_expect_thingplus_cleanup();
-	thingplus_cleanup(t);
-}
 
 TEST_GROUP(thingplus_value_publish)
 {
 	void setup()
 	{
 		fixture_setup();
+		mock_expect_thingplus_init(gw_id, apikey);
+		mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
+		mock_expect_thingplus_connected(gw_id);
+
+		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
+		thingplus_connect(t, ca_file, keepalive);
+		mock_mosquitto_connected(0);
 	}
 
 	void teardown()
 	{
+		mock_expect_thingplus_cleanup();
+		thingplus_cleanup(t);
 		fixture_teardown();
-		mock().clear();
 	}
 };
 
@@ -161,12 +139,20 @@ TEST_GROUP(thingplus_status_publish)
 	void setup()
 	{
 		fixture_setup();
+		mock_expect_thingplus_init(gw_id, apikey);
+		mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
+		mock_expect_thingplus_connected(gw_id);
+
+		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
+		thingplus_connect(t, ca_file, keepalive);
+		mock_mosquitto_connected(0);
 	}
 
 	void teardown()
 	{
+		mock_expect_thingplus_cleanup();
+		thingplus_cleanup(t);
 		fixture_teardown();
-		mock().clear();
 	}
 };
 
@@ -268,6 +254,13 @@ TEST_GROUP(subscribe)
 	void setup()
 	{
 		fixture_setup();
+		mock_expect_thingplus_init(gw_id, apikey);
+		mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
+		mock_expect_thingplus_connected(gw_id);
+
+		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
+		thingplus_connect(t, ca_file, keepalive);
+		mock_mosquitto_connected(0);
 
 		callback.actuating = _actuating;
 		thingplus_callback_set(t, &callback, NULL);
@@ -275,8 +268,9 @@ TEST_GROUP(subscribe)
 
 	void teardown()
 	{
+		mock_expect_thingplus_cleanup();
+		thingplus_cleanup(t);
 		fixture_teardown();
-		mock().clear();
 	}
 };
 
@@ -313,4 +307,3 @@ TEST(subscribe, no_method_json_subscribed_publish_error)
 
 	packetize_free(payload);
 }
-
