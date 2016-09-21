@@ -50,8 +50,21 @@ struct thingplus_device {
 	char id[THINGPLUS_NAME_LENGTH];
 };
 
-struct thingplus_gatewayinfo {
-	int dummy;
+struct thingplus_gateway {
+	char name[THINGPLUS_NAME_LENGTH];
+	char id[THINGPLUS_NAME_LENGTH];
+	bool discoverable;
+
+	int nr_devices;
+	char** devices;
+
+	int nr_sensors;
+	char** sensors;
+
+	time_t mtime;
+	time_t ctime;
+	int site;
+	int model;
 };
 
 

@@ -47,12 +47,6 @@ void *curl_easy_init(void)
 
 int curl_easy_setopt(CURL *curl, CURLoption option, ...)
 {
-	printf("%d\n", option);
-	printf("%d\n", option);
-	printf("%d\n", option);
-	printf("%d\n", option);
-	printf("%d\n", option);
-
 	va_list args;
 
 	va_start(args, option);
@@ -73,7 +67,7 @@ int curl_easy_setopt(CURL *curl, CURLoption option, ...)
 
 int curl_easy_perform(CURL *curl)
 {
-	if (_write_callback)
+	if (_write_callback && _contents)
 		_write_callback(_contents, strlen(_contents), 1, _tcurl_payload);
 
 	mock_c()->actualCall("curl_easy_perform");

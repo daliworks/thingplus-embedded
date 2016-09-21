@@ -63,6 +63,7 @@ static int _curl_exec(char* url, void* tube_curl, void *postfields, struct tcurl
 	p->json = json_tokener_parse(p->payload);
 	if (p->json == NULL) {
 		fprintf(stdout, "[CURL] json_tokener_parse failed\n");
+		ret = -1;
 		goto err_json_tokener_parse;
 	}
 	ret = 0;

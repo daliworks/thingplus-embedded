@@ -121,8 +121,8 @@ TEST(values, cleanupNoMemoryLeadk)
 	v[1].id ="b";
 	v[1].value = "b";
 	v[1].time_ms = 1000;
-
 	void *s = values_init(nr_value, v);
+
 	CHECK(s);
 	values_cleanup(s);
 }

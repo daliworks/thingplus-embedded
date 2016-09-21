@@ -20,7 +20,7 @@ struct thingplus {
 	void *rest;
 };
 
-int thingplus_gatewayinfo(void *_t, struct thingplus_gatewayinfo* gwinfo)
+int thingplus_gatewayinfo(void *_t, struct thingplus_gateway* gwinfo)
 {
 	if (gwinfo == NULL) {
 		fprintf(stdout, "[ERR] gwinfo is NULL\n");

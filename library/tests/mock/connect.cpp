@@ -5,19 +5,13 @@
 #include <CppUTestExt/MockSupport.h>
 
 #include <mock_expect_thingplus.h>
+#include "fixture.h"
 
 extern "C" {
-#include "config.h"
 #include "mock_mosquitto.h"
 #include "thingplus.h"
 }
 
-static char *gw_id;
-static char *apikey;
-static char *mqtt_url;
-static char *restapi_url;
-static char *ca_file;
-static int keepalive;
 static void *t;
 static struct thingplus_callback callback;
 
@@ -35,41 +29,25 @@ static void cb_disconnected(void *cb_arg, enum thingplus_error err)
 		.withParameter("err", err);
 }
 
-static void _fixture_setup(void)
-{
-	gw_id = "012345012345";
-	apikey = "D_UoswsKC-v4BHgAk6X4-2i61Zg=";
-	mqtt_url = "mqtt.thingplus.net";
-	restapi_url = "api.thingplus.net";
-	ca_file = CERT_FILE;
-	keepalive = 60;
-
-	mock_expect_thingplus_init(gw_id, apikey);
-	t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
-
-	callback.connected = cb_connected,
-	callback.disconnected = cb_disconnected,
-
-	thingplus_callback_set(t, &callback, NULL);
-}
-
-static void _fixture_teardown(void)
-{
-	mock_expect_thingplus_cleanup();
-	thingplus_cleanup(t);
-}
-
 TEST_GROUP(thingplus_connect)
 {
 	void setup()
 	{
-		_fixture_setup();
+		fixture_setup();
+
+		mock_expect_thingplus_init(gw_id, apikey);
+		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
+
+		callback.connected = cb_connected;
+		callback.disconnected = cb_disconnected;
+		thingplus_callback_set(t, &callback, NULL);
 	}
 
 	void teardown()
 	{
-		_fixture_teardown();
-		mock().clear();
+		mock_expect_thingplus_cleanup();
+		thingplus_cleanup(t);
+		fixture_teardown();
 	}
 };
 
@@ -78,6 +56,7 @@ TEST(thingplus_connect, ssl_using_8883_port_and_necessacy_mosquitto_lib_called)
 	mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
 	int ret = thingplus_connect(t, ca_file, keepalive);
 
+	CHECK_EQUAL(0, ret);
 	mock().checkExpectations();
 }
 
@@ -125,16 +104,24 @@ TEST_GROUP(thingplus_disconnect)
 {
 	void setup()
 	{
-		_fixture_setup();
+		fixture_setup();
+
+		mock_expect_thingplus_init(gw_id, apikey);
+		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
 
 		mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
+		callback.connected = cb_connected;
+		callback.disconnected = cb_disconnected;
+		thingplus_callback_set(t, &callback, NULL);
 		thingplus_connect(t, ca_file, keepalive);
 	}
 
 	void teardown()
 	{
-		_fixture_teardown();
-		mock().clear();
+		mock_expect_thingplus_cleanup();
+		thingplus_cleanup(t);
+
+		fixture_teardown();
 	}
 };
 

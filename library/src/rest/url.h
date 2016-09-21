@@ -11,6 +11,7 @@ enum url_index {			// url_get arg list
 	URL_INDEX_SENSOR_REGISTER,	// char *gateway_id;
 	URL_INDEX_DEVICE_INFO,	// char *gateway_id, char *device_id;
 	URL_INDEX_SENSOR_INFO, //char *gateway_id, char *sensor_id;
+	URL_INDEX_GATEWAY_INFO2,	// char *gateway_id;
 };
 
 char *url_get(enum url_index r, ...);
