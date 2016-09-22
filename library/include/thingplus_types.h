@@ -50,12 +50,18 @@ struct thingplus_device {
 	char id[THINGPLUS_NAME_LENGTH];
 };
 
+struct thingplus_device_short_info { 
+	char id[THINGPLUS_NAME_LENGTH];
+	char model[THINGPLUS_NAME_LENGTH];
+};
+
 struct thingplus_gateway {
 	char name[THINGPLUS_NAME_LENGTH];
 	char id[THINGPLUS_NAME_LENGTH];
 	bool discoverable;
 
 	int nr_devices;
+	struct thingplus_device_short_info device_sinfo;
 	char** devices;
 
 	int nr_sensors;

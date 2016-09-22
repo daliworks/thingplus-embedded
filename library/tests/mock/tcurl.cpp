@@ -135,7 +135,7 @@ TEST(tcurl_read_post, read)
 	char *device_id = "abcdefg";
 	char *url = url_get(URL_INDEX_DEVICE_INFO, gw_id, device_id);
 
-	mock_curl_payload_set("{\"name\":\"a\"}");
+	mock_curl_payload_append("{\"name\":\"a\"}");
 
 	int ret  = tcurl_read(url, tcurl, &p);
 
@@ -143,6 +143,7 @@ TEST(tcurl_read_post, read)
 	mock().checkExpectations();
 
 	tcurl_payload_free(&p);
+	mock_curl_payload_clear();
 }
 
 TEST(tcurl_read_post, read_with_err_curl_easy_perform_returns_fail)
@@ -151,20 +152,19 @@ TEST(tcurl_read_post, read_with_err_curl_easy_perform_returns_fail)
 		.andReturnValue((void*)0xdeadbeef);
 	mock().expectNCalls(4, "curl_easy_setopt");
 	mock().expectOneCall("curl_easy_perform")
-		.andReturnValue(1);
+		.andReturnValue((int)1);
 	mock().expectOneCall("curl_easy_cleanup");
 
 	struct tcurl_payload p;
 	char *device_id = "abcdefg";
 	char *url = url_get(URL_INDEX_DEVICE_INFO, gw_id, device_id);
-	mock_curl_payload_set("{\"name\":\"a\"}");
-
 	int ret  = tcurl_read(url, tcurl, &p);
 
 	CHECK_EQUAL(-1, ret);
 	mock().checkExpectations();
 
 	tcurl_payload_free(&p);
+	mock_curl_payload_clear();
 }
 
 TEST(tcurl_read_post, read_with_err_curl_easy_init_returns_fail)
@@ -189,7 +189,7 @@ TEST(tcurl_read_post, post)
 	char *device_id = "abcdefg";
 	char *url = url_get(URL_INDEX_DEVICE_INFO, gw_id, device_id);
 
-	mock_curl_payload_set("{\"name\":\"a\"}");
+	mock_curl_payload_append("{\"server_response\":\"dummy\"}");
 
 	int ret  = tcurl_post(url, tcurl, (void*)"abcdefg", &p);
 
@@ -197,4 +197,5 @@ TEST(tcurl_read_post, post)
 	mock().checkExpectations();
 
 	tcurl_payload_free(&p);
+	mock_curl_payload_clear();
 }

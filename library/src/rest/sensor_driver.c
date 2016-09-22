@@ -21,26 +21,20 @@ static struct sensor_driver* _sensor_drivers_get(void* curl, char *driver_name)
 	char *url = url_get(URL_INDEX_SENSOR_DRIVERS, driver_name);
 	if (url == NULL) {
 		fprintf(stdout, "[SENSOR_DRIVER] url_get failed. driver_name:%s\n", driver_name);
-		return NULL;
+		goto err_url_get;
 	}
 
 	struct tcurl_payload p;
 	if (tcurl_read(url, curl, &p) < 0) {
 		fprintf(stdout, "[SENSOR_DRIVER] tube_curl_read_ failed\n");
-
-		tcurl_payload_free(&p);
-		url_put(url);
-		return NULL;
+		goto err_tcurl_read;
 	}
 
-	json_object *sensor_driver_object = json_object_array_get_idx(p.json, 0);
+	json_object *sensor_driver_object = p.json;
 	json_object *id_template_object = NULL;
-	if (!json_object_object_get_ex(sensor_driver_object, "idTemplate", &id_template_object)) {
+	if (!json_object_object_get_ex(p.json, "idTemplate", &id_template_object)) {
 		fprintf(stdout, "[SENSOR_DRIVER] json_object_object_get_ex failed\n");
-
-		tcurl_payload_free(&p);
-		url_put(url);
-		return NULL;
+		goto err_json_object_object_get_ex;
 	}
 
 	int realloc_size = sizeof(struct sensor_driver) * (nr_list +1);
@@ -49,12 +43,9 @@ static struct sensor_driver* _sensor_drivers_get(void* curl, char *driver_name)
 		fprintf(stdout, "[SENSOR_DRIVER] realloc failed. realloc size:%d",
 			realloc_size);
 
-		tcurl_payload_free(&p);
-		url_put(url);
 		list = NULL;
 		nr_list = 0;
-
-		return NULL;
+		goto err_realloc;
 	}
 
 	list[nr_list].driver_name = strdup(driver_name);
@@ -64,6 +55,14 @@ static struct sensor_driver* _sensor_drivers_get(void* curl, char *driver_name)
 	url_put(url);
 
 	return &list[nr_list++];
+
+err_realloc:
+err_json_object_object_get_ex:
+err_tcurl_read:
+	tcurl_payload_free(&p);
+	url_put(url);
+err_url_get:
+	return NULL;
 }
 
 static struct sensor_driver* _sensor_driver_search(char* driver_name)

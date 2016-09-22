@@ -18,12 +18,11 @@ extern "C" {
 
 static void *t;
 
-TEST_GROUP(rest)
+TEST_GROUP(rest_register)
 {
 	void setup()
 	{
 		fixture_setup();
-
 		mock_expect_tcurl_init();
 		t = rest_init(gw_id, apikey, restapi_url);
 	}
@@ -32,98 +31,12 @@ TEST_GROUP(rest)
 	{
 		mock_expect_tcurl_cleanup();
 		rest_cleanup(t);
-		t = NULL;
-
 		fixture_teardown();
+		t = NULL;
 	}
 };
 
-TEST(rest, rest_deviceinfo_success)
-{
-	mock_expect_tcurl_read();
-	char *device_info_json = "{ \
-				 \"name\":\"DEVNAME\", \
-				 \"model\":\"jsonrpcFullV1.0\", \
-				 \"owner\":\"OWNER\", \
-				 \"mtime\":\"123\", \
-				 \"ctime\":\"456\", \
-				 \"id\":\"dev_id\"}";
-	mock_curl_payload_set(device_info_json);
-
-	struct thingplus_device device;
-	memset(&device, 0, sizeof(device));
-	int ret = rest_deviceinfo(t, "dev_id", &device);
-
-	CHECK_EQUAL(0, ret);
-	STRCMP_EQUAL("DEVNAME", device.name);
-	STRCMP_EQUAL("jsonrpcFullV1.0", device.model);
-	STRCMP_EQUAL("OWNER", device.owner);
-	CHECK_EQUAL(123, device.mtime);
-	CHECK_EQUAL(456, device.ctime);
-	STRCMP_EQUAL("dev_id", device.id);
-	mock().checkExpectations();
-}
-
-TEST(rest, rest_deviceinfo_err_tcurl_read_returns_fail)
-{
-	mock().expectOneCall("curl_easy_init")
-		.andReturnValue((void*)NULL);
-
-	struct thingplus_device device;
-	int ret = rest_deviceinfo(t, "dev_id", &device);
-
-	CHECK_EQUAL(-1, ret);
-	mock().checkExpectations();
-}
-
-TEST(rest, rest_sensorinfo_success)
-{
-	char *sensor_info_json = "{\
-				  \"id\":\"ID\", \
-				  \"network\":\"NETWORK\", \
-				  \"driverName\":\"DRIVER_NAME\", \
-				  \"mtime\":\"123\", \
-				  \"ctime\":\"456\", \
-				  \"model\":\"MODEL\", \
-				  \"type\":\"TYPE\", \
-				  \"category\":\"CATEGORY\", \
-				  \"name\":\"NAME\", \
-				  \"device_id\":\"DEVICE_ID\", \
-				  \"owner\":\"OWNER\"}";
-	mock_curl_payload_set(sensor_info_json);
-	mock_expect_tcurl_read();
-
-	struct thingplus_sensor sensor;
-	int ret = rest_sensorinfo(t, "sensor_id", &sensor);
-
-	CHECK_EQUAL(0, ret);
-	STRCMP_EQUAL("ID", sensor.id);
-	STRCMP_EQUAL("NETWORK", sensor.network);
-	STRCMP_EQUAL("DRIVER_NAME", sensor.driver_name);
-	STRCMP_EQUAL("MODEL", sensor.model);
-	STRCMP_EQUAL("TYPE", sensor.type);
-	STRCMP_EQUAL("CATEGORY", sensor.category);
-	STRCMP_EQUAL("NAME", sensor.name);
-	STRCMP_EQUAL("DEVICE_ID", sensor.device_id);
-	STRCMP_EQUAL("OWNER", sensor.owner);
-	CHECK_EQUAL(123, sensor.mtime);
-	CHECK_EQUAL(456, sensor.ctime);
-	mock().checkExpectations();
-}
-
-TEST(rest, rest_sensorinfo_err_tcurl_read_return_fail)
-{
-	mock().expectOneCall("curl_easy_init")
-		.andReturnValue((void*)NULL);
-
-	struct thingplus_sensor sensor;
-	int ret = rest_sensorinfo(t, "sensor_id", &sensor);
-
-	CHECK_EQUAL(-1, ret);
-	mock().checkExpectations();
-}
-
-TEST(rest, rest_gatewayinfo_success)
+TEST(rest_register, device_resigster_success)
 {
 	char *gateway_info_json = "{\
 				   \"sensors\":[\"a\",\"b\"], \
@@ -136,26 +49,202 @@ TEST(rest, rest_gatewayinfo_success)
 				   \"mtime\":\"123\", \
 				   \"ctime\":\"456\", \
 				   \"id\":\"ID\"}";
-	mock_curl_payload_set(gateway_info_json);
+	mock_curl_payload_append(gateway_info_json);
 	mock_expect_tcurl_read();
 
-	struct thingplus_gateway gateway;
-	int ret = rest_gatewayinfo(t, &gateway);
+	char *gateway_model_json = "{\
+				    \"deviceModels\":[{\
+					\"id\":\"jsonrpcFullV1.0\", \
+	     				\"discoverable\": \"y\", \
+					\"idTemplate\": \"{gatewayId}-{deviceAddress}\",\
+					\"sensors\": [{\
+						\"network\":\"jsonrpc\",\
+	     					\"driverName\":\"jsonrpcSensor\",\
+						\"model\":\"jsonrpcNumber\",\
+						\"type\":\"number\",\
+						\"category\":\"sensor\"}]\
+					}]\
+				}";	
+	mock_curl_payload_append(gateway_model_json);
+	mock_expect_tcurl_read();
+
+	mock_curl_payload_append("{\"server_response\":\"dummy\"}");
+	mock_expect_tcurl_post();
+
+	char device_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_device_register(t, "name", 0, "jsonrpcFullV1.0", device_id);
 
 	CHECK_EQUAL(0, ret);
-	CHECK_EQUAL(538, gateway.site);
-	CHECK_EQUAL(123, gateway.mtime);
-	CHECK_EQUAL(456, gateway.ctime);
-	CHECK_EQUAL(34, gateway.model);
-	CHECK(gateway.discoverable);
-	STRCMP_EQUAL("NAME", gateway.name);
-	STRCMP_EQUAL("ID", gateway.id);
-	CHECK_EQUAL(2, gateway.nr_devices);
-	STRCMP_EQUAL("c", gateway.devices[0]);
-	STRCMP_EQUAL("d", gateway.devices[1]);
-	CHECK_EQUAL(2, gateway.nr_sensors);
-	STRCMP_EQUAL("a", gateway.sensors[0]);
-	STRCMP_EQUAL("b", gateway.sensors[1]);
 	mock().checkExpectations();
+
+	mock_curl_payload_clear();
 }
 
+TEST(rest_register, device_register_name_null_return_fail)
+{
+	char device_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_device_register(t, NULL, 0, "jsonrpcFullV1.0", device_id);
+
+	CHECK_EQUAL(-1, ret);
+}
+
+TEST(rest_register, device_register_no_gateway_null_return_fail)
+{
+	mock().expectOneCall("curl_easy_init")
+		.andReturnValue((void*)NULL);
+
+	char device_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_device_register(t, "name", 0, "jsonrpcFullV1.0", device_id);
+
+	CHECK_EQUAL(-1, ret);
+}
+
+TEST(rest_register, device_register_gateway_not_discoverable_return_fail)
+{
+	char *gateway_info_json = "{\
+				   \"autoCreateDiscoverable\":\"n\", \
+				   }";
+	mock_curl_payload_append(gateway_info_json);
+	mock_expect_tcurl_read();
+
+	char device_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_device_register(t, "name", 0, "jsonrpcFullV1.0", device_id);
+
+	CHECK_EQUAL(-1, ret);
+	mock().checkExpectations();
+
+	mock_curl_payload_clear();
+}
+
+TEST(rest_register, device_register_gatewaymodel_no_devicemodel_return_fail)
+{
+	char *gateway_info_json = "{\
+				   \"autoCreateDiscoverable\":\"y\", \
+				   \"id\":\"ID\"}";
+	mock_curl_payload_append(gateway_info_json);
+	mock_expect_tcurl_read();
+	mock_expect_tcurl_read();
+
+	char device_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_device_register(t, "name", 0, "jsonrpcFullV1.0", device_id);
+
+	CHECK_EQUAL(-1, ret);
+	mock().checkExpectations();
+
+	mock_curl_payload_clear();
+}
+
+TEST(rest_register, sensor_register_sensor_id_null_return_fail)
+{
+	int ret = rest_sensor_register(t, "NAME", 0, "TYPE", "DEVICE_ID", NULL);
+	CHECK_EQUAL(-1, ret);
+
+}
+
+TEST(rest_register, register_sensor_to_unregister_gateway_return_fail)
+{
+	mock().ignoreOtherCalls();
+
+	char sensor_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_sensor_register(t, "NAME", 0, "TYPE", "DEVICE_ID", sensor_id);
+
+	CHECK_EQUAL(-1, ret);
+	mock().clear();
+}
+
+TEST(rest_register, sensor_register_get_gatewayinfo)
+{
+	struct rest {
+		char *gw_id;
+		char *apikey;
+		void* curl;
+
+		struct thingplus_gateway gateway_info;
+	};
+
+	char *gateway_info_json = "{\
+				   \"sensors\":[\"a\",\"b\"], \
+				   \"devices\":[\"c\",\"d\"], \
+				   \"_site\":\"538\",\
+				   \"autoCreateDiscoverable\":\"n\", \
+				   \"deviceModels\":[{\"model\":\"jsonrpcFullV1.0\"}], \
+				   \"name\":\"NAME\", \
+				   \"model\":\"34\", \
+				   \"mtime\":\"123\", \
+				   \"ctime\":\"456\", \
+				   \"id\":\"ID\"}";
+	mock_curl_payload_append(gateway_info_json);
+	mock_expect_tcurl_read();
+	mock().ignoreOtherCalls();
+
+	char sensor_id[THINGPLUS_ID_LENGTH] = {0,};
+	rest_sensor_register(t, "NAME", 0, "TYPE", "DEVICE_ID", sensor_id);
+	struct rest *r = (struct rest *)t;
+
+	CHECK_EQUAL(34, r->gateway_info.model);
+}
+
+TEST(rest_register, register_sensor_to_not_discoverable_gateway_return_fail)
+{
+	char *gateway_info_json = "{\
+				   \"autoCreateDiscoverable\":\"y\", \
+				   \"id\":\"ID\"}";
+	mock().ignoreOtherCalls();
+
+	char sensor_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_sensor_register(t, "NAME", 0, "TYPE", "DEVICE_ID", sensor_id);
+	CHECK_EQUAL(-1, ret);
+	mock_curl_payload_clear();
+}
+
+TEST(rest_register, sensor_register_success)
+{
+	char *gateway_info_json = "{\
+				   \"sensors\":[\"a\",\"b\"], \
+				   \"devices\":[\"c\",\"d\"], \
+				   \"_site\":\"538\",\
+				   \"autoCreateDiscoverable\":\"y\", \
+				   \"deviceModels\":[{\"model\":\"jsonrpcFullV1.0\"}], \
+				   \"name\":\"NAME\", \
+				   \"model\":\"34\", \
+				   \"mtime\":\"123\", \
+				   \"ctime\":\"456\", \
+				   \"id\":\"ID\"}";
+	mock_curl_payload_append(gateway_info_json);
+	mock_expect_tcurl_read();
+
+	char *gateway_model_json = "{\
+				    \"deviceModels\":[{\
+					\"id\":\"jsonrpcFullV1.0\", \
+	     				\"discoverable\": \"y\", \
+					\"idTemplate\": \"{gatewayId}-{deviceAddress}\",\
+					\"sensors\": [{\
+						\"network\":\"jsonrpc\",\
+	     					\"driverName\":\"jsonrpcSensor\",\
+						\"model\":\"jsonrpcNumber\",\
+						\"type\":\"number\",\
+						\"category\":\"sensor\"}]\
+					}]\
+				}";	
+	mock_curl_payload_append(gateway_model_json);
+	mock_expect_tcurl_read();
+
+	char *device_model_json = "{\
+				   	\"model\": \"jsonrpcFullV1.0\", \
+	     				\"discoverable\": \"y\", \
+				}";	
+	mock_curl_payload_append(device_model_json);
+	mock_expect_tcurl_read();
+
+	mock_curl_payload_append("{\"idTemplate\":\"{gatewayId}-{deviceAddress}\"}");
+	mock_expect_tcurl_read();
+	mock_curl_payload_append("{\"server_response\":\"dummy\"}");
+	mock_expect_tcurl_post();
+
+	char sensor_id[THINGPLUS_ID_LENGTH] = {0,};
+	int ret = rest_sensor_register(t, "NAME", 0, "number", "jsonrpcFullV1.0", sensor_id);
+
+	CHECK_EQUAL(0, ret);
+	mock().checkExpectations();
+	mock_curl_payload_clear();
+}

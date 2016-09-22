@@ -7,10 +7,13 @@
 
 #include "tcurl.h"
 
-#define TUBE_CURL_DEBUG_PAYLOAD_PRINT
+//#define TUBE_CURL_DEBUG_PAYLOAD_PRINT
 
 static size_t _curl_callback (void *contents, size_t size, size_t nmemb, void *userp)
 {
+	if (!contents || !size || !nmemb)
+		return -1;
+
 	size_t realsize = size * nmemb;
 	struct tcurl_payload* p = (struct tcurl_payload*)userp;
 	int realloc_size = p->size + realsize + 1;

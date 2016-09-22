@@ -14,6 +14,8 @@
 #include "sensor_driver.h"
 #include "url.h"
 
+#define GATEWAY_INFO_EMPTY(t)	((t)->gateway_info.model == -1)
+
 struct sensor {
 	const char *network;
 	const char *driver_name;
@@ -56,6 +58,7 @@ struct rest {
 	char *apikey;
 	void* curl;
 
+	struct thingplus_gateway gateway_info;
 	struct gateway_info gw_info;
 	struct gateway_model gw_model;
 };
@@ -109,7 +112,7 @@ static bool _json_string_parse(struct json_object *json, char *key, char *dest, 
 	return true;
 }
 
-static void _gw_info_device_add(struct gateway_info *gw_info, char *device_id)
+static void _gw_info_device_add(struct thingplus_gateway *gw_info, char *device_id)
 {
 	int realloc_size = sizeof(char*) * (gw_info->nr_devices + 1);
 
@@ -157,14 +160,6 @@ static int _gateway_info_sensors_parse(struct json_object* json, char*** sensors
 	return nr_sensors;
 }
 
-static void _gw_info_parse(json_object *json, struct gateway_info* gw_info)
-{
-	gw_info->discoverable = _discoverable_parse(json, "autoCreateDiscoverable");
-	gw_info->model = _json_int_parse(json, "model");
-	gw_info->nr_devices = _gateway_info_devices_parse(json, &gw_info->devices);
-	gw_info->nr_sensors = _gateway_info_sensors_parse(json, &gw_info->sensors);
-}
-
 static void _gw_info_cleanup(struct gateway_info *gw_info)
 {
 	if (!gw_info)
@@ -187,27 +182,6 @@ static void _gw_info_cleanup(struct gateway_info *gw_info)
 	}
 
 	tcurl_payload_free(&gw_info->p);
-}
-
-static int _gw_info_get(struct rest *t)
-{
-	char *url = url_get(URL_INDEX_GATEWAY_INFO, t->gw_id);
-	if (url == NULL) {
-		fprintf(stdout, "[ERR] url_get failed. gw_id:%s\n", t->gw_id);
-		return -1;
-	}
-
-	if (tcurl_read(url, t->curl, (void*)&t->gw_info.p) < 0) {
-		fprintf(stdout, "[ERR] tcurl_read(URL_INDEX_GATEWAY_INFO) failed. gw_id:%s\n", t->gw_id);
-
-		url_put(url);
-		return -1;
-	}
-
-	_gw_info_parse(t->gw_info.p.json, &t->gw_info);
-
-	url_put(url);
-	return 0;
 }
 
 static void _sensor_parse(struct sensor *sensor, struct json_object *sensor_object)
@@ -323,7 +297,7 @@ static struct device_model* _device_model_get(struct gateway_model *gw_model, ch
 	return NULL;
 }
 
-static bool _is_device_duplicated(struct gateway_info *gw_info, char *device_id)
+static bool _is_device_duplicated(struct thingplus_gateway *gw_info, char *device_id)
 {
 	int i;
 	for (i=0; i<gw_info->nr_devices; i++) {
@@ -415,6 +389,12 @@ static bool _is_sensor_duplicated(struct gateway_info *gw_info, char *sensor_id)
 static bool _sensor_id_set(char* id_template, struct sensor* sensor, char* gw_id, char* device_id, int uid, char* sensor_id)
 {
 	memset(sensor_id, 0, THINGPLUS_ID_LENGTH);
+
+
+	if (!id_template) {
+		sprintf(sensor_id, "%s-%s-%d", device_id, sensor->type, uid);
+		return true;
+	}
 
 	if (strcasecmp(id_template, "{type}-{gatewayId}-{sequence}") == 0) {
 		sprintf(sensor_id, "%s-%s-%d", sensor->type, gw_id, uid);
@@ -635,41 +615,23 @@ err_tcurl_read:
 
 int rest_sensor_register(void* instance, char* name, int uid, char* type, char* device_id, char* sensor_id)
 {
+	if (!instance || !name || !type || !device_id || !sensor_id) {
+		fprintf(stdout, "[ERR] Invalid argument.");
+		fprintf(stdout, "instance(%p), name(%p) type(%p) device_id(%p) sensor_id(%p)",
+				instance, name, type, device_id, sensor_id);
+		return -1;
+	}
+
 	struct rest *t = (struct rest*) instance;
 
-	if (t == NULL) {
-		fprintf(stdout, "[ERR] instance is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
-
-	if (name == NULL) {
-		fprintf(stdout, "[ERR] name is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
-
-	if (type == NULL) {
-		fprintf(stdout, "[ERR] type is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
-
-	if (device_id == NULL) {
-		fprintf(stdout, "[ERR] device_id is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
-
-	if (sensor_id == NULL) {
-		fprintf(stdout, "[ERR] sensor_id is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
-
-	if (t->gw_info.model == -1) {
-		if (_gw_info_get(t) < 0) {
-			fprintf(stdout, "[ERR] _gw_info_get failed\n");
-			return THINGPLUS_ERR_CURL_READ;
+	if (GATEWAY_INFO_EMPTY(t)) {
+		if (rest_gatewayinfo(instance, &t->gateway_info) < 0) {
+			fprintf(stdout, "[ERR] rest_gatewayinfo failed\n");
+			return -1;
 		}
 	}
 
-	if (!t->gw_info.discoverable) {
+	if (!t->gateway_info.discoverable) {
 		fprintf(stdout, "[ERR] this gateway is not discoverable\n");
 		return THINGPLUS_ERR_NOT_DISOVERABLE;
 	}
@@ -684,7 +646,7 @@ int rest_sensor_register(void* instance, char* name, int uid, char* type, char* 
 	struct device_model *dev_model = _device_model_get_by_device_id(t, device_id);
 	if (dev_model == NULL) {
 		fprintf(stdout, "[ERR] no device\n");
-		return THINGPLUS_ERR_CURL_READ;
+		return -1;
 	}
 
 	if (!dev_model->discoverable) {
@@ -694,13 +656,14 @@ int rest_sensor_register(void* instance, char* name, int uid, char* type, char* 
 
 	struct sensor *sensor = _sensor_get(type, dev_model);
 	if (sensor == NULL) {
+		fprintf(stdout, "[ERR] _sensor_get failed\n");
 		return THINGPLUS_ERR_CURL_READ;
 	}
 
 	char* id_template = sensor_driver_id_template_get(t->curl, (char*)sensor->driver_name);
 	if (!id_template) {
-		fprintf(stdout, "[ERR] id_template get failed\n");
-		return -1;
+		fprintf(stdout, "[WARN] id_template get failed\n");
+		//return -1;
 	}
 	_sensor_id_set(id_template, sensor, t->gw_id, device_id, uid, sensor_id);
 
@@ -721,44 +684,30 @@ enum thingplus_error rest_device_register(void* instance, char* name, int uid, c
 {
 	struct rest *t = (struct rest*) instance;
 
-	if (t == NULL) {
-		fprintf(stdout, "instance is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
+	if (!t || !name || !device_model_id || !device_id) {
+		fprintf(stdout, "[ERR] instance(%p) or name(%p) or device_model_id(%p) or device_id(%p) is NULL\n",
+				instance, name, device_model_id, device_id);
+		return -1;
 	}
 
-	if (name == NULL) {
-		fprintf(stdout, "name is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
 
-	if (device_model_id == NULL) {
-		fprintf(stdout, "device_model_id is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
-
-	if (device_id == NULL) {
-		fprintf(stdout, "device_id is NULL\n");
-		return THINGPLUS_ERR_SUCCESS;
-	}
-
-	if (t->gw_info.model == -1) {
-		if (_gw_info_get(t) < 0) {
-			fprintf(stdout, "[ERR] _gw_info_get failed\n");
-			return THINGPLUS_ERR_CURL_READ;
+	if (GATEWAY_INFO_EMPTY(t)) {
+		if (rest_gatewayinfo(instance, &t->gateway_info) < 0) {
+			fprintf(stdout, "[ERR] rest_gatewayinfo failed\n");
+			return -1;
 		}
 	}
 
-	if (!t->gw_info.discoverable) {
-		fprintf(stdout, "[ERR] this gateway is not discoverable\n");
-		fprintf(stdout, "[ERR] gateway model number is %d\n",
-			t->gw_info.model);
-		return THINGPLUS_ERR_NOT_DISOVERABLE;
+	if (!t->gateway_info.discoverable) {
+		fprintf(stdout, "[ERR] not discoverable\n");
+		fprintf(stdout, "[ERR] gateway model number is %d\n", t->gateway_info.model);
+		return -1;
 	}
 
 	if (t->gw_model.nr_device_models == 0) {
 		if (_gw_model_get(t) < 0) {
 			fprintf(stdout, "[ERR] _gw_model_get failed\n");
-			return THINGPLUS_ERR_UNKNOWN;
+			return -1;
 		}
 	}
 
@@ -780,7 +729,7 @@ enum thingplus_error rest_device_register(void* instance, char* name, int uid, c
 		return THINGPLUS_ERR_INVALID_TYPE;
 	}
 
-	if (_is_device_duplicated(&t->gw_info, device_id)) {
+	if (_is_device_duplicated(&t->gateway_info, device_id)) {
 		fprintf(stdout, "[ERR] device is already registered. name:%s\n", name);
 		return THINGPLUS_ERR_DUPLICATED;
 	}
@@ -790,27 +739,21 @@ enum thingplus_error rest_device_register(void* instance, char* name, int uid, c
 		return THINGPLUS_ERR_CURL_POST;
 	}
 
-	_gw_info_device_add(&t->gw_info, device_id);
+	_gw_info_device_add(&t->gateway_info, device_id);
 
 	return THINGPLUS_ERR_SUCCESS;
 }
 
 void* rest_init(char *gw_id, char *apikey, char *rest_url)
 {
-	if (gw_id == NULL) {
-		fprintf(stdout, "gw_id is NULL\n");
-		return NULL;
-	}
-
-	if (apikey == NULL) {
-		fprintf(stdout, "apikey is NULL\n");
+	if (gw_id == NULL || apikey == NULL) {
+		fprintf(stdout, "gw_id(%p) or apikey(%p)is NULL \n", gw_id , apikey);
 		return NULL;
 	}
 
 	struct rest *t = calloc(1, sizeof(struct rest));
 	if (t == NULL) {
-		fprintf(stdout, "calloc failed. size:%ld\n", 
-			sizeof(struct rest));
+		fprintf(stdout, "calloc failed. size:%ld\n", sizeof(struct rest));
 		return NULL;
 	}
 
@@ -821,6 +764,7 @@ void* rest_init(char *gw_id, char *apikey, char *rest_url)
 	}
 
 	t->gw_info.model = -1;
+	t->gateway_info.model = -1;
 	t->gw_id = strdup(gw_id);
 	t->apikey = strdup(apikey);
 

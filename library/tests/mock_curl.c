@@ -24,18 +24,23 @@ typedef size_t (*curl_write_callback)(char *buffer,
 
 static curl_write_callback _write_callback;
 
-static char *_contents;
 static void *_tcurl_payload;
 
-void _mock_curl_payload_set(char *contents)
+static struct mock_curl_payload{
+	int nr_payloads;
+	char *payload[256];
+
+	int index;
+} _mock_curl_payloads;
+
+void mock_curl_payload_append(char *payload)
 {
-	_contents = contents;
+	_mock_curl_payloads.payload[_mock_curl_payloads.nr_payloads++] = payload;
 }
 
-void mock_curl_payload_set(char *contents, void *tcurl_payload)
+void mock_curl_payload_clear(void)
 {
-	_contents = contents;
-	_tcurl_payload  = tcurl_payload;
+	memset(&_mock_curl_payloads, 0, sizeof(struct mock_curl_payload));
 }
 
 void *curl_easy_init(void)
@@ -67,12 +72,20 @@ int curl_easy_setopt(CURL *curl, CURLoption option, ...)
 
 int curl_easy_perform(CURL *curl)
 {
-	if (_write_callback && _contents)
-		_write_callback(_contents, strlen(_contents), 1, _tcurl_payload);
+	int ret = mock_c()->returnValue().value.intValue;
+	char *payload = _mock_curl_payloads.payload[_mock_curl_payloads.index++];
+
+	if (_mock_curl_payloads.nr_payloads && payload) {
+		_write_callback(payload, strlen(payload), 1, _tcurl_payload);
+	}
+	else {
+		_write_callback(NULL, 0, 0, _tcurl_payload);
+		ret = 1;
+	}
 
 	mock_c()->actualCall("curl_easy_perform");
 
-	return mock_c()->returnValue().value.intValue;
+	return ret;
 }
 
 void curl_easy_cleanup(CURL *curl)
