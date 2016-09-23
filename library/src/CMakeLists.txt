@@ -5,3 +5,5 @@ add_library(thingplus SHARED ${THINGPLUS_LIBRARY_SOURCE})
 target_link_libraries(thingplus json-c curl mosquitto)
 
 target_include_directories(thingplus PUBLIC ${PROJECT_BINARY_DIR}/include)
+
+#install(TARGETS thingplus LIBRARY DESTINATION lib)
