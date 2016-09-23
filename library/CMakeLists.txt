@@ -1,3 +1,5 @@
+##	for change install dirctory 
+#	cmake -DCMAKE_INSTALL_PREFIX:PATH=/h me/younghyun/tmp .
 cmake_minimum_required(VERSION 3.0)
 
 #project name is "Thinplus" and version is "1.0.0"
