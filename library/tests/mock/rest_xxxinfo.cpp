@@ -41,15 +41,6 @@ TEST_GROUP(rest_xxxinfo)
 TEST(rest_xxxinfo, rest_deviceinfo_success)
 {
 	mock_expect_tcurl_read();
-	char *device_info_json = "{ \
-				 \"name\":\"DEVNAME\", \
-				 \"model\":\"jsonrpcFullV1.0\", \
-				 \"owner\":\"OWNER\", \
-				 \"mtime\":\"123\", \
-				 \"ctime\":\"456\", \
-				 \"id\":\"dev_id\"}";
-	mock_curl_payload_append(device_info_json);
-
 	struct thingplus_device device;
 	memset(&device, 0, sizeof(device));
 	int ret = rest_deviceinfo(t, "dev_id", &device);
@@ -63,7 +54,6 @@ TEST(rest_xxxinfo, rest_deviceinfo_success)
 	STRCMP_EQUAL("dev_id", device.id);
 	mock().checkExpectations();
 
-	mock_curl_payload_clear();
 }
 
 TEST(rest_xxxinfo, rest_deviceinfo_err_tcurl_read_returns_fail)
@@ -80,19 +70,6 @@ TEST(rest_xxxinfo, rest_deviceinfo_err_tcurl_read_returns_fail)
 
 TEST(rest_xxxinfo, rest_sensorinfo_success)
 {
-	char *sensor_info_json = "{\
-				  \"id\":\"ID\", \
-				  \"network\":\"NETWORK\", \
-				  \"driverName\":\"DRIVER_NAME\", \
-				  \"mtime\":\"123\", \
-				  \"ctime\":\"456\", \
-				  \"model\":\"MODEL\", \
-				  \"type\":\"TYPE\", \
-				  \"category\":\"CATEGORY\", \
-				  \"name\":\"NAME\", \
-				  \"device_id\":\"DEVICE_ID\", \
-				  \"owner\":\"OWNER\"}";
-	mock_curl_payload_append(sensor_info_json);
 	mock_expect_tcurl_read();
 
 	struct thingplus_sensor sensor;
@@ -112,7 +89,6 @@ TEST(rest_xxxinfo, rest_sensorinfo_success)
 	CHECK_EQUAL(456, sensor.ctime);
 	mock().checkExpectations();
 
-	mock_curl_payload_clear();
 }
 
 TEST(rest_xxxinfo, rest_sensorinfo_err_tcurl_read_return_fail)
@@ -129,18 +105,6 @@ TEST(rest_xxxinfo, rest_sensorinfo_err_tcurl_read_return_fail)
 
 TEST(rest_xxxinfo, rest_gatewayinfo_success)
 {
-	char *gateway_info_json = "{\
-				   \"sensors\":[\"a\",\"b\"], \
-				   \"devices\":[\"c\",\"d\"], \
-				   \"_site\":\"538\",\
-				   \"autoCreateDiscoverable\":\"y\", \
-				   \"deviceModels\":[{\"model\":\"jsonrpcFullV1.0\"}], \
-				   \"name\":\"NAME\", \
-				   \"model\":\"34\", \
-				   \"mtime\":\"123\", \
-				   \"ctime\":\"456\", \
-				   \"id\":\"ID\"}";
-	mock_curl_payload_append(gateway_info_json);
 	mock_expect_tcurl_read();
 
 	struct thingplus_gateway gateway;
@@ -161,8 +125,6 @@ TEST(rest_xxxinfo, rest_gatewayinfo_success)
 	STRCMP_EQUAL("a", gateway.sensors[0]);
 	STRCMP_EQUAL("b", gateway.sensors[1]);
 	mock().checkExpectations();
-
-	mock_curl_payload_clear();
 }
 
 

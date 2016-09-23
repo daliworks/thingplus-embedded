@@ -4,6 +4,7 @@
 #include <string.h>
 #include <CppUTestExt/MockSupport_c.h>
 
+#include "restapi_server.h"
 
 struct curl_slist;
 
@@ -22,26 +23,10 @@ typedef size_t (*curl_write_callback)(char *buffer,
 		size_t nitems,
 		void *outstream);
 
+static char *_url;
 static curl_write_callback _write_callback;
-
 static void *_tcurl_payload;
 
-static struct mock_curl_payload{
-	int nr_payloads;
-	char *payload[256];
-
-	int index;
-} _mock_curl_payloads;
-
-void mock_curl_payload_append(char *payload)
-{
-	_mock_curl_payloads.payload[_mock_curl_payloads.nr_payloads++] = payload;
-}
-
-void mock_curl_payload_clear(void)
-{
-	memset(&_mock_curl_payloads, 0, sizeof(struct mock_curl_payload));
-}
 
 void *curl_easy_init(void)
 {
@@ -59,6 +44,9 @@ int curl_easy_setopt(CURL *curl, CURLoption option, ...)
 		case CURLOPT_WRITEFUNCTION:
 			_write_callback = va_arg(args, curl_write_callback);
 			break;
+		case CURLOPT_URL:
+			_url = va_arg(args, char*);
+			break;
 		case CURLOPT_WRITEDATA:
 			_tcurl_payload = va_arg(args, void *);
 			break;
@@ -72,20 +60,15 @@ int curl_easy_setopt(CURL *curl, CURLoption option, ...)
 
 int curl_easy_perform(CURL *curl)
 {
-	int ret = mock_c()->returnValue().value.intValue;
-	char *payload = _mock_curl_payloads.payload[_mock_curl_payloads.index++];
-
-	if (_mock_curl_payloads.nr_payloads && payload) {
-		_write_callback(payload, strlen(payload), 1, _tcurl_payload);
-	}
-	else {
-		_write_callback(NULL, 0, 0, _tcurl_payload);
-		ret = 1;
-	}
-
 	mock_c()->actualCall("curl_easy_perform");
 
-	return ret;
+	printf("before call restapi_server_call\n");
+	char *response = restapi_server_call(_url);
+	if (response) {
+		_write_callback(response, strlen(response), 1, _tcurl_payload);
+	}
+
+	return mock_c()->returnValue().value.intValue;
 }
 
 void curl_easy_cleanup(CURL *curl)

@@ -40,26 +40,12 @@ struct gateway_model {
 	struct tcurl_payload p;
 };
 
-struct gateway_info {
-	bool discoverable;
-	int model;
-
-	int nr_devices;
-	char** devices;
-
-	int nr_sensors;
-	char** sensors;
-
-	struct tcurl_payload p;
-};
-
 struct rest {
 	char *gw_id;
 	char *apikey;
 	void* curl;
 
 	struct thingplus_gateway gateway_info;
-	struct gateway_info gw_info;
 	struct gateway_model gw_model;
 };
 
@@ -160,7 +146,7 @@ static int _gateway_info_sensors_parse(struct json_object* json, char*** sensors
 	return nr_sensors;
 }
 
-static void _gw_info_cleanup(struct gateway_info *gw_info)
+static void _gw_info_cleanup(struct thingplus_gateway *gw_info)
 {
 	if (!gw_info)
 		return;
@@ -181,7 +167,7 @@ static void _gw_info_cleanup(struct gateway_info *gw_info)
 		free(gw_info->sensors);
 	}
 
-	tcurl_payload_free(&gw_info->p);
+	//tcurl_payload_free(&gw_info->p);
 }
 
 static void _sensor_parse(struct sensor *sensor, struct json_object *sensor_object)
@@ -267,7 +253,7 @@ static int _gw_model_parse(struct tcurl_payload *p, struct gateway_model *gw_mod
 
 static int _gw_model_get(struct rest *t)
 {
-	char *url = url_get(URL_INDEX_GATEWAY_MODEL, t->gw_info.model);
+	char *url = url_get(URL_INDEX_GATEWAY_MODEL, t->gateway_info.model);
 	if (url == NULL) {
 		fprintf(stdout, "[ERR] url_get failed\n");
 		return -1;
@@ -374,7 +360,7 @@ static struct sensor* _sensor_get(char *type, struct device_model *device_model)
 	return NULL;
 }
 
-static bool _is_sensor_duplicated(struct gateway_info *gw_info, char *sensor_id)
+static bool _is_sensor_duplicated(struct thingplus_gateway *gw_info, char *sensor_id)
 {
 	int i;
 	for (i=0; i<gw_info->nr_sensors; i++) {
@@ -667,7 +653,7 @@ int rest_sensor_register(void* instance, char* name, int uid, char* type, char* 
 	}
 	_sensor_id_set(id_template, sensor, t->gw_id, device_id, uid, sensor_id);
 
-	if (_is_sensor_duplicated(&t->gw_info, sensor_id)) {
+	if (_is_sensor_duplicated(&t->gateway_info, sensor_id)) {
 		fprintf(stdout, "[ERR] sensor is already registered. name:%s\n", name);
 		return THINGPLUS_ERR_DUPLICATED;
 	}
@@ -763,7 +749,6 @@ void* rest_init(char *gw_id, char *apikey, char *rest_url)
 		goto err_tcurl_init;
 	}
 
-	t->gw_info.model = -1;
 	t->gateway_info.model = -1;
 	t->gw_id = strdup(gw_id);
 	t->apikey = strdup(apikey);
@@ -789,7 +774,7 @@ void rest_cleanup(void* instance)
 
 	sensor_driver_cleanup();
 	_gw_model_cleanup(&t->gw_model);
-	_gw_info_cleanup(&t->gw_info);
+	_gw_info_cleanup(&t->gateway_info);
 
 	if (t->gw_id)
 		free(t->gw_id);

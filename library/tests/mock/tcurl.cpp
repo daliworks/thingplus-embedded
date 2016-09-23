@@ -13,6 +13,7 @@ extern "C" {
 #include "mock_curl.h"
 #include "rest/tcurl.h"
 #include "rest/url.h"
+#include "restapi_server.h"
 #include "thingplus.h"
 }
 
@@ -132,18 +133,14 @@ TEST(tcurl_read_post, read)
 	mock_expect_tcurl_read();
 
 	struct tcurl_payload p;
-	char *device_id = "abcdefg";
-	char *url = url_get(URL_INDEX_DEVICE_INFO, gw_id, device_id);
-
-	mock_curl_payload_append("{\"name\":\"a\"}");
-
+	char *url = url_get(URL_INDEX_GATEWAY_INFO2, gw_id);
 	int ret  = tcurl_read(url, tcurl, &p);
 
-	CHECK_FALSE(ret);
+	CHECK_EQUAL(0, ret);
+	STRCMP_EQUAL(restapi_server_expect_get(url), p.payload);
 	mock().checkExpectations();
 
 	tcurl_payload_free(&p);
-	mock_curl_payload_clear();
 }
 
 TEST(tcurl_read_post, read_with_err_curl_easy_perform_returns_fail)
@@ -164,7 +161,6 @@ TEST(tcurl_read_post, read_with_err_curl_easy_perform_returns_fail)
 	mock().checkExpectations();
 
 	tcurl_payload_free(&p);
-	mock_curl_payload_clear();
 }
 
 TEST(tcurl_read_post, read_with_err_curl_easy_init_returns_fail)
@@ -186,16 +182,14 @@ TEST(tcurl_read_post, post)
 	mock_expect_tcurl_post();
 
 	struct tcurl_payload p;
-	char *device_id = "abcdefg";
-	char *url = url_get(URL_INDEX_DEVICE_INFO, gw_id, device_id);
+	char *url = url_get(URL_INDEX_DEVICE_REGISTER, gw_id);
 
-	mock_curl_payload_append("{\"server_response\":\"dummy\"}");
 
 	int ret  = tcurl_post(url, tcurl, (void*)"abcdefg", &p);
 
-	CHECK_FALSE(ret);
+	CHECK_EQUAL(0, ret);
+	//CHECK_FALSE(ret);
 	mock().checkExpectations();
 
 	tcurl_payload_free(&p);
-	mock_curl_payload_clear();
 }

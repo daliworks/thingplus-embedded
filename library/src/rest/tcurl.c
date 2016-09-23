@@ -101,6 +101,10 @@ int tcurl_post(char* url, void* tube_curl, void *postfields, struct tcurl_payloa
 		return -1;
 	}
 
+	if (!p->payload) {
+		return -1;
+	}
+
 	int response = atoi(p->payload) * -1;
 	if (response < 0) {
 		fprintf(stdout, "[TUBE_CURL] server response %d. msg:%s\n", response, p->payload);
