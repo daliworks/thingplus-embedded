@@ -1,49 +1,49 @@
 ## 1. Thing+ Embedded Overview
-Thing+ Embedded is composed with Thing+ Embedded Protocol, Thing+ Embedded SDK and Thing+ Gateway. Thing+ Embedded Protocol defines data format between hardware and Thing+ Cloud server. Thing+ Embedded SDK is C library that implement Thing+ Embedded Protocol. Thing+ Gateway is a Node.js application program implement Thing+ Embedded Protocol.
+Thing+ Embedded is composed of the Thing+ Embedded Protocol, Thing+ Embedded SDK and Thing+ Gateway. The Thing+ Embedded Protocol defines the format of data flowing between hardware and the Thing+ Cloud server. The Thing+ Embedded SDK is a C library that implements our Thing+ Embedded Protocol. The Thing+ Gateway is a Node.js application program that implements Thing+ Embedded Protocol.
 
 ### 1.1 Hardware application requirements
 
 #### 1.1.1 Thing+ Embedded Protocol
-Thing+ Embedded Protocol can be implement from low end hardware such as WiFi chips to high end. Firmware or any OS is possible. Connecting MQTT server, sensing sensors, actuating actuators, composing MQTT, HTTP message are required to HW vendor application.
+The Thing+ Embedded Protocol can be implemented in hardware ranging from the low end such as WiFi chips to the high end. Firmware or any OS can be used. The ability to connect a MQTT server, sense sensors, actuate actuators, compose MQTT, and send HTTP messages are required in order to function correctly.
 
 Category|Description
 :---|:---
-**Application requirement**|Sensing sensors<br> Actuating actuators<br> MQTT, HTTP connection<br> Composing MQTT, HTTP message<br> Send status and value periodically.
+**Application requirement**|Sensing sensors<br> Actuating actuators<br> MQTT, HTTP connection<br> Composing MQTT, HTTP message<br> Sending status and values periodically.
 Target hardware| Low end to high end
 Dependency|None
 
 #### 1.1.2 Thing+ Embedded SDK
-Thing+ Embedded SDK is C library and can be implement from middle end to high end hardware. The SDK depends on libmosquitto, libcurl, libjson-c, openssl. The SDK connects hardware to Thing+ Cloud server and composes MQTT, HTTP message. Sensing sensors, actuating actuators, send status and values are required to HW vendor application.
+The Thing+ Embedded SDK is a C library that can be implemented typically in middle end to high end hardware. The SDK's depencies include libmosquitto, libcurl, libjson-c, openssl. The SDK's primary purpose is to connect hardware to the Thing+ Cloud server and compose MQTT and HTTP messages. Sensing sensors, actuating actuators, sending status messages and values are required features of any hardware used.
 
 Category|Descriptions
 :---|:---
-**Application requirement**|Sensing sensors<br> Actuating actuators<br>  Send status and value periodically.
+**Application requirement**|Sensing sensors<br> Actuating actuators<br>  Sending status and value periodically.
 Target hardware|Middle end to high end
 Dependency|libcurl<br> libjson-c<br> libmosquitto<br> openssl<br> C or C++ application
 
 #### 1.1.3 Thing+ Gateway
-Thing+ Gateway can be implement for high end hardware. Thing+ Gateway is Node.js application program. Hardware must be possible to run node.js. There is another protocol between Thing+ Gateway and hardware application a.k.a "Device Agent". Thing+ Gateway  connects hardware to Thing+ Cloud server and composes MQTT, HTTP message and send status and values to server. Sensing sensors, actuating actuators and running JSONRPC server are required to HW vendor application.
+The Thing+ Gateway can be implemented on high end hardware. The Thing+ Gateway is a Node.js application program. Whatever hardware is used must have the ability to run node.js. There is another protocol between the Thing+ Gateway and hardware/device applications we call the "Device Agent". The Thing+ Gateway connects hardware to the Thing+ Cloud server and composes MQTT & HTTP messages with the purpose of sending status and data/values to the server. Sensing sensors, actuating actuators and running a JSONRPC server must be possible on any hardware you use to set up a Thing+ gateway.
 
 Category|Descriptions
 :---|:---
-**Application requirement**|Sensing a sensors<br> Actuating actuators<br> Send event sensor value<br> JSONRPC Server
+**Application requirement**|Sensing a sensors<br> Actuating actuators<br> Sending sensor event values<br> JSONRPC Server
 Target hardware|High end
 Dependency|Node.js
 
 ## 2. Thing+ Embedded Protocol
-Thing+ defined message protocol between hardware and Thing+ cloud, it is called Thing+ Embedded Protocol.
-Thing+ Embedded Prococol based on HTTP and MQTT. The sensors values, actuator commands are sent via MQTT and sensors list, device lists are passed via HTTP.
+The Thing+ defined message protocol used to communicate between hardware and the Thing+ cloud is called the "Thing+ Embedded Protocol".
+Thing+ Embedded Prococol is based on HTTP and MQTT. Sensor values and actuator commands are sent via MQTT between sensors and devices - data coming out of devices to a gateway is passed via HTTP.
 
 #### 2.1 MQTT
 TBD
 
 #### 2.2 Thing+ MQTT Protocol
-This chapter describes the MQTT Topic and data format used by Thing+ Platform. A hardware integrated with Thing+ Cloud Platform should follow the given Thing+ MQTT Specification. When Thing+ Cloud Platform send a command to an actuator, the command uses the same Thing+ MQTT Specification.
+This chapter describes the MQTT Topic and data format used by Thing+ Platform. Any hardware to be integrated with the Thing+ Cloud Platform should follow the given Thing+ MQTT Specification. When the Thing+ Cloud Platform sends a command to an actuator, the command uses the same Thing+ MQTT Specification.
 ­
-- Thing+ MQTT Message uses QoS1. ‘RETAIN’ of all messages except ‘Will’ Message is not used.
-­- Timezone of the message is UTC.
-- A thing transmit data regarding the status of MQTT connection, gateway and sensor.
-­- The value for each status is defined like below,
+- Thing+ MQTT Message uses QoS1. ‘RETAIN’ of all messages except that the ‘Will’ Message is not used.
+­- Message timezone is always UTC.
+- A thing transmits data regarding the status of the MQTT connection, gateway and sensor.
+­- The value for each status is defined as below,
 
 Status|Value(strings)
 :---|:---
@@ -52,8 +52,8 @@ turned-off|off
 Error occurred|err
 
 #### 2.2.1 MQTT connection.
-The version of MQTT used by Thing+ Platform is 3 and 8883 port is used for the MQTT communication.
-8883 port should be opened for communicating with Thing+ Platform. <br>
+The version of MQTT used by the Thing+ Platform is 3 and the 8883 port is used for MQTT communication.
+8883 port should be opened before communicating with the Thing+ Platform. <br>
 
 ** Details of the MQTT Connection Spec  **
 
@@ -71,8 +71,8 @@ Will Message Retain | TRUE
 Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
 
 #### 2.2.2 Transmission of the MQTT Connection status data
-A hardware should transmit the status of the MQTT Connection to Thing+ Platform after the MQTT
-Connection is created successfully.
+Hardware should transmit the status of the MQTT Connection to the Thing+ Platform after the MQTT
+connection has been created successfully.
 >­ Transmit the MQTT Connection Success Status
 
 ```javascript
@@ -88,7 +88,7 @@ MESSAGE: on
 ```
 
 #### 2.2.3 Transmission of the H/W status data  
-A hardware should transmit its status and the valid time of the status data periodically. When Thing+ fails to get the status data of a specific H/W within the valid time period, Thing +defines its status as the error status
+Hardware should transmit its status and the valid time of the status data periodically. When Thing+ fails to get the status data of a specific piece of H/W within the valid time period, Thing+ defines its status using the error status
 >­ Transmit the H/W Status Data
 
 ```javascript
@@ -107,7 +107,7 @@ MESSAGE: on,146156169505
 
 
 #### 2.2.4 Transmission of the sensor status data  
-A hardware should transmit the status of a sensor on it and the valid time of the status data periodically. When Thing+ fails to get the status data within the valid time period, Thing+ defines its status as the error status <br>
+Hardware should transmit the status of a sensor attached to it and the valid time of the status data periodically. When Thing+ fails to get the status data within the valid time period, Thing+ defines its status using the error status <br>
 
 > Transmit the sensor status data
 
@@ -126,8 +126,8 @@ TOPIC: v/a/g/000011112222/s/000011112222-temperature-0/status
 MESSAGE: on,146156161192
 ```
 
-#### 2.2.5 Transmission of the H/W status and sensors status data
-Sensor Status Data can be transmitted with the H/W status data. It is an efficient way to send the sensor status data with the H/W status data in one topic for saving the network bandwidth cost. When a hardware has multiple sensors and/or actuators, each sensor/actuator should have an unique value for identifying it from other sensors/actuators on the hardware. You can define it by yourself. If you use this method, you can skip chapter 2.2.4
+#### 2.2.5 Transmission of the H/W status and sensor's status data
+Sensor Status Data can be transmitted along with the H/W status data. It is an efficient way to send the sensor status data combined with the H/W status data in one topic in order to save on network bandwidth cost. When hardware has multiple sensors and/or actuators, each sensor/actuator should have a unique value for identifying it from other sensors/actuators on the hardware. You can also define it by yourself. If you use this method, you can skip chapter 2.2.4
 
 > Transmit H/W status and sensors status data
 
@@ -150,9 +150,9 @@ MESSAGE: on,146156169505,000011112222-onoff-0,on,146156168403,000011112222-tempe
 
 
 #### 2.2.6 Transmission of the sensor value data  
-A single sensor value and multiple sensor values for a specific sensor can be transmitted at a time. A sensor
-value should be paired with the time value which the hardware read it. When multiple sensor values are
-transmitted at a time, they should be ordered by time. Array of multiple sensor values is allowed
+A single sensor value and multiple sensor values for a specific sensor can be transmitted in one go. A sensor
+value should be paired with the time value when the hardware reads it. When multiple sensor values are
+transmitted at a time, they should be ordered by time. An array of multiple sensor values is allowed.
 
 > Transmit of the sensor value data  
 
@@ -185,9 +185,9 @@ MESSAGE: [146156161000,26.5,146156162000,27.5,146156163000,30]
 
 #### 2.2.7 Transmission of the sensor value data for multiple sensors  
 Multiple sensor values for multiple sensors can be transmitted at a time. At this time, the sensor value
-should for a single sensor should be grouped and ordered by time
+should, for a single sensor, be grouped and ordered by time
 
->­ Transmit the multiple sensor values for multiple sensors
+>­ Transmit multiple sensor values for multiple sensors
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__
@@ -203,7 +203,7 @@ MESSAGE: {"000011112222-temperature-0":[1461563978000,27.5,1461563978000,28.5],"
 ```
 
 #### 2.2.8 Transmission of the result of a request from Thing+
-A hardware should be report the result of a request from Thing+ Platform. the request can be the command for an actuator, the configuration request.
+Hardware should be able to report the result of a request from the Thing+ Platform. the request can be the command for an actuator or a configuration request.
 
 > Transmit the result of a request from Thing+ - Success Case
 
@@ -232,9 +232,9 @@ hardware can subscribe a MQTT message only for it.
 TOPIC : v/a/g/__GATEWAY_ID__/req
 MESSAGE: {"id": __MESSAGE_ID__, "method": __METHOD__, "params": __PARAMS__}
 
-__MESSAGE_ID__ : ​It is an unique id for identifying each message and reporting the result of each request.
+__MESSAGE_ID__ : ​It is a unique id for identifying each message and reporting the result of each request.
 __METHOD__ : ​List of requests from Thing+ Platform.
-__PARAMS__ : : Parameters for a method. each method has its own parameters List of Methods defined by Thing+ platform is below,
+__PARAMS__ : : Parameters for a method. each method has its own parameters List of Methods defined by the Thing+ platform as below,
 
 ```
 
@@ -245,7 +245,7 @@ TOPIC: v/a/g/000011112222/req
 
 ```
 
-#### 2.2.10 List of Methods and Parameters from Thing+ Platform
+#### 2.2.10 List of Methods and Parameters from the Thing+ Platform
 > Method List
 
 Method|Description|Parameters|Param Description
@@ -259,10 +259,10 @@ restart|restar the embedded software|None|None
 swUpdate|Upgrade the embedded software|None|None
 swInfo|소프트웨어 Provide the version of embedded software|None|None
 
-The mandatory methods which should be implemented an embedded software integrated with Thing+ Platform should are ​timeSync and setProperty ​. Others are optional.
+The mandatory methods which should be implemented for embedded software integrated with the Thing+ Platform include both ​timeSync and setProperty. Others are optional.
 
 ##### timeSync
-When a hardware get an MQTT message inclduing this method, it should reset the local time on it as the
+When hardware gets an MQTT message including this method, it should reset the local time on it as the
 received time value.
 > timeSync params
 
@@ -289,7 +289,7 @@ REPONSE IF FAILED : {"id":"e1kcs13b9","error":{"code": -32000, "message": "inval
 ```
 
 ##### setProperty
-This method is for changing the report interval. the unit of report interval value is msec. Thing+ Portal
+This method is for changing the report interval. The unit of reporting interval values is msec. The Thing+ Portal
 provides the UI for changing the report interval.
 
 >setProperty params
@@ -315,9 +315,9 @@ RESPONSE IF ERROR : {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid 
 ```
 
 ##### controlActuator
-This method is for sending command to an actuator. Command can be sent from Thing+ Portal UI and an
-actuator should execute the delivered command from Thing+ Platform. Commands and options for each
-actuator are defined by Thing+. The examples of commands and option for some actuators are below,
+This method is for sending commands to an actuator. Commands can be sent from the Thing+ Portal UI and an
+actuator should execute the delivered command from the Thing+ Platform. Commands and options for each
+actuator are defined by Thing+. The examples of commands and options for some actuators are below,
 
 > Commonly used actuator commands and options
 
@@ -356,16 +356,16 @@ TBD
 TBD
 
 ## 4, Thing+ Gateway
-Thing+ Gateway is a program implementing Thing+ MQTT Protocol, disturbuted by Daliworks. Thing+ Gateway connects hardware to Thing+ Cloud Platform, sends sensors status and values, support server time syncronization, discover sensors and actuators, remote software updates.
+The Thing+ Gateway is a program implementing the Thing+ MQTT Protocol, distributed by Daliworks. The Thing+ Gateway connects hardware to the Thing+ Cloud Platform and sends sensor status and values, supports server time syncronization, discover sensors and actuators, and performs remote software updates.
 
-Device Agent is a program made by hardware vendor for collecting sensors value and actuating actuators. Thing+ Gateway request sensor values and actuating actuators to Device Agent and Thing+ Gateway already defined protocol between Thing+ Gateway and Device Agent. The protocol is based on JSONRPC.
+The device Agent is a program made by hardware vendors for collecting sensor values and actuating actuators. The Thing+ Gateway requests sensor values and actuating actuators to the Device Agent and the Thing+ Gateway already defined protocol between Thing+ Gateway and Device Agent. The protocol is based on JSONRPC.
 
-Thing+ Gateway is easier and fater than implementing all of Thing+ Embedded Protocols.
+Using a Thing+ Gateway is easier and faster than manually implementing all of the Thing+ Embedded Protocols by hand.
 
 ![Cloud_Gateway_DeviceAgent](./image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png)
 
 ### 4.1 Hardware Requirement
-Thing+ Gateway is running on embedded hardwares, and written by Node.js. Your hardware MUST be possible to run Node.js.
+Thing+ Gateways run on embedded hardware, and is written via Node.js. Your hardware MUST have the ability to run Node.js.
 
 > Node.js Running Enviomental<br>
 
@@ -396,21 +396,21 @@ Store DB|Save sensors value if network is disconnected
 SW Update|Upgrade Thing+ Gatweway software from remote
 
 - Connection<br>
-Thing+ Gateway connects hardware and Thing+ Cloud. One thing you need to do is launch Thing+ Gateway with APIKEY once. Thing+ Gateway sends sensors status, values periodically based on report interval.
+The Thing+ Gateway connects hardware to the Thing+ Cloud. One thing you need to do is launch the Thing+ Gateway with APIKEY once. The Thing+ Gateway sends sensors status and values periodically based on the report interval.
 
 - Discover <br>
-Thing+ Gateway sends connected sensors and actuators list to Thing+ Cloud. If sensors and actuators are hot pluged, Thing+ Gateway send updated list to Thing+ Cloud. If not using Discover features, User MUST add new sensors and actuators at Thing+ Portal.
+The Thing+ Gateway sends a connected sensors and actuators list to the Thing+ Cloud. If sensors and actuators are hot plugged, the Thing+ Gateway sends an updated list to Thing+ Cloud. If not using Discover features, the user MUST add new sensors and actuators manually via the Thing+ Portal.
 
 - TimeSync <br>
-Hardware time is MUST syncronized with server time. Thing+ Gateway is possible to syncronize time automatically.
-If you use Thing+ Gateway, there`s not thing to do releated time syncronization. Thing+ Gateway do everything.
+Hardware time MUST be syncronized with server time. The Thing+ Gateway can, however, syncronize time automatically.
+If you use the Thing+ Gateway, there`s nothing required for you to do related to time syncronization. The Thing+ Gateway handles everything.
 
 - Store DB <br>
-If network is disconnected, Thing+ Gateway saves sensors value to local storage. The saved sensor values will be published after network is reconnected.
+If your network is disconnected, the Thing+ Gateway saves sensors values to local storage. The saved sensor values will be published after the network is reconnected.
 
 ### 4.3 Device Agent
 
-Device Agent is a program reads sensors values and actuating actuators. It is programed by hardware vendors. Thing+ Gateway connects Device Agent with JSONRPC. Thing+ Gateway is JSONRPC Client and Device Agent is JSONRPC Server and the port number is 50800.
+Device Agent is a program that reads sensors values and actuates actuators. It is programed directly by hardware vendors. The Thing+ Gateway connects to the Device Agent with JSONRPC. The Thing+ Gateway is a JSONRPC Client and the Device Agent acts as a JSONRPC Server with a port number of 50800.
 
 Server|Device Agent
 :---|:---
@@ -418,7 +418,7 @@ Server|Device Agent
 Client|Thing+ Gateway
 
 #### 4.3.1 JSONRPC Protocol
-JSONRPC is light-weight remote procedure call protocol. It uses JSON as data format.([WIKI](http://www.jsonrpc.org/ "Title"))
+JSONRPC is light-weight remote procedure call protocol. It uses JSON as it's data format.([WIKI](http://www.jsonrpc.org/ "Title"))
 
 - Request format
 
@@ -436,7 +436,7 @@ result|The result of executed service or method
 error|error object. Null if no error
 id|The ID from request message
 
-### ** Every message MUST ends with NEW LINE(\n)**
+### ** Every message MUST end with NEW LINE(\n)**
 
 - Error codes
 
@@ -461,7 +461,7 @@ sensor.notification|Response Event sensors value and status.
 
 ##### 4.3.2.1 "discover" method
 
-Thing+ Gateway requests sensrs and actuators list
+Thing+ Gateway requests a sensor and actuator list
 
 ```
 Device Agent <-- Thing+ Gateway
@@ -492,7 +492,7 @@ Device Agent --> Thing+ Gateway
 ```
 
 ##### 4.3.2.2 "sensor.get" method
-Request series sensor value
+Request a series of sensor values
 
 ```
 Device Agent <-- Thing+ Gateway
@@ -506,8 +506,8 @@ Device Agent --> Thing+ Gateway
                     {"status": "err", "message": ERROR REASONE}
 
   - value : Sensor value
-  - status : Sensor status.("on"|"off"|"err"). If sensor value is exists and status is empty, the status is gussing as "on"
-  - message : If status is error, additional message( for error reason.(optional)
+  - status : Sensor status.("on"|"off"|"err"). If the sensor value is exists and status is empty, the status is gussing it being "on"
+  - message : If status is error, additional message (for error reasons(optional)).
 ```
 
 - Request Example (Thing+ Gateway)
@@ -550,7 +550,7 @@ Device Agent --> Thing+ Gateway
 
 ##### 4.3.2.4 "sensor.setNotification" method
 
-Request using as event sensor
+Request to set a sensor event
 
 ```
 Device Agent <-- Thing+ Gateway
@@ -573,10 +573,10 @@ Device Agent --> Thing+ Gateway
 ```
 
 
-** If using as event sensor, Device Agent MUST send sensor status each report interval **
+** If using as an event sensor, the Device Agent MUST send it's sensor status on each report interval **
 
 ##### 4.3.2.5 "sensor.notification" method
-Response event sensors value and status
+Response event with sensor values and status
 
 ```
 Device Agent --> Thing+ Gateway
@@ -600,7 +600,7 @@ Device Agent <-- Thing+ Gateway
 ```
 
 ##### 4.3.2.6 "ping" method
-Check Device Agent works well or not
+Check if the Device Agent is working or not
 
 ```
 Device Agent <-- Thingp+ Gateway
