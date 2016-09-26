@@ -1,6 +1,0 @@
-[submodule "examples/protocol/paho"]
-	path = examples/protocol/paho
-	url = http://git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.embedded-c.git
-[submodule "examples/protocol/cjson"]
-	path = examples/protocol/cjson
-	url = https://github.com/kbranigan/cJSON.git
