@@ -6,7 +6,9 @@ set (RESTAPI_SRC
 add_executable (restapi_server_test ${RESTAPI_SRC})
 
 target_link_libraries(restapi_server_test 
-	CppUTest
-	CppUTestExt
-	gcov)
-include_directories(../)
+	gcov
+	${CPPUTEST_LIB}
+	)
+include_directories(../
+	${CPPUTEST_INCDIR}
+	)
