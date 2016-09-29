@@ -35,11 +35,11 @@ IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 	#configuration test coverage report
 	add_compile_options(-O0 --coverage -fprofile-arcs -ftest-coverage)
-	SETUP_TARGET_FOR_COVERAGE(mock_coverage bin/tests/mock coverage)
+	SETUP_TARGET_FOR_COVERAGE(coverage bin/tests/test_thingplus coverage)
 
 	add_subdirectory(tests)
 
 	#TESTING
 	enable_testing()
-	add_test(NAME mock COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests/mock)
+	add_test(NAME mock COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests/test_thingplus)
 ENDIF()
