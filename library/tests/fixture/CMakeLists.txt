@@ -1,1 +1,4 @@
-add_subdirectory(tests)
+FILE (GLOB FIXTURES *.cpp *.c)
+SET (FIXTURES ${FIXTURES} PARENT_SCOPE)
+
+ADD_SUBDIRECTORY(tests)
