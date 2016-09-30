@@ -1158,7 +1158,7 @@ Device Agent <-- Thing+ Gateway
 Device Agent의 구동 여부 확인
 
 ```
-Device Agent <-- Thingp+ Gateway
+Device Agent <-- Thing+ Gateway
 - Request Method : sensor.setNotification
 - Request Params : 없음
 
