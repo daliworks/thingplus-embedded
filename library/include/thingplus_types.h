@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
 
 #define THINGPLUS_DM_RESULT_LENGTH 2048
 
