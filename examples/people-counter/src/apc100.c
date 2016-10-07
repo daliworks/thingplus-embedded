@@ -91,7 +91,6 @@ static void* _polling(void *arg)
 yield:
 		sched_yield();
 		pthread_testcancel();
-
 	}
 
 	return NULL;

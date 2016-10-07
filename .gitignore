@@ -1,8 +1,6 @@
-a.out
-*.o
-*.log
-*.a
-*.swp
-*.deps
-*config.status
-stamp-h1
+CMakeFiles
+*.cmake
+CMakeCache.txt
+CTestCostData.txt
+Makefile
+tags

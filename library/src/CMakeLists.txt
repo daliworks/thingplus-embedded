@@ -12,6 +12,5 @@ target_link_libraries(thingplus_static json-c curl mosquitto)
 set_target_properties(thingplus_static PROPERTIES OUTPUT_NAME thingplus)
 target_include_directories(thingplus_static PUBLIC ${PROJECT_BINARY_DIR}/include)
 
-
 install(TARGETS thingplus LIBRARY DESTINATION lib)
 install(TARGETS thingplus_static ARCHIVE DESTINATION lib)
