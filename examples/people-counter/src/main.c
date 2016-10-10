@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "gateway.h"
 #include "apc100.h"
@@ -36,7 +37,15 @@ int main(int argc, char **argv)
 	gw_init(gw_id, apikey, 1, &s);
 	gw_connect(ca_cert);
 
-	void *a = apc100_init("/dev/ttyUSB0");
+	char *tty = NULL;;
+	if (access("/dev/ttyUSB0", F_OK) == 0)
+		tty = "/dev/ttyUSB0";
+	else if (access("/dev/ttyUSB1", F_OK) == 0)
+		tty = "/dev/ttyUSB1";
+	else
+		tty = "/dev/ttyUSB2";
+
+	void *a = apc100_init(tty);
 	apc100_in_trigger(a, _cb_pcounter_in, NULL);
 
 	while(1);
