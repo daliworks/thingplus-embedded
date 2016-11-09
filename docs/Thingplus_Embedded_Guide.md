@@ -119,7 +119,7 @@ Thing+가 지원하는 센서, 액추에이터의 전체 목록은 [센서,엑�
 
 
 
-## 2. Thing+ Embedded 프로토콜
+## 2. Thing+ Embedded Protocol
 
 Thing+는 IoT 기기와 주고 받는 데이터 형식을 사전에 정의해 두었으며, 이를 Thing+ Embedded 프로토콜이라고 합니다. thing은 Thing+에서 정의한 형태로 데이터를 구성하여 Thing+로 전송해야 하며, Thing+도 Embedded 프로토콜에서 정의한 형식에 따라 데이터를 전송합니다.
 
@@ -906,8 +906,167 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 |471|요금제에 의해 디바이스 추가를 할 수 없음.
 
 ## 3. Thing+ Embedded SDK
-준비중
+Thing+ Embedded SDK는 Thing+ Embedded Protocol을 사용하기 쉽게 만든 라이브러리로, 센서값, 센서 상태 전송, 센서와 디바이스 등록 기능을 제공합니다. Thing+ Embedded SDK를 사용하면, MQTT와 HTTP 메시지 구성을 직접하지 않고, API호출을 통해 Thing+ 연동을 쉽게 할 수 있습니다.
 
+### 3.1 Software Requirement
+Thing+ Embedded SDK는 C언어로 작성되었으며, openssl, libmosquitto, libjson-c, libcurl을 사용합니다. SDK 설치 전 Target 보드에 해당 라이브러리가 설치되어 있어야 합니다.
+
+  - Preinstalled Software
+    - openssl(https://www.openssl.org/)
+    - libmosquitto(https://mosquitto.org/)
+    - libjson-c(https://github.com/json-c/json-c)
+    - libcurl(https://curl.haxx.se/libcurl/)
+
+### 3.2 Installation
+- Repository : https://github.com/daliworks/thingplus-embedded
+
+```
+git clone https://github.com/daliworks/thingplus-embedded
+cd thingplus-embedded/library
+cmake .
+make
+make install
+```
+
+### 3.3. API
+#### 3.3.1 thingplus_init
+```
+- Prototype : void* thingplus_init(char *gw_id, char *apikey, char *mqtt_url, char *restapi_url);
+- Description : Thinglus Embedded SDK를 초기화합니다.
+- Parameters
+  - gw_id : 게이트웨이 아이디
+  - apikey : Thing+ Portal에서 발급받은 apikey
+  - mqtt_url : 접속할 MQTT 서버 주소. 일반적으로 "mqtt.thingplus.net"을 사용하여 Non SSL일경우 "dmqtt.thingplus.net"을 사용합니다.
+  - restapi_url : 접속할 HTTPS 서버 주소. "https://api.thingplus.net"을 사용합니다.
+- Return Value
+  - !NULL : 성공. SDK 인스턴스를 반환합니다.
+  - NULL : 에러
+```
+
+#### 3.3.2 thingplus_cleanup
+```
+- Prototype : void thingplus_cleanup(void *t);
+- Description : Thing+ Embedded SDK를 종료합니다. 프로그램 종료 전 호출해야합니다.
+- Parameters
+  - t : SDK 인스턴스
+```
+
+#### 3.3.3 thingplus_callback_set
+```
+- Prototype: void thingplus_callback_set(void *t, struct thingplus_callback *callback, void *callback_arg);
+- Description : SDK 내부에서 호출할 callback 함수를 설정합니다.
+- Parameters
+  - t : SDK 인스턴스
+  - callback : SDK에서 호출 할 callback 함수들. struct thingplus_callback 구조체는 thingplus_types.h에 정의되어 있습니다.
+  - callback_arg : callback 함수 호출 시 같이 받을 Argument
+```
+
+#### 3.3.4 thingplus_connect
+```
+- Prototype : int thingplus_connect(void *t, char *ca_file, int keepalive);
+- Description : Thing+ 서버에 접속을 시도합니다. 비동기 함수로, 접속이 되면 thingplus_callback_set 함수에서 설정한 callback함수가 호출 됩니다.
+- Parameters
+  - t : SDK 인스턴스
+  - ca_file : SSL 인증서. 만약 NULL이면 Non-SSL로 접속합니다. Non-SSL 접속은 mqtt_url이 "dmqtt.thingplus.net"일 때만 가능합니다.
+  - keepalive : Keepalive 시간. 단위는 초
+- Return Value
+  - 0 : 성공. 성공은 서버 접속에 성공했음을 뜻하는 것이 아니라, 서버 연결을 시도했다는 뜻입니다.
+        서버의 접속 성공 여부는 callback함수에서 확인하셔야 합니다.
+  - < 0 : 실패
+```
+
+#### 3.3.5 thingplus_disconnect
+```
+- Prototype : int thingplus_disconnect(void *t)
+- Description : Thing+ 서버 연결을 끊습니다. 비동기 함수로, 서버 접속이 끊키면 thingplus_callback_set함수에서 설정한 callback함수가 호출 됩니다.
+- Parameters
+  - t : SDK 인스턴스
+  - Return Value
+    - 0 : 성공. 성공는 연결이 끊킴을 뜻하는 것이 아니라, 연결 해제 시도가 성공이라는 뜻입니다.
+          연결 해제 결과는 callback함수에서 확인하셔야 합니다.
+    - < 0 : 실패
+```
+
+#### 3.3.6 thingplus_status_publish
+```
+- Prototype : int thingplus_status_publish(void *t, int nr_status, struct thingplus_status *status)
+- Description : 게이트웨이, 센서, 액츄에이터의 상태를 전송합니다. 
+- Parameters
+  - t : SDK 인스턴스
+  - nr_status : 전송할 상태의 개수
+  - status : 전송할 상태
+- Return Value
+  - 0 : 성공
+  - < 0 : 실패
+```
+
+#### 3.3.7 thingplus_value_publish
+```
+- Prototype : int thingplus_value_publish(void *t, int nr_value, struct thingplus_value *values)
+- Description : Thing+에 센서의 값을 전송합니다. 
+- Parameters
+  - t : SDK 인스턴스
+  - nr_value : 전송할 센서값의 개수
+  - values : 전송할 센서값
+- Return Value
+  - 0 : 성공
+  - < 0 : 실패  
+```
+
+#### 3.3.8 thingplus_device_register
+```
+- Prototype : int thingplus_device_register(void *t, char *name, int uid, char *device_model_id, char device_id[THINGPLUS_ID_LENGTH])
+- Description : Thing+ 서버에 디바이스를 등록합니다.
+- Parameters
+  - t : SDK 인스턴스
+  - name : 디바이스 이름
+  - uid : 게이트웨이 내 디바이스 고유의 아이디. 다른 디바이스와 중복되면 안됩니다.
+  - device_model_id : 게이트웨이 모델에 명시된 디바이스 모델의 아이디
+  - device_id : Thing+에서 사용하는 디바이스 아이디. 디바이스 등록이 성공하면, Thing+에서 사용하는 디바이스 아이디가 해당 배열에 채워집니다.
+- Return Value
+  - 0 : 성공
+  - < 0 : 실패
+```
+
+##### 3.3.9 thingplus_sensor_register
+```
+- Prototype : int thingplus_sensor_register(void *t, char *name, int uid, char* type, char* device_id, char sensor_id[THINGPLUS_ID_LENGTH])
+- Description : Thing+에 센서를 등록합니다.
+- Parameters
+  - t : SDK 인스턴스
+  - name : 센서 이름
+  - uid : 디바이스 내 센서 고유의 아이디. 다른 센서와 중복되면 안됩니다.
+  - type : 게이트웨이 모델에 명시된 센서의 종류
+  - device_id : 센서가 소속된 디바이스의 아이디. Thing+에서 발급받은 디바이스 아이디를 사용해야 합니다. 
+  - sensor_id : Thing+에서 사용하는 센서 아이디. 센서 등록이 성공하면, Thing+에서 사용하는 센서 아이디가 해당 배열에 채워집니다.
+- Return Value
+  - 0 : 성공
+  - < 0 : 실패
+```
+
+#### 3.3.10 thingplus_gatewayinfo
+```
+- Prototype : int thingplus_gatewayinfo(void *t, struct thingplus_gateway *info)
+- Description : Thing+ 서버에 등록된 게이트웨이 정보를 불러옵니다.
+- Parameters
+  - t : SDK 인스턴스
+  - info : 게이트웨이 정보가 담길 구조체
+- Return Value
+  - 0 : 성공
+  - < 0 : 실패
+```
+
+#### 3.3.11 thingplus_deviceinfo
+```
+- Prototype : int thingplus_deviceinfo(void *t, struct thingplus_device *info)
+- Description : Thing+ 서버에 등록된 디바이스 정보를 불러옵니다.
+- Parameters
+  - t : SDK 인스턴스
+  - info : 디바이스 정보가 담길 구조체
+- Return Value
+  - 0 : 성공
+  - < 0 : 실패
+```
 
 ## 4 Thing+ Gateway
 Thing+ Gateway는  Daliworks에서 만든 Thing+ MQTT 프로토콜을 따르는 소프트웨어입니다. Thing+ Gateway는 하드웨어를 Thing+ Cloud에 연결하며, 게이트웨이 상태 및 센서값을 전송하고, 시간 동기, 센서값 재전송, 연결된 센서/액추에이터 탐색, 원격 업데이트 기능을 제공합니다.<br>
