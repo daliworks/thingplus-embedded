@@ -6,9 +6,6 @@ extern "C"
 #ifndef _THINGPLUS_H_
 #define _THINGPLUS_H_
 
-#include <stdbool.h>
-#include <stdint.h>
-
 #include <thingplus_types.h>
 
 #define THINGPLUS_ID_LENGTH 128
