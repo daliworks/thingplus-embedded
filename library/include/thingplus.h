@@ -1,10 +1,11 @@
+#ifndef THINGPLUS_H
+#define THINGPLUS_H
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#ifndef _THINGPLUS_H_
-#define _THINGPLUS_H_
 
 #include <thingplus_types.h>
 
@@ -29,8 +30,9 @@ void thingplus_callback_set(void *_t, struct thingplus_callback *callback, void 
 void *thingplus_init(char *gw_id, char *apikey, char *mqtt_url, char *restapi_url);
 void thingplus_cleanup(void *t);
 
-#endif //#ifndef _THINGPLUS_H_
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif //#ifndef _THINGPLUS_H_
