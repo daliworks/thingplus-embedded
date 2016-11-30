@@ -32,7 +32,7 @@ void *curl_easy_init(void)
 {
 	mock_c()->actualCall("curl_easy_init");
 
-	return mock_c()->returnValue().value.pointerValue;
+	return mock_c()->returnPointerValueOrDefault(0xdeadbeef);
 }
 
 int curl_easy_setopt(CURL *curl, CURLoption option, ...)

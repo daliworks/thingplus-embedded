@@ -120,6 +120,10 @@ static int _gateway_info_devices_parse(struct json_object* json, char*** devices
 	}
 
 	int nr_devices = json_object_array_length(devices_object);
+	if (nr_devices == 0) {
+		return 0;
+	}
+
 	*devices = malloc(sizeof(char*) * nr_devices);
 
 	int i = 0;
@@ -573,10 +577,46 @@ err_tcurl_read:
 	return ret;
 }
 
+void rest_gatewayinfo_free(struct thingplus_gateway *gw_info) 
+{
+	_gw_info_cleanup(gw_info);
+	/*
+	{
+		printf("name:%s\n", gw_info->name);
+		printf("id:%s\n", gw_info->id);
+		printf("nr_devices:%d\n", gw_info->nr_devices);
+		printf("devices:%p\n", gw_info->devices);
+	}
+
+	int i;
+	if (gw_info->devices) {
+		for (i=0; i<gw_info->nr_devices; i++) {
+			if (!gw_info->devices[i]) 
+				continue;
+			free(gw_info->devices[i]);
+		}
+
+		free(gw_info->devices);
+	}
+
+	if (gw_info->sensors) {
+		for (i=0; i<gw_info->nr_sensors; i++) {
+			if (gw_info->sensors[i])
+				continue;
+			free(gw_info->sensors[i]);
+		}
+
+		free(gw_info->sensors);
+	}
+	*/
+}
+
 int rest_gatewayinfo(void *instance, struct thingplus_gateway *gw_info)
 {
 	int ret = -1;
 	struct rest *r =  (struct rest *)instance;
+
+	memset(gw_info, 0, sizeof(*gw_info));
 
 	char *url = url_get(URL_INDEX_GATEWAY_INFO2, r->gw_id);
 	if (url == NULL) {
@@ -675,7 +715,6 @@ enum thingplus_error rest_device_register(void* instance, char* name, int uid, c
 				instance, name, device_model_id, device_id);
 		return -1;
 	}
-
 
 	if (GATEWAY_INFO_EMPTY(t)) {
 		if (rest_gatewayinfo(instance, &t->gateway_info) < 0) {

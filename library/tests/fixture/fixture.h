@@ -11,7 +11,7 @@ static int keepalive;
 static void fixture_setup()
 {
 	gw_id = "012345012345";
-	apikey = "D_UoswsKC-v4BHgAk6X4-2i61Zg=";
+	apikey = "D_UoswsKC-v5BHgAk6X4-2i61Zg=";
 	mqtt_url = "mqtt.thingplus.net";
 	restapi_url = "api.thingplus.net";
 	ca_file = "../cert/ca-cert.pem";

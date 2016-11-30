@@ -127,4 +127,12 @@ TEST(rest_xxxinfo, rest_gatewayinfo_success)
 	mock().checkExpectations();
 }
 
+TEST(rest_xxxinfo, rest_gatewayinfo_free_success)
+{
+	mock().ignoreOtherCalls();
 
+	struct thingplus_gateway gateway;
+	rest_gatewayinfo(t, &gateway);
+
+	rest_gatewayinfo_free(&gateway);
+}
