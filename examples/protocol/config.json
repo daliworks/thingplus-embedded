@@ -1,9 +1,0 @@
-{
-  "gatewayId": "_mac_address_",
-  "hostname": "mqtt.thingplus.net",
-  "host": "mqtt.thingplus.net",
-  "port": 8883,
-  "username": "_mac_address_",
-  "password": "_replace_with_api_key_",
- "caFile": "./cert/ca-cert.pem"
-}
