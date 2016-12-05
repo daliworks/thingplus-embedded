@@ -54,7 +54,7 @@ TEST_GROUP(thingplus_connect)
 TEST(thingplus_connect, ssl_using_8883_port_and_necessacy_mosquitto_lib_called)
 {
 	mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
-	int ret = thingplus_connect(t, ca_file, keepalive);
+	int ret = thingplus_connect(t, 8883, ca_file, keepalive);
 
 	CHECK_EQUAL(0, ret);
 	mock().checkExpectations();
@@ -63,7 +63,7 @@ TEST(thingplus_connect, ssl_using_8883_port_and_necessacy_mosquitto_lib_called)
 TEST(thingplus_connect, invaild_ca_file_return_fail)
 {
 	ca_file = "invalid.ca_file";
-	int ret = thingplus_connect(t, ca_file, keepalive);
+	int ret = thingplus_connect(t, 8883, ca_file, keepalive);
 
 	CHECK_EQUAL(-1, ret);
 	//mock().checkExpectations();
@@ -74,7 +74,7 @@ TEST(thingplus_connect, non_ssl_using_1883_port_and_necessacy_mosquitto_lib_call
 	mock_expect_thingplus_connect_non_ssl(mqtt_url, keepalive);
 
 	ca_file = NULL;
-	thingplus_connect(t, ca_file, keepalive);
+	thingplus_connect(t, 1883, ca_file, keepalive);
 
 	mock().checkExpectations();
 }
@@ -83,7 +83,7 @@ TEST(thingplus_connect, change_keepalive_to_60_if_user_pass_zero_keepalive)
 {
 	mock_expect_thingplus_connect_ssl(ca_file, mqtt_url, keepalive);
 	keepalive = 0;
-	thingplus_connect(t, ca_file, keepalive);
+	thingplus_connect(t, 8883, ca_file, keepalive);
 
 	mock().checkExpectations();
 }
@@ -94,7 +94,7 @@ TEST(thingplus_connect, cb_connected_called_after_mqtt_connected)
 	mock_expect_thingplus_connected(gw_id);
 	mock().expectOneCall("cb_connected").ignoreOtherParameters();
 
-	thingplus_connect(t, ca_file, keepalive);
+	thingplus_connect(t, 8883, ca_file, keepalive);
 	mock_mosquitto_connected(0);
 
 	mock().checkExpectations();
@@ -113,7 +113,7 @@ TEST_GROUP(thingplus_disconnect)
 		callback.connected = cb_connected;
 		callback.disconnected = cb_disconnected;
 		thingplus_callback_set(t, &callback, NULL);
-		thingplus_connect(t, ca_file, keepalive);
+		thingplus_connect(t, 8883, ca_file, keepalive);
 	}
 
 	void teardown()

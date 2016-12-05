@@ -8,7 +8,7 @@
 void *mqtt_init(char *gw_id, char *apikey, char *mqtt_url);
 void mqtt_cleanup(void *_t);
 
-int mqtt_connect(void *_t, char *ca_file, int keepalive);
+int mqtt_connect(void *_t, int port, char *ca_file, int keepalive);
 int mqtt_disconnect(void *_t);
 
 void mqtt_callback_set(void *_t, struct thingplus_callback *callback, void *callback_arg);

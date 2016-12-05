@@ -22,7 +22,7 @@ int thingplus_value_publish(void *_t, int nr_value, struct thingplus_value *valu
 int thingplus_status_publish(void *t, int nr_status, struct thingplus_status *status);
 
 int thingplus_disconnect(void *t);
-int thingplus_connect(void *t, char *ca_file, int keepalive);
+int thingplus_connect(void *t, int port, char *ca_file, int keepalive);
 
 void thingplus_callback_set(void *_t, struct thingplus_callback *callback, void *callback_arg);
 

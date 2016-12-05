@@ -27,7 +27,7 @@ TEST_GROUP(thingplus_value_publish)
 		mock_expect_thingplus_connected(gw_id);
 
 		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
-		thingplus_connect(t, ca_file, keepalive);
+		thingplus_connect(t, 8883, ca_file, keepalive);
 		mock_mosquitto_connected(0);
 	}
 
@@ -144,7 +144,7 @@ TEST_GROUP(thingplus_status_publish)
 		mock_expect_thingplus_connected(gw_id);
 
 		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
-		thingplus_connect(t, ca_file, keepalive);
+		thingplus_connect(t, 8883, ca_file, keepalive);
 		mock_mosquitto_connected(0);
 	}
 
@@ -259,7 +259,7 @@ TEST_GROUP(subscribe)
 		mock_expect_thingplus_connected(gw_id);
 
 		t = thingplus_init(gw_id, apikey, mqtt_url, restapi_url);
-		thingplus_connect(t, ca_file, keepalive);
+		thingplus_connect(t, 8883, ca_file, keepalive);
 		mock_mosquitto_connected(0);
 
 		callback.actuating = _actuating;

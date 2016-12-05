@@ -141,7 +141,7 @@ int thingplus_disconnect(void *_t)
 	return mqtt_disconnect(t->mqtt);
 }
 
-int thingplus_connect(void *_t, char *ca_file, int keepalive)
+int thingplus_connect(void *_t, int port, char *ca_file, int keepalive)
 {
 	if (!_t) {
 		fprintf(stdout, "[ERR] invalid thingplus instance\n");
@@ -149,7 +149,7 @@ int thingplus_connect(void *_t, char *ca_file, int keepalive)
 	}
 	struct thingplus *t = (struct thingplus*)_t;
 
-	return mqtt_connect(t->mqtt, ca_file, keepalive);
+	return mqtt_connect(t->mqtt, port, ca_file, keepalive);
 }
 
 void thingplus_callback_set(void *_t, struct thingplus_callback *callback, void *callback_arg)

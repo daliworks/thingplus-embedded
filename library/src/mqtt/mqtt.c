@@ -412,7 +412,7 @@ int mqtt_disconnect(void *_t)
 	return 0;
 }
 
-int mqtt_connect(void *_t, char *ca_file, int keepalive)
+int mqtt_connect(void *_t, int port, char *ca_file, int keepalive)
 {
 	if (!_t) {
 		fprintf(stdout, "[ERR] invalid mqtt instance\n");
@@ -421,7 +421,6 @@ int mqtt_connect(void *_t, char *ca_file, int keepalive)
 
 	struct mqtt *t = (struct mqtt*)_t;
 	int ret = -1;
-	int port = 1883;
 
 	if (ca_file) {
 		if (!_file_exist(ca_file)) {
@@ -442,7 +441,6 @@ int mqtt_connect(void *_t, char *ca_file, int keepalive)
 				mosquitto_strerror(ret));
 			goto err_mosquitto_tls_opts_set;
 		}
-		port = 8883;
 	}
 
 	mosquitto_connect_callback_set(t->mosq, _cb_connected);
