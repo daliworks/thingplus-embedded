@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 	}
 	thingplus_callback_set(h->t, &cb, h);
 
-	int ret = thingplus_connect(h->t, ca_file, keep_alive);
+	int ret = thingplus_connect(h->t, 8883, ca_file, keep_alive);
 	if (ret < 0) {
 		fprintf(stderr, "thingplus_connect_forever failed\n");
 		return 0;

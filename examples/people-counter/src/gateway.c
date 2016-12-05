@@ -145,7 +145,7 @@ int gw_connect(char *ca_cert)
 		return -1;
 	}
 
-	thingplus_connect(gw->thingplus, ca_cert, KEEPALIVE);
+	thingplus_connect(gw->thingplus, 8883, ca_cert, KEEPALIVE);
 	_thingplus_wait(gw);
 	
 	return 0;
