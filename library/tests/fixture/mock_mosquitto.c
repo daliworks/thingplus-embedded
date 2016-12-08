@@ -22,6 +22,7 @@ static void *_cb_arg = NULL;
 static void (*_cb_connect)(struct mosquitto *, void *, int) = NULL;
 static void (*_cb_disconnect)(struct mosquitto *, void *, int) = NULL;
 static void (*_cb_message)(struct mosquitto *, void *, const struct mosquitto_message *);
+static void (*_cb_published)(struct mosquitto *, void *, int);
 
 void mock_mosquitto_connected(int result)
 {
@@ -33,6 +34,12 @@ void mock_mosquitto_disconnected(int result)
 {
 	if (_cb_disconnect)
 		return _cb_disconnect(NULL, _cb_arg, result);
+}
+
+void mock_mosquitto_published(int mid)
+{
+	if (_cb_published)
+		return _cb_published(NULL, _cb_arg, mid);
 }
 
 void mock_mosquitto_subscribed(char *topic, char *payload, int payload_len)
@@ -128,12 +135,18 @@ int mosquitto_loop_stop(struct mosquitto * mosq, bool force)
 int mosquitto_publish(struct mosquitto *mosq, int *mid, const char *topic,
 		int payloadlen, const char *payload, int qos, bool retain)
 {
+#define DUMMY_MID 0x12345
 	mock_c()->actualCall("mosquitto_publish")
 		->withStringParameters("topic", topic)
 		->withStringParameters("payload", payload)
 		->withIntParameters("payloadlen", payloadlen);
 
-	return mock_c()->returnValue().value.intValue;
+	int ret = mock_c()->returnValue().value.intValue;
+
+	if (_cb_published)
+		_cb_published(mosq, _cb_arg, DUMMY_MID);
+
+	return ret;
 }
 
 int mosquitto_subscribe(struct mosquitto *mosq, int *mid, const char *sub, int qos)
@@ -208,8 +221,14 @@ void mosquitto_log_callback_set(struct mosquitto * mosq,
 {
 }
 
+void mosquitto_publish_callback_set(struct mosquitto * mosq,
+		void (*on_publish)(struct mosquitto *, void *, int))
+{
+	_cb_published = on_publish;
+}
 
 int mosquitto_will_set(struct mosquitto * mosq, const char * topic, int payloadlen, const void * payload, int qos, bool retain)
 {
 	return 0;
 }
+

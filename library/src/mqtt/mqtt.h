@@ -13,8 +13,8 @@ int mqtt_disconnect(void *_t);
 
 void mqtt_callback_set(void *_t, struct thingplus_callback *callback, void *callback_arg);
 
-int mqtt_status_publish(void* _t, int nr_thing, struct thingplus_status *things);
-int mqtt_value_publish(void *_t, int nr_value, struct thingplus_value *values);
+int mqtt_status_publish(void* _t, int *mid, int nr_thing, struct thingplus_status *things);
+int mqtt_value_publish(void *_t, int *mid, int nr_value, struct thingplus_value *values);
 
 
 #endif //#ifndef_MQTT_H_

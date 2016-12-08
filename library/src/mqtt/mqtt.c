@@ -248,7 +248,17 @@ static void _cb_message(struct mosquitto *mosq, void *obj, const struct mosquitt
 	device_management_result_free(result);
 }
 
-int mqtt_value_publish(void *_t, int nr_value, struct thingplus_value *values)
+static void _cb_publish(struct mosquitto *mosq, void *obj, int mid)
+{
+	fprintf(stdout, "[INFO] message published. %d\n", mid);
+	struct mqtt *t = obj;
+
+	if (t->callback.published) {
+		t->callback.published(t->callback_arg, mid);
+	}
+}
+
+int mqtt_value_publish(void *_t, int *mid, int nr_value, struct thingplus_value *values)
 {
 	if (_t == NULL) {
 		fprintf(stdout, "[ERR] invalid thingplus instance\n");
@@ -288,7 +298,7 @@ int mqtt_value_publish(void *_t, int nr_value, struct thingplus_value *values)
 
 	fprintf(stdout, "[DEBUG] publish. topic:%s payload:%s\n", topic, payload);
 
-	int mosq_err = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, MQTT_QOS, false);
+	int mosq_err = mosquitto_publish(t->mosq, mid, topic, strlen(payload), payload, MQTT_QOS, false);
 	if (mosq_err != MOSQ_ERR_SUCCESS) {
 		fprintf(stdout, "[ERR] mosquitto_publish failed. %s\n", mosquitto_strerror(mosq_err));
 		ret = -1;
@@ -299,7 +309,7 @@ int mqtt_value_publish(void *_t, int nr_value, struct thingplus_value *values)
 	return ret;
 }
 
-int mqtt_status_publish(void* _t, int nr_thing, struct thingplus_status *things)
+int mqtt_status_publish(void* _t, int *mid, int nr_thing, struct thingplus_status *things)
 {
 	if (_t == NULL) {
 		fprintf(stdout, "[ERR] invalid thingplus instance\n");
@@ -356,7 +366,7 @@ int mqtt_status_publish(void* _t, int nr_thing, struct thingplus_status *things)
 
 		fprintf(stdout, "[DEBUG] publish. topic:%s payload:%s\n", topic, payload);
 
-		ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, MQTT_QOS, false);
+		ret = mosquitto_publish(t->mosq, mid, topic, strlen(payload), payload, MQTT_QOS, false);
 		if (ret != MOSQ_ERR_SUCCESS)
 			fprintf(stdout, "[ERR] mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
 
@@ -375,7 +385,7 @@ int mqtt_status_publish(void* _t, int nr_thing, struct thingplus_status *things)
 
 			fprintf(stdout, "[DEBUG] publish. topic:%s payload:%s\n", topic, payload);
 
-			ret = mosquitto_publish(t->mosq, NULL, topic, strlen(payload), payload, MQTT_QOS, false);
+			ret = mosquitto_publish(t->mosq, mid, topic, strlen(payload), payload, MQTT_QOS, false);
 			if (ret != MOSQ_ERR_SUCCESS) {
 				fprintf(stdout, "[ERR] mosquitto_publish failed. %s\n", mosquitto_strerror(ret));
 			}
@@ -446,6 +456,7 @@ int mqtt_connect(void *_t, int port, char *ca_file, int keepalive)
 	mosquitto_connect_callback_set(t->mosq, _cb_connected);
 	mosquitto_disconnect_callback_set(t->mosq, _cb_disconnected);
 	mosquitto_message_callback_set(t->mosq, _cb_message);
+	mosquitto_publish_callback_set(t->mosq, _cb_publish);
 
 	ret = mosquitto_connect_async(t->mosq, t->mqtt_url, port, _keepalive_set(keepalive));
 	if (ret != MOSQ_ERR_SUCCESS) {

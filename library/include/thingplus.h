@@ -18,8 +18,8 @@ int thingplus_sensor_register(void *t, char *name, int uid, char* type, char* de
 int thingplus_device_register(void* instance, char* name, int uid, char* device_model_id, 
 		char device_id[THINGPLUS_ID_LENGTH]);
 
-int thingplus_value_publish(void *_t, int nr_value, struct thingplus_value *values);
-int thingplus_status_publish(void *t, int nr_status, struct thingplus_status *status);
+int thingplus_value_publish(void *_t, int *mid, int nr_value, struct thingplus_value *values);
+int thingplus_status_publish(void *t, int *mid, int nr_status, struct thingplus_status *status);
 
 int thingplus_disconnect(void *t);
 int thingplus_connect(void *t, int port, char *ca_file, int keepalive);

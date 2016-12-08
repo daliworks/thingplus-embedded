@@ -93,6 +93,7 @@ struct thingplus_status {
 struct thingplus_callback {
 	void (*connected)(void *cb_arg, enum thingplus_error error);
 	void (*disconnected)(void *cb_arg, enum thingplus_error error);
+	void (*published)(void *cb_arg, int message_id);
 
 	bool (*actuating)(void *cb_arg, const char *id, const char *cmd, const char *options, 
 			char result_message[THINGPLUS_DM_RESULT_LENGTH]);

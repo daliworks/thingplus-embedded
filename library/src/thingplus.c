@@ -88,7 +88,7 @@ int thingplus_device_register(void* _t, char* name, int uid, char* device_model_
 	return rest_device_register(t->rest, name, uid, device_model_id, device_id);
 }
 
-int thingplus_value_publish(void *_t, int nr_value, struct thingplus_value *values)
+int thingplus_value_publish(void *_t, int *mid, int nr_value, struct thingplus_value *values)
 {
 	if (nr_value <= 0) {
 		fprintf(stdout, "invalid nr_value\n");
@@ -106,10 +106,10 @@ int thingplus_value_publish(void *_t, int nr_value, struct thingplus_value *valu
 	}
 	struct thingplus *t = _t;
 
-	return mqtt_value_publish(t->mqtt, nr_value, values);
+	return mqtt_value_publish(t->mqtt, mid, nr_value, values);
 }
 
-int thingplus_status_publish(void* _t, int nr_thing, struct thingplus_status *things)
+int thingplus_status_publish(void* _t, int *mid, int nr_thing, struct thingplus_status *things)
 {
 	if (nr_thing <= 0) {
 		fprintf(stdout, "invalid nr_thing\n");
@@ -127,7 +127,7 @@ int thingplus_status_publish(void* _t, int nr_thing, struct thingplus_status *th
 	}
 	struct thingplus *t = _t;
 
-	return mqtt_status_publish(t->mqtt, nr_thing, things);
+	return mqtt_status_publish(t->mqtt, mid, nr_thing, things);
 }
 
 int thingplus_disconnect(void *_t)

@@ -17,6 +17,11 @@ extern "C" {
 static void *t;
 static struct thingplus_callback callback;
 
+static void _published(void *arg, int message_id)
+{
+	mock().actualCall("published");
+}
+
 TEST_GROUP(thingplus_value_publish)
 {
 	void setup()
@@ -42,6 +47,11 @@ TEST_GROUP(thingplus_value_publish)
 TEST(thingplus_value_publish, single_sensor_single_value_publish_success)
 {
 	char *payload = "1234567890,16\0";
+	struct thingplus_value value = {
+		.id = "012345012345-temp",
+		.value = "16",
+		.time_ms = 1234567890
+	};
 
 	mock().expectOneCall("mosquitto_publish")
 		.withParameter("topic", "v/a/g/012345012345/s/012345012345-temp")
@@ -49,13 +59,39 @@ TEST(thingplus_value_publish, single_sensor_single_value_publish_success)
 		.withParameter("payloadlen", strlen(payload))
 		.ignoreOtherParameters();
 
+	int mid;
+	int r = thingplus_value_publish(t, &mid, 1, &value);
+
+	CHECK_EQUAL(THINGPLUS_ERR_SUCCESS, r);
+	mock().checkExpectations();
+}
+
+TEST(thingplus_value_publish, published_callback_called)
+{
+	//given
+	char *payload = "1234567890,16\0";
+
+	mock().expectOneCall("mosquitto_publish")
+		.withParameter("topic", "v/a/g/012345012345/s/012345012345-temp")
+		.withParameter("payload", payload)
+		.withParameter("payloadlen", strlen(payload))
+		.ignoreOtherParameters();
+	mock().expectOneCall("published");
+	mock().ignoreOtherCalls();
+
 	struct thingplus_value value = {
 		.id = "012345012345-temp",
 		.value = "16",
 		.time_ms = 1234567890
 	};
-	int r = thingplus_value_publish(t, 1, &value);
+	callback.published = _published;
+	
+	//when
+	int message_id;
+	thingplus_callback_set(t, &callback, NULL);
+	int r = thingplus_value_publish(t, &message_id, 1, &value);
 
+	//then
 	CHECK_EQUAL(THINGPLUS_ERR_SUCCESS, r);
 	mock().checkExpectations();
 }
@@ -64,13 +100,6 @@ TEST(thingplus_value_publish, single_sensor_two_value_publish_success)
 {
 	char *temp_id = "012345012345-temp"; 
 	char *payload = "1234567890,16,1234567891,17";
-
-	mock().expectOneCall("mosquitto_publish")
-		.withParameter("topic", "v/a/g/012345012345/s/012345012345-temp")
-		.withParameter("payload", payload)
-		.withParameter("payloadlen", strlen(payload))
-		.ignoreOtherParameters();
-
 	struct thingplus_value value[2];
 	value[0].id = temp_id;
 	value[0].value = "16";
@@ -78,7 +107,15 @@ TEST(thingplus_value_publish, single_sensor_two_value_publish_success)
 	value[1].id = temp_id;
 	value[1].value = "17";
 	value[1].time_ms = 1234567891;
-	int r = thingplus_value_publish(t, 2, value);
+
+	mock().expectOneCall("mosquitto_publish")
+		.withParameter("topic", "v/a/g/012345012345/s/012345012345-temp")
+		.withParameter("payload", payload)
+		.withParameter("payloadlen", strlen(payload))
+		.ignoreOtherParameters();
+
+	int mid;
+	int r = thingplus_value_publish(t, &mid, 2, value);
 
 	CHECK_EQUAL(THINGPLUS_ERR_SUCCESS, r);
 	mock().checkExpectations();
@@ -88,13 +125,6 @@ TEST(thingplus_value_publish, single_sensor_two_value_with_null_id_publish_succe
 {
 	char *temp_id = "012345012345-temp"; 
 	char *payload = "1234567890,16,1234567891,17";
-
-	mock().expectOneCall("mosquitto_publish")
-		.withParameter("topic", "v/a/g/012345012345/s/012345012345-temp")
-		.withParameter("payload", payload)
-		.withParameter("payloadlen", strlen(payload))
-		.ignoreOtherParameters();
-
 	struct thingplus_value value[3];
 	value[0].id = temp_id;
 	value[0].value = "16";
@@ -105,7 +135,15 @@ TEST(thingplus_value_publish, single_sensor_two_value_with_null_id_publish_succe
 	value[2].id = temp_id;
 	value[2].value = "17";
 	value[2].time_ms = 1234567891;
-	int r = thingplus_value_publish(t, 3, value);
+
+	mock().expectOneCall("mosquitto_publish")
+		.withParameter("topic", "v/a/g/012345012345/s/012345012345-temp")
+		.withParameter("payload", payload)
+		.withParameter("payloadlen", strlen(payload))
+		.ignoreOtherParameters();
+
+	int mid;
+	int r = thingplus_value_publish(t, &mid, 3, value);
 
 	CHECK_EQUAL(THINGPLUS_ERR_SUCCESS, r);
 	mock().checkExpectations();
@@ -114,13 +152,6 @@ TEST(thingplus_value_publish, single_sensor_two_value_with_null_id_publish_succe
 TEST(thingplus_value_publish, two_sensor_single_value_publish_success)
 {
 	char *payload = "{\"012345012345-onoff\": [1234567890,on], \"012345012345-temp\": [1234567891,16]}";
-
-	mock().expectOneCall("mosquitto_publish")
-		.withParameter("topic", "v/a/g/012345012345")
-		.withParameter("payload", payload)
-		.withParameter("payloadlen", strlen(payload))
-		.ignoreOtherParameters();
-
 	struct thingplus_value value[2];
 	value[0].id = "012345012345-onoff";
 	value[0].value = "on";
@@ -128,7 +159,15 @@ TEST(thingplus_value_publish, two_sensor_single_value_publish_success)
 	value[1].id = "012345012345-temp";
 	value[1].value = "16";
 	value[1].time_ms = 1234567891;
-	int r = thingplus_value_publish(t, 2, value);
+
+	mock().expectOneCall("mosquitto_publish")
+		.withParameter("topic", "v/a/g/012345012345")
+		.withParameter("payload", payload)
+		.withParameter("payloadlen", strlen(payload))
+		.ignoreOtherParameters();
+
+	int mid;
+	int r = thingplus_value_publish(t, &mid, 2, value);
 
 	CHECK_EQUAL(THINGPLUS_ERR_SUCCESS, r);
 	mock().checkExpectations();
@@ -165,7 +204,9 @@ TEST(thingplus_status_publish, single_sensor_status_publish_success)
 	struct thingplus_status status;
 	status.id = "012345012345-onoff";
 	status.timeout_ms = 60 * 1000;
-	int r = thingplus_status_publish(t, 1, &status);
+
+	int mid;
+	int r = thingplus_status_publish(t, &mid,1, &status);
 
 	CHECK_EQUAL(0, r);
 	mock().checkExpectations();
@@ -176,7 +217,9 @@ TEST(thingplus_status_publish, missing_id_single_sensor_status_do_not_publish)
 	struct thingplus_status status;
 	status.id = NULL;
 	status.timeout_ms = 60 * 1000;
-	int r = thingplus_status_publish(t, 1, &status);
+
+	int mid;
+	int r = thingplus_status_publish(t, &mid, 1, &status);
 
 	CHECK_EQUAL(0, r);
 	mock().checkExpectations();
@@ -185,7 +228,8 @@ TEST(thingplus_status_publish, missing_id_single_sensor_status_do_not_publish)
 TEST(thingplus_status_publish, nr_thing_is_zero_returns_error)
 {
 	struct thingplus_status status;
-	CHECK_EQUAL(THINGPLUS_ERR_INVALID_ARGUMENT, thingplus_status_publish(t, 0, &status));
+	int mid;
+	CHECK_EQUAL(THINGPLUS_ERR_INVALID_ARGUMENT, thingplus_status_publish(t, &mid, 0, &status));
 }
 
 TEST(thingplus_status_publish, gw_and_sensor_status_publish_success)
@@ -199,7 +243,9 @@ TEST(thingplus_status_publish, gw_and_sensor_status_publish_success)
 	status[0].timeout_ms = 60 * 1000;
 	status[1].id = "012345012345-ononff";
 	status[1].timeout_ms = 60 * 1000;
-	int r = thingplus_status_publish(t, 2, status);
+
+	int mid;
+	int r = thingplus_status_publish(t, &mid, 2, status);
 
 	CHECK_EQUAL(0, r);
 	mock().checkExpectations();
@@ -218,7 +264,9 @@ TEST(thingplus_status_publish, missing_gw_id_and_sensor_status_publish_success)
 	status[1].timeout_ms = 60 * 1000;
 	status[2].id = NULL;
 	status[2].timeout_ms = 60 * 1000;
-	int r = thingplus_status_publish(t, 3, status);
+
+	int mid;
+	int r = thingplus_status_publish(t, &mid, 3, status);
 
 	CHECK_EQUAL(0, r);
 	mock().checkExpectations();
@@ -234,7 +282,9 @@ TEST(thingplus_status_publish, two_sensor_status_publish_success)
 	status[0].timeout_ms = 60 * 1000;
 	status[1].id = "012345012345-ononff";
 	status[1].timeout_ms = 60 * 1000;
-	int r = thingplus_status_publish(t, 2, status);
+
+	int mid;
+	int r = thingplus_status_publish(t, &mid, 2, status);
 
 	CHECK_EQUAL(0, r);
 	mock().checkExpectations();
@@ -262,6 +312,7 @@ TEST_GROUP(subscribe)
 		thingplus_connect(t, 8883, ca_file, keepalive);
 		mock_mosquitto_connected(0);
 
+		memset(&callback, 0, sizeof(callback));
 		callback.actuating = _actuating;
 		thingplus_callback_set(t, &callback, NULL);
 	}
