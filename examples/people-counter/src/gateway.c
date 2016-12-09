@@ -76,7 +76,7 @@ static void _status_publish(union sigval sigval)
 	s[i].status = 0;
 	s[i].timeout_ms = (REPORT_INTERVAL * 2) * 1000;
 
-	thingplus_status_publish(g->thingplus, sizeof(s)/sizeof(s[0]), s);
+	thingplus_status_publish(g->thingplus, NULL, sizeof(s)/sizeof(s[0]), s);
 }
 
 static void _status_publish_timer_start(struct gw *g)
@@ -129,7 +129,7 @@ int gw_event_value_publish(char *id, char *value)
 	v.value = value;
 	v.time_ms = _now_ms();
 
-	return thingplus_value_publish(gw->thingplus, 1, &v);
+	return thingplus_value_publish(gw->thingplus, NULL, 1, &v);
 }
 
 int gw_connect(char *ca_cert)

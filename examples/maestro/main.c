@@ -86,7 +86,7 @@ static void _value_status_publish(union sigval sigval)
 		{.id = hbe_sensors[2].sensor_id, .status = THINGPLUS_STATUS_ON, .timeout_ms = h->report_interval * 2},
 	};
 
-	thingplus_status_publish(h->t, 4, thing_status);
+	thingplus_status_publish(h->t, NULL, 4, thing_status);
 	int v = hbe_sensors[0].ops.get(NULL);
 	
 	struct thingplus_value t;
@@ -95,7 +95,7 @@ static void _value_status_publish(union sigval sigval)
 	t.value = calloc(1, 10);
 	sprintf(t.value, "%.2f", (float)(((float)temp)/10));
 	t.time_ms = _now_ms();
-	thingplus_value_publish(h->t, 1, &t);
+	thingplus_value_publish(h->t, NULL, 1, &t);
 	free(t.id);
 	free(t.value);
 
@@ -105,7 +105,7 @@ static void _value_status_publish(union sigval sigval)
 	hu.id  = strdup(hbe_sensors[2].sensor_id);
 	sprintf(hu.value, "%.2f", (float)((((float)humidity)/10)));
 	hu.time_ms = _now_ms();
-	thingplus_value_publish(h->t, 1, &hu);
+	thingplus_value_publish(h->t, NULL, 1, &hu);
 	free(hu.value);
 	free(hu.id);
 }
@@ -123,7 +123,7 @@ static void hbe_event_trigger(void *arg, char *value)
 	v.id = hbe_sensors[0].sensor_id;
 	v.time_ms = _now_ms();
 	
-	thingplus_value_publish(h->t, 1, &v);
+	thingplus_value_publish(h->t, NULL, 1, &v);
 }
 
 static void _connected(void *cb_arg, int err)
