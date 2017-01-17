@@ -619,3 +619,98 @@ Device Agent --> Thing+ Gateway
 ```
 {"id":6,"result":"success","error":null}\n
 ```
+
+## Appendix
+
+### A. Gateway, Sensor Registration Request Form
+If you need to register your gateway and sensor model in Thing +, please fill out the following document form and send it to us.
+
+#### Gateway, Sensor Registration From
+```
+* Gateway infomation
+1. Vendor name :
+2. Gateway name : 	
+3. The value to use on the gateway ID : MAC, IMEI or UUID
+   (The gateway ID is a value that distinguishes each hardware and can not be duplicated with other gateways.)
+   (Please contact us if you can not use the above three items.)
+4. Report interval (Minium is 60 second) :
+   4.1. Whether Thing + Portal displays the report interval : Yes or No
+   4.1. Whether the report interval can be changed : Yes or No
+5. Maximum number of devices :
+
+* Device information
+1. Device name :
+2. Whether using 'Discover' function : Yes or No
+   (Discover is a function to find and register the sensors installed in the hardware.)
+3. Sensor infomation
+   - type :
+   - data format :
+   - unit :
+4. Actuator infomation
+   - Command :
+     - Parameter :
+     (In the parameter, specify the content of the required value, unit, and whether it is required.)
+```
+
+##### Examples
+
+```
+- Gateway information
+1. Vendor name : Libelium
+2. Gateway name : Meshlium
+3. The value to use on the gateway ID: MAC
+4. Report interval : 60 sec
+   4.1. Whether Thing + Portal displays the report interval : Yes
+   4.1. Whether the report interval can be changed : Yes
+5. Maximum number of devices : 3
+
+- Device information
+1. Device name : Plug and Sensor
+2. Whether using 'Discover' function : Yes
+3. Sensor infomation
+   - type : Temperature, format : Number, Unit : °C
+   - type : Humidity, format : Number, unit : %
+   - type : Position, format : {x:number, y:number, z:number}, unit : m/s²
+   - type : String Sensor, format : String, unit : None
+4. Actuator information
+   - type : LED
+     - command : On
+       - parameter
+         1. Duration. unit : sec. Optional.
+            Description : The LED will turn off after the duration. The parameter is optional; if not, the LED remains on.
+     - command : Blink
+       - parameter
+         - 1. Interval. unit : sec. necessary
+              Description : LED blinking is the value to control the speed. It lights up for interval time and turns off for interval time.
+         - 2. Duration. unit : sec. Optional.
+     - command : Off
+       - parameter : None
+```
+
+```
+- Gateway information
+1. Vendor name : Dell
+2. Gateway name : Edge 5000
+3. ID to use on the gateway: IMEI
+4. Report interval : 90 seconds
+   4.1. Whether Thing + Portal displays the report interval : No
+   4.1. Whether the report interval can be changed : No
+5. Maximum number of devices : 5
+
+- Device information
+1. Device name : Temerature Monitor
+2. Whether using 'Discover' function : Yes
+3. Sensor infomation
+   - type : Temperature, unit : °C
+
+- Device information
+1. Device name : Power Switch Controller
+2. Whether using 'Discover' function : Yes
+4. Actuation infomation
+   - type : Power Switch
+     - command : On
+       - parameter : None
+     - command : Off
+       - parameter : None
+
+```
