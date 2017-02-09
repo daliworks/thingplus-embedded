@@ -176,7 +176,7 @@ MQTT Connection SPEC|Thing+ Definition
 MQTT Version | 3
 PORT | 8883
 MQTT Client ID | {gateway_id}
-Clean Settion | TRUE
+Clean Session | TRUE
 MQTT ID | {gateway_id}
 MQTT Passworkd | {APIKEY}
 Will Topic | v/a/g/{gateway_id}/mqtt/status
