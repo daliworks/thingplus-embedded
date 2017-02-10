@@ -31,6 +31,8 @@ ADD_EXECUTABLE(test_thingplus
 	${FIXTURES}
 	${THINGPLUS_LIBRARY_SOURCE})
 
+ADD_DEPENDENCIES(test_thingplus cpputest)
+
 target_link_libraries(test_thingplus
 	json-c
 	gcov
