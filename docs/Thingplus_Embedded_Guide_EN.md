@@ -367,9 +367,9 @@ Using a Thing+ Gateway is easier and faster than manually implementing all of th
 ### 4.1 Hardware Requirement
 Thing+ Gateways run on embedded hardware, and is written via Node.js. Your hardware MUST have the ability to run Node.js.
 
-> Node.js Running Enviomental<br>
+> Node.js Running Environment<br>
 
-- CPU : arm, ia32, x86, x86_64
+- CPU : ARM, ia32, x86, x86_64
 - Memory : Minimum 128MB
 - OS : LINUX, WINDOWS, MAC, FREEBSD, OPENBSD, android
   - Can NOT support RTOS, MICRO OS
