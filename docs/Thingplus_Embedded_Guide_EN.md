@@ -253,11 +253,11 @@ Method|Description|Parameters|Param Description
 timeSync|Synchronize the local time of a hardware with Thing+ server time|{"time":\_\_TIME\_\_}|\_\_TIME\_\_ : current time in UTC
 controlActuator|execute a command on an actuator|{"id":\_\_SENSOR_ID\_\_,"cmd":\_\_CMD\_\_,"options",\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : ID of an actuator<br>\_\_CMD\_\_ : Command for an actator<br>\_\_OPTIONS\_\_ : Options for a command<br>
 setProperty|Environment configuration|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_ : frequency for reporting sensor value in msec
-poweroff|turn off the device|None|None
-reboot|restart the H/W|None|None
-restart|restar the embedded software|None|None
+poweroff|Turn off the device|None|None
+reboot|Reboot the H/W|None|None
+restart|Restart the embedded software|None|None
 swUpdate|Upgrade the embedded software|None|None
-swInfo|소프트웨어 Provide the version of embedded software|None|None
+swInfo|Provide the version of embedded software|None|None
 
 The mandatory methods which should be implemented for embedded software integrated with the Thing+ Platform include both ​timeSync and setProperty. Others are optional.
 
