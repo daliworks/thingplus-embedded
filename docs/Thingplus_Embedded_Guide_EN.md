@@ -349,11 +349,592 @@ RESPONSE IF FAILED: {"id":"46h6f8xp3","error": {"code":-32000,"message":"invalid
 }
 ```
 
-#### 2.3 Thing+ HTTP Protocol
-TBD
+### 2.3 Thing + HTTP Protocol
+The Thing + HTTP Protocol is the main protocol used for the Thing+ REST API. When the Discover function is implemented, the IoT device informs Thing+ of the device and sensor information connected to it through the REST API. The Thing+ HTTP Protocol implementation is required to use the Discover function.
 
-## 3. Thing+ Embedded SDK
-TBD
+#### 2.3.1 Device Registration Process
+![Device_Discover](./image/Thingplus_Embedded_Guide/DeviceDiscover.png)
+
+1. Obtaining gateway information. (See Section 2.3.4)
+  * Determine if discovery is possible from the obtained gateway information.
+      * Refer to autoCreateDiscoverable
+         * ** If not dismounted, thing+ can not register a device **
+      * The "gateway information model" is used to get the correct gateway model.
+2. Get the gateway model. (See Section 2.3.5)
+  * Select the device model to use in the deviceModels array of the gateway model. Note: These are Gateways that currently are supported by Thing+.
+  * IdTemplate defined in the device model is used when registering the device.
+3. Create and transmit device information in order to register with Thing+. (See Section 2.3.6)
+ <br>
+  The data format is as follows.
+
+  ```Javascript
+  {
+      reqId: '<Device ID>',
+      name: '<Device Name>',
+      model: '<Device Model>'
+  }
+  ```
+  * ReqId: Creates an ID for the idTemplate type in the device model.
+     * Typically, the idTemplate is {gatewayID} - {deviceAddress}.
+         * GatewayID: Gateway ID
+         * DeviceAddress: This value is used to identify the device in the gateway. It should not be duplicated within the gateway. Custom
+  * Name: The device name. Custom
+  * Model: The name of the device model to use. The device model name to be used in the gateway model information.
+
+#### 2.3.2 Sensor Registration Process
+
+![SensorDiscover](./image/Thingplus_Embedded_Guide/SensorDiscover.png)
+
+1. Obtain gateway information (see Section 2.3.4).
+  * Determine if discovery is possible from the obtained gateway information.
+      * See autoCreateDiscoverable
+         * ** Without discovery, thing+ can not register sensors **
+      * The "gateway information model" is used to get the correct gateway model.
+2. Get the gateway model. (See Section 2.3.5)
+  * Select the device model to use in the deviceModels array of the gateway model. Note: These are Gateways that currently are supported by Thing+.
+  * The sensors array in the device model is a list of sensor models available on the device.
+  * Among available sensor models, the network, driverName, model, type and category are used for sensor registration.
+  * Also, driverName is needed when getting a sensor driver.
+3. Grab the sensor driver.
+  * The idTemplate defined by the sensor driver is used when registering the sensor.
+4. Create and send sensor information for registration. (See Section 2.3.7)
+ <br>
+  The data format is as follows.
+
+```Javascript
+{
+  reqId: 'abcdefghijkl-0-humidity',
+  category: 'sensor',
+  type: 'humidity',
+  model: 'jsonrpcHumi',
+  driverName: 'jsonrpcSensor'
+  network: 'jsonrpc',
+  name: 'My Camera',
+  owner: 'abcdefghijkl',
+  ctime: 1456297274325,
+  deviceId: 'abcdefghijkl-0'
+}
+```
+
+   * ReqId: Creates an ID according to the idTemplate type in sensor driver.
+     * Typically, idTemplate is {gatewayID} - {deviceAddress} - {type} - {sequence}.
+      * GatewayID: Gateway ID
+      * DeviceAddress: You must specify the device where the sensor belongs (is attached to) as the value for identifying the device in the gateway.
+      * Type: The sensor type defined by Thing+
+      * Sequence: It is a value to distinguish when there are two or more sensors of the same type in one device. If you only have one, you can omit it. Custom
+  * Category: The category of the sensor to be registered. It is defined in the sensor model.
+  * Type: Sensor type, which is defined in the sensor model.
+  * Model: The name of the sensor model, which is defined in the sensor model.
+  * DriverName: The driver name to be used by the sensor, which is defined in the sensor model.
+  * Network: The network used by the sensor, which is defined in the sensor model.
+  * Name: The name of the sensor. Custom
+  * Owner: The gateway ID to which the sensor belongs.
+  * Ctime: Time at which the sensor was created. UTC
+  * DeviceId: The ID of the device to which the sensor belongs.
+
+#### 2.3.3 Preferences and Authentication
+The URL used for testing and usage of the REST API is: <br>
+```
+https://api.thingplus.net
+```
+
+To authenticate, just fill in your username and apikey in the header.
+
+```Javascript
+{
+  username: <GATEWAY_ID>
+  apikey: <APIKEY>
+}
+```
+> GATEWAY_ID: Gateway ID <br>
+> APIKEY: APIKEY from Thing+ Portal (Gateway registration section)
+
+The content type should be application / json.
+
+```
+Content-type: application / json
+```
+
+#### 2.3.3 Error Codes
+| Error Code | Description |
+| --- | --- |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
+| 409 | Post Item Error |
+| 471 | Billing Error |
+
+#### 2.3.4 Getting Your Gateway Information
+This is an API that brings in information of the gateway in use.
+
+#### Resource URL
+`GET https://api.thingplus.net/gateways/ <GATEWAY_ID>? Fields = model & fiedlds = autoCreateDiscoverable`
+> ##### ** GATEWAY_ID ** Gateway ID
+
+##### Request Example
+`GET https://api.thingplus.net/gateways/abcdefghijkl?Fields=model&fields=autoCreateDiscoverable`
+
+--
+#### Response Example
+```Javascript
+{
+  id: "abcdefghijkl",
+  model: "34",
+  autoCreateDiscoverable: "y",
+}
+```
+> ** model ** Gateway model number
+<br>
+** autoCreateDiscoverable **  Whether the disk function is supported
+
+#### 2.3.5 Getting the Gateway Model
+This is an API that brings in a gateway model defined by Thing+. Using the model number in the gateway information, you can grab the gateway model.
+
+#### Resource URL
+`GET https://api.thingplus.net/gatewayModels/ <MODEL_NUMBER>`
+> ##### ** MODEL_NUMBER **  Gateway model number
+
+##### Request Example
+`GET https: // api.thingplus.net / gatewayModels / 34`
+
+--
+#### Response Body Format and Example
+##### Body Format
+```Javascript
+{
+  ctime: "<Gateway Model creation time>",
+  model: "<Gateway Model name>",
+  deviceMgmt: {
+    reportInterval: {
+      show: "<Whether the report interval is visible in Thing + Cloud, y or n>",
+      change: "<report interval changeable y or n>"
+    },
+    dM: {
+      poweroff: {
+        support: "<Supports power off via thing + y or n>"
+      },
+      reboot: {
+        support: "<Restart support via Thing +. Y or n>"
+      },
+      restart: {
+        support: "<Support for restarting application programs via Thing+. Y or n>"
+      },
+      swUpdate: {
+        support: "<Software support for Thing +. Y or n"
+      },
+      swInfo: {
+        support: "<Thing + supports reading software version information from y or n"
+      }
+    }
+  },
+  id: "<Model ID>",
+  vendor: "<Vendor Name>",
+  mtime: "<Modified time in UTC>",
+  deviceModels: [
+    {
+      id: "<device model ID>",
+      displayName: "<device model name>",
+      idTemplate: "<device id format>",
+      discoverable: "<Discoverability, y or n>",
+      sensors: [
+        {
+          network: "<network used by the sensor>",
+          nriverName: "<Sensor Driver Name>",
+          model: "<sensor model>",
+          type: "<sensor type>",
+          category: "<category. Sensor or actuator>"
+        },
+        ...,
+      ],
+      max: <number of available devices>
+    }
+  ],
+  displayName: "<gateway name>"
+}
+
+```
+
+> ** deviceModels **: Model for devices that the gateway can connect with
+>> ** discoverable **: Whether the device is discoverable <br>
+>> ** idTemplate **: Defining the format of the device id <br>
+>>> When you register the device, you need to create and register the device ID in idTemplate format.
+
+##### Example
+```Javacript
+{
+  ctime: "1456122659103",
+  model: "openHardwareCustom",
+  deviceMgmt: {
+    reportInterval: {
+      show: "y",
+      change: "y"
+    },
+    DM: {
+      poweroff: {
+        support: "n"
+      },
+      reboot: {
+        support: "n"
+      },
+      restart: {
+        support: "y"
+      },
+      swUpdate: {
+        support: "y"
+      },
+      swInfo: {
+        support: "y"
+      }
+    }
+  },
+  id: "34",
+  vendor: "OPEN SOURCE HARDWARE",
+  mtime: "1456122659103",
+  deviceModels:
+    {
+      id: "jsonrpcFullV1.0",
+      displayName: "Open Source Device",
+      idTemplate: "{gatewayId} - {deviceAddress}",
+      discoverable: "y",
+      sensors: [
+        {
+          network: "jsonrpc",
+          driverName: "jsonrpcSensor",
+          model: "jsonrpcNumber",
+          type: "number",
+          category: "sensor"
+        },
+        {
+          network: "jsonrpc",
+          driverName: "jsonrpcSensor",
+          model: "jsonrpcString",
+          type: "string",
+          category: "sensor"
+        }
+      ],
+      max: 1
+    }
+  ],
+  displayName: "Open Source Gateway"
+}
+```
+
+#### 2.3.6 Getting the Sensor Driver
+This is an API that handles sensor drivers as defined by Thing+.
+
+#### Resource URL
+`GET https://api.thingplus.net/sensorDrivers/?filter [id] = <driverName>`
+
+> ** driverName ** Sensor driver name
+
+##### Request Example
+`GET https://api.thingplus.net/sensorDrivers/?filter [id] = jsonrpcSensor`
+
+--
+#### Response Example
+```Javascript
+{
+  ciscoverable: "true",
+  ctime: "1456122653281",
+  id: "jsonrpcSensor",
+  displayName: "jsonrpc Sensor",
+  models: [
+    "JsonrpcNumber",
+    "JsonrpcString"
+    ...,
+    "JsonrpcReader"
+  ],
+  supportedNetworks: [
+    "Jsonrpc"
+  ],
+  mtime: "1456122653281",
+  category: "sensor",
+  addressable: "false"
+  dataTypes: {
+    jsonrpcNumber: [
+      "Number"
+    ],
+    jsonrpcString: [
+      "String"
+    ],
+    ...,
+    jsonrpcReader: [
+      "Reader"
+    ]
+  },
+  driverName: "jsonrpcSensor",
+  idTemplate: "{gatewayId} - {deviceAddress} - {type} - {sequence}"
+}
+```
+> ** discoverable ** Whether the sensor is discoverable
+
+#### 2.3.7 Registering a Device
+
+#### Resource URL
+`POST https://api.thingplus.net/devices`
+
+#### Post Parameters
+
+| Parameter | description |
+| ----- | -------- |
+| ReqId | Device ID <br>  The idTemplate must be created in the gateway model. <br> <br> The idTemplate is the idTemplate of the device in the deviceModels array of the gateway model.
+| Name | device name |
+| Model | The model ID used by the device. <br> <br> Of the deviceModels array of the gateway model, insert the ID of the device to use.
+
+##### Request Body Example
+```Javascript
+{
+  reqId: 'abcdefghijkl-0'
+  name: 'My Device0',
+  model: 'jsonrpcFullV1.0'}
+}
+```
+--
+#### Response Example
+```
+{
+  name: 'My Device0',
+  model: 'jsonrpcFullV1.0',
+  owner: 'abcdefghijkl',
+  mtime: 1456297274619,
+  ctime: 1456297274619,
+  id: 'abcdefghijkl-0'
+}
+```
+
+--
+#### Error
+| Error Code | Description |
+| --- | --- |
+| 401 | The gateway ID of the body, or APIKEY is incorrect.
+| 404 | Attempt to add device to unregistered gateway.
+| 471 | Device can not be added by plan.
+
+#### 2.3.8 Registering a sensor
+
+#### Resource URL
+`POST https://api.thingplus.net/gateways/ <GATEWAY_ID> / sensors`
+
+> ** GATEAY_ID ** The ID of the gateway to which the sensor belongs
+
+#### Post Parameter
+| Parameter | description |
+| --- | --- |
+| Network | network name |
+| DriverName | The name of the driver used by the sensor |
+| Model | sensor model |
+| Type | Sensor type |
+| Category | Sensor or actuator |
+| ReqId | Sensor ID | Need to create in idTemplate format defined by sensor driver |
+| Name | sensor name |
+| Owner | Gateway to which the sensor belongs |
+| Ctime | Time the sensor was created (UTC) |
+| DeviceId | The ID of the device to which the sensor belongs |
+
+##### Request Body Example
+```Javascript
+{
+  network: 'jsonrpc',
+  driverName: 'jsonrpcActuator',
+  model: 'jsonrpcCamera',
+  type: 'camera',
+  category: 'actuator',
+  reqId: 'abcdefghijkl-0-camera',
+  name: 'My Camera',
+  owner: 'abcdefghijkl',
+  ctime: 1456297274325,
+  deviceId: 'abcdefghijkl-0'
+}
+```
+--
+#### Response Example
+```
+{
+  network: 'jsonrpc',
+  driverName: 'jsonrpcActuator',
+  model: 'jsonrpcCamera',
+  type: 'camera',
+  category: 'actuator',
+  name: 'My Camera',
+  address: '0',
+  options: {},
+  deviceId: 'abcdefghijkl-0',
+  owner: 'abcdefghijkl',
+  mtime: 1456297274458,
+  ctime: 1456297274458,
+  id: 'abcdefghijkl-0-camera'
+}
+```
+--
+#### Error
+| Error Code | Description |
+| --- | --- |
+| 401 | The gateway ID of the body, or APIKEY is incorrect.
+| 404 | Attempt to add device to unregistered gateway.
+| 471 | Device can not be added by plan.
+
+## 3. Thing + Embedded SDK
+The Thing+ Embedded SDK is a library created to help easily use Thing+'s Embedded Protocol. It provides sensor values, sensor status transmissions, and sensor and device registration functions. With the Thing+ Embedded SDK, Thing+ can be easily interfaced with and API calls can be used without directly configuring MQTT and HTTP messages.
+
+### 3.1 Software Requirements
+The Thing+ Embedded SDK is written in C and uses openssl, libmosquitto, libjson-c, and libcurl. Before installing the SDK, the library must be installed on the target board.
+
+  - Preinstalled Software
+    - openssl (https://www.openssl.org/)
+    - libmosquitto (https://mosquitto.org/)
+    - libjson-c (https://github.com/json-c/json-c)
+    - libcurl (https://curl.haxx.se/libcurl/)
+
+### 3.2 Installation
+- Repository: https://github.com/daliworks/thingplus-embedded
+
+```
+git clone https://github.com/daliworks/thingplus-embedded
+cd thingplus-embedded / library
+cmake.
+make
+make install
+```
+
+### 3.3. API
+#### 3.3.1 thingplus_init
+```
+- Prototype: void * thingplus_init (char * gw_id, char * apikey, char * mqtt_url, char * restapi_url);
+- Description: Initialize the Thinglus Embedded SDK.
+- Parameters
+  - gw_id: Gateway ID
+  - apikey: apikey from Thing + Portal
+  - mqtt_url: The MQTT server address to connect to. In general, use "mqtt.thingplus.net" and use "dmqtt.thingplus.net" for non-SSL.
+  - restapi_url: HTTPS server address to connect to. Use "https://api.thingplus.net".
+- Return Value
+  -! NULL: Success. Returns the SDK instance.
+  - NULL: Error
+```
+
+#### 3.3.2 thingplus_cleanup
+```
+- Prototype: void thingplus_cleanup (void * t);
+- Description: Exit the Thing + Embedded SDK. Must be called before program termination.
+- Parameters
+  - t: SDK instance
+```
+
+#### 3.3.3 thingplus_callback_set
+```
+- Prototype: void thingplus_callback_set (void * t, struct thingplus_callback * callback, void * callback_arg);
+- Description: Sets the callback function to be called from the SDK.
+- Parameters
+  - t: SDK instance
+  - callback: Callback functions to be called from the SDK. The struct thingplus_callback structure is defined in thingplus_types.h.
+  - callback_arg: Argument to receive when calling callback function
+```
+
+#### 3.3.4 thingplus_connect
+```
+- Prototype: int thingplus_connect (void * t, char * ca_file, int keepalive);
+- Description: Attempt to connect to Thing + server. Asynchronous function, callback function set by thingplus_callback_set function is called when connected.
+- Parameters
+  - t: SDK instance
+  - ca_file: SSL certificate. If NULL, connect with non-SSL. Non-SSL connections are only possible when mqtt_url is "dmqtt.thingplus.net".
+  - keepalive: Keepalive time. Unit is seconds
+- Return Value
+  - 0: Success. Success does not mean that the server connection was successful, but it means that you tried to connect to the server.
+        The callback function should check whether the connection of the server is successful.
+  - <0: Failed
+```
+
+#### 3.3.5 thingplus_disconnect
+```
+- Prototype: int thingplus_disconnect (void * t)
+- Description: Thing + disconnects the server. Asynchronous function, callback function set by thingplus_callback_set function is called when a server connection is disconnected.
+- Parameters
+  - t: SDK instance
+  - Return Value
+    - 0: Success. Success does not mean that the connection is broken, but it means that the attempt to disconnect is successful.
+          The result of the disconnection must be confirmed by the callback function.
+    - <0: Failed
+```
+
+#### 3.3.6 thingplus_status_publish
+```
+- Prototype: int thingplus_status_publish (void * t, int nr_status, struct thingplus_status * status)
+- Description: Transmits the status of the gateway, sensor, and actuator.
+- Parameters
+  - t: SDK instance
+  - nr_status: Number of states to transmit
+  - status: status to transmit
+- Return Value
+  - 0: Success
+  - <0: Failed
+```
+
+#### 3.3.7 thingplus_value_publish
+```
+- Prototype: int thingplus_value_publish (void * t, int nr_value, struct thingplus_value * values)
+- Description: Transmit the sensor value to Thing +.
+- Parameters
+  - t: SDK instance
+  - nr_value: number of sensor values ​​to transmit
+  - values: the sensor value to send
+- Return Value
+  - 0: Success
+  - <0: Failed
+```
+
+#### 3.3.8 thingplus_device_register
+```
+- Prototype: int thingplus_device_register (void * t, char * name, int uid, char * device_model_id, char device_id [THINGPLUS_ID_LENGTH]
+- Description: Register the device on Thing + server.
+- Parameters
+  - t: SDK instance
+  - name: the device name
+  - uid: The unique ID of the device in the gateway. It should not overlap with other devices.
+  - device_model_id: ID of the device model specified in the gateway model
+  - device_id: The device ID used by Thing +. If the device registration succeeds, the device ID used by Thing + is filled in the corresponding array.
+- Return Value
+  - 0: Success
+  - <0: Failed
+```
+
+##### 3.3.9 thingplus_sensor_register
+```
+- Prototype: int thingplus_sensor_register (void * t, char * name, int uid, char * type, char * device_id, char sensor_id [THINGPLUS_ID_LENGTH]
+- Description: Register sensor in Thing +.
+- Parameters
+  - t: SDK instance
+  - name: Sensor name
+  - uid: The unique ID of the sensor in the device. It should not overlap with other sensors.
+  - type: the type of sensor specified in the gateway model
+  - device_id: ID of the device to which the sensor belongs. You must use the device ID issued by Thing +.
+  - sensor_id: Sensor ID used by Thing +. If the sensor registration succeeds, the sensor ID used by Thing + is filled in the corresponding array.
+- Return Value
+  - 0: Success
+  - <0: Failed
+```
+
+#### 3.3.10 thingplus_gatewayinfo
+```
+- Prototype: int thingplus_gatewayinfo (void * t, struct thingplus_gateway * info)
+- Description: Thing + retrieves the gateway information registered in the server.
+- Parameters
+  - t: SDK instance
+  - info: Structure to hold gateway information
+- Return Value
+  - 0: Success
+  - <0: Failed
+```
+
+#### 3.3.11 thingplus_deviceinfo
+```
+- Prototype: int thingplus_deviceinfo (void * t, struct thingplus_device * info)
+- Description: Thing + brings up device information registered in server.
+- Parameters
+  - t: SDK instance
+  - info: Structure to hold device information
+- Return Value
+  - 0: Success
+  - <0: Failed
+```
 
 ## 4. Thing+ Gateway
 The Thing+ Gateway is a program implementing the Thing+ MQTT Protocol, distributed by Daliworks. The Thing+ Gateway connects hardware to the Thing+ Cloud Platform and sends sensor status and values, supports server time syncronization, discover sensors and actuators, and performs remote software updates.
@@ -403,7 +984,7 @@ The Thing+ Gateway sends a connected sensors and actuators list to the Thing+ Cl
 
 - TimeSync <br>
 Hardware time MUST be syncronized with server time. The Thing+ Gateway can, however, syncronize time automatically.
-If you use the Thing+ Gateway, there`s nothing required for you to do related to time syncronization. The Thing+ Gateway handles everything.
+If you use the Thing+ Gateway, theres nothing required for you to do related to time syncronization. The Thing+ Gateway handles everything.
 
 - Store DB <br>
 If your network is disconnected, the Thing+ Gateway saves sensors values to local storage. The saved sensor values will be published after the network is reconnected.
