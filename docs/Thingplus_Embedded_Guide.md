@@ -1186,7 +1186,7 @@ Device Agent <-- Thing+ Gateway
 - Request params : 없음
 
 Device Agent --> Thing+ Gateway
-- Response Result : [{"deviceAddress": DEV_ID, deviceModelId: DEVICE_MODEL_ID, "sensors":["id":ID, "type":TYPE, "notification": true or false}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}]
+- Response Result : [{"deviceAddress": DEV_ID, "deviceModelId": DEVICE_MODEL_ID, "sensors":["id":ID, "type":TYPE, "notification": true or false}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}]
   - deviceAddress: 디바이스 아이디. 디바이스별로 가지는 고유값으로 디바이스 에이전트에서 정하면 됩니다.
   - deviceModelId : Thing+에서 정의한 디바이스 모델 아이디
   - sensors: 센서 리스트
