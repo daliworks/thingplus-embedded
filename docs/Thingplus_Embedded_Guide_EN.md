@@ -35,15 +35,39 @@ The Thing+ defined message protocol used to communicate between hardware and the
 Thing+ Embedded Prococol is based on HTTP and MQTT. Sensor values and actuator commands are sent via MQTT between sensors and devices - data coming out of devices to a gateway is passed via HTTP.
 
 #### 2.1 MQTT
-TBD
+Message Queuing Telemetry Transport (MQTT) is a lightweight messaging protocol used between an IoT device that uses low bandwidth and low power and the Thing + Cloud. MQTT has a publish / subscribe structure and is implemented via TCP / IP. You can use SSL and TLS to secure your data and provide a USERNAME / PASSWORD based authentication method.
+
+![MQTT_thing](./image/thingplus_Embedded_Guide/MQTT_thing.png)
+
+The MQTT broker is responsible for delivering messages to various clients for sending and receiving messages. Thing + Cloud provides an MQTT broker. IoT devices send sensor values to the MQTT broker provided by the Thing+ Cloud, receive actuators commands, and operate according to commands.
+
+The client that generates the message publishes the message with a Topic before it, and the subscriber that subscribes to the message registers the topic to be received with the broker. The MQTT broker relays messages based on topics. Topics have a hierarchy and use slashes (/) to separate them. <br>
+
+```
+Topic example)
+HOME0 / BEDROOM / TEMERTATURE
+HOME0 / BEDROOM / HUMIDITY
+HOME0 / LIVING / CO2_LEVEL
+HOME1 / KITCHEN / DUST_LEVEL
+
+```
+
+MQTT provides three levels of quality of service (QoS).
+
+- QoS0: The message is sent only once and does not check the success or failure of the transmission. Possible message loss.
+- ** QoS1 **: Messages can be sent more than once. Messages are always delivered accurately and can be delivered in duplicates during the delivery process. ** Thing + Cloud uses QoS1 **
+- QoS2: The message is transmitted exactly once and does not cause message loss and duplicate transmission. However, a large amount of network bandwidth is required for message transmission.
+
+MQTT provides a Last Will and Testament (LWT) function that can save messages to other clients when a client connection is lost. The client can define a Will message, which the broker is storing. If the client is disconnected due to an error, the broker sends a Will message to the other client. Thing + uses the error status of the thing as a Will message. When an error occurs in the thing, Thing + Cloud can immediately detect the error of the device.
+
 
 #### 2.2 Thing+ MQTT Protocol
 This chapter describes the MQTT Topic and data format used by Thing+ Platform. Any hardware to be integrated with the Thing+ Cloud Platform should follow the given Thing+ MQTT Specification. When the Thing+ Cloud Platform sends a command to an actuator, the command uses the same Thing+ MQTT Specification.
-­
+
 - Thing+ MQTT Message uses QoS1. ‘RETAIN’ of all messages except that the ‘Will’ Message is not used.
-­- Message timezone is always UTC.
+- Message timezone is always UTC.
 - A thing transmits data regarding the status of the MQTT connection, gateway and sensor.
-­- The value for each status is defined as below,
+- The value for each status is defined as below,
 
 Status|Value(strings)
 :---|:---
