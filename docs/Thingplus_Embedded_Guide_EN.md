@@ -36,8 +36,8 @@ Thing+ Embedded Prococol is based on HTTP and MQTT. Sensor values and actuator c
 
 #### 2.1 MQTT
 Message Queuing Telemetry Transport (MQTT) is a lightweight messaging protocol used between an IoT device that uses low bandwidth and low power and the Thing + Cloud. MQTT has a publish / subscribe structure and is implemented via TCP / IP. You can use SSL and TLS to secure your data and provide a USERNAME / PASSWORD based authentication method.
+![MQTT_thing](./image/Thingplus_Embedded_Guide/MQTT_thing.png)
 
-![MQTT_thing](./image/thingplus_Embedded_Guide/MQTT_thing.png)
 
 The MQTT broker is responsible for delivering messages to various clients for sending and receiving messages. Thing + Cloud provides an MQTT broker. IoT devices send sensor values to the MQTT broker provided by the Thing+ Cloud, receive actuators commands, and operate according to commands.
 
