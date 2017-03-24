@@ -120,13 +120,13 @@ TOPIC: v/a/g/__GATEWAY_ID__/status
 MESSAGE: __HW_STATUS__,__VALID_TIME__
 
 __HW_STATUS__: "on" or "off"
-__VALID_TIME__: Unit is msec
+__VALID_TIME__: Unit is sec
 ```
 Example
 
 ```
 TOPIC: v/a/g/000011112222/status
-MESSAGE: on,146156169505
+MESSAGE: on,90
 ```
 
 
@@ -140,14 +140,14 @@ TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
 MESSAGE: __SENSOR_STATUS__,__VALID_TIME__
 
 __SENSOR_STATUS__ : "on" or "off"
-__VALID_TIME__: Unit is msec
+__VALID_TIME__: Unit is sec
 ```
 
 Example
 
 ```
 TOPIC: v/a/g/000011112222/s/000011112222-temperature-0/status
-MESSAGE: on,146156161192
+MESSAGE: on,90
 ```
 
 #### 2.2.5 Transmission of the H/W status and sensor's status data
@@ -161,7 +161,7 @@ MESSAGE: __HW_STATUS__,__VALID_TIME__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_TI
 }
 
 __HW_STATUS__ : "on" or "off"
-__VALID_TIME__: Unit is msec
+__VALID_TIME__: Unit is sec
 __SENSOR_STATUS__ : "on" or "off"
 ```
 
@@ -169,7 +169,7 @@ Example
 
 ```
 TOPIC: v/a/g/000011112222/status
-MESSAGE: on,146156169505,000011112222-onoff-0,on,146156168403,000011112222-temperature-0,off,146156161192
+MESSAGE: on,90,000011112222-onoff-0,on,90,000011112222-temperature-0,off,90
 ```
 
 
