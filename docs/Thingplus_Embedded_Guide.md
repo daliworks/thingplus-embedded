@@ -101,10 +101,10 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 
 |액추에이터|Type|명령어|명령어 설명|파라미터|파라미터 설명
 |:---|:---|:---|:---|:---|:---
-|LED|led|on|켜기|duration|지속시간 (단위:ms)
-|||blink|깜빡임|duration<br>interval|지속시간 (단위:ms)<br>깜빡이는 주기 (단위:ms)
+|LED|led|on|켜기|duration|지속시간(단위 ms)
+|||blink|깜빡임|duration<br>interval|지속시간(단위 ms)<br>깜빡이는 주기(단위 ms)
 |||off|끄기|없음|
-|파워스위치|powerSwitch|on|켜기|duration|지속시간 (단위:ms)
+|파워스위치|powerSwitch|on|켜기|duration|지속시간(단위 ms)
 |||off|끄기|없음|
 |부저|buzzer|on|켜기|없음|
 |||off|끄기|없음|
