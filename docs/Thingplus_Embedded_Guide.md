@@ -100,17 +100,17 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 ##### 1.1.4.3 액추에이터
 
 |액추에이터|Type|명령어|명령어 설명|파라미터|파라미터 설명
-|:---|:---|:---|:---|:---|:---|:---
+|:---|:---|:---|:---|:---|:---
 |LED|led|on|켜기|duration|지속시간 (단위:ms)
 |||blink|깜빡임|duration<br>interval|지속시간 (단위:ms)<br>깜빡이는 주기 (단위:ms)
-|||off|끄기|없음
+|||off|끄기|없음|
 |파워스위치|powerSwitch|on|켜기|duration|지속시간 (단위:ms)
-|||off|끄기|없음
-|부저|buzzer|on|켜기|없음
-|||off|끄기|없음
+|||off|끄기|없음|
+|부저|buzzer|on|켜기|없음|
+|||off|끄기|없음|
 |LCD|lcd|print|출력|text<br>row<br>column|출력할 문자열<br>x좌표<br>y좌표
 |||clear|문자열 삭제|row|삭제할 줄<br> -1이면 전체 삭제
-|카메라|camera|snapPicture|사진찍기|없음
+|카메라|camera|snapPicture|사진찍기|없음|
 |문자열 액추에이터|stringActuator|send|액추에이터 실행|text|사용자 정의 문자열
 
 Thing+가 지원하는 센서, 액추에이터의 전체 목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인할 수 있습니다.
