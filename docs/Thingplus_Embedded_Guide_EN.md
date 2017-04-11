@@ -695,7 +695,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 #### 2.3.7 Registering a Device
 
 #### Resource URL
-`POST https://api.thingplus.net/devices`
+`POST https://api.thingplus.net/gateways/<GATEWAY_ID>/devices`
 
 #### Post Parameters
 
