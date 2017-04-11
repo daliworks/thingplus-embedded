@@ -803,7 +803,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 #### 2.3.7 디바이스 등록하기
 
 #### Resource URL
-`POST https://api.thingplus.net/devices`
+`POST https://api.thingplus.net/gateways/<GATEWAY_ID>/devices`
 
 #### Post Parameters
 
