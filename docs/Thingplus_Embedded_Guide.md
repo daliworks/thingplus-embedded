@@ -589,7 +589,7 @@ https://api.thingplus.net
 content-type: application/json
 ```
 
-#### 2.3.3 에러코드
+##### 에러코드
 |Error Code|Description|
 |---|---|
 |401|Unauthorized|
@@ -601,7 +601,7 @@ content-type: application/json
 #### 2.3.4 사용중인 게이트웨이 정보 가지고 오기
 사용중인 게이트웨이의 정보를 가지고 오는 API입니다.
 
-#### Resource URL
+##### Resource URL
 `GET https://api.thingplus.net/gateways/<GATEWAY_ID>?fields=model&fiedlds=autoCreateDiscoverable`
 > ##### **GATEWAY_ID** &nbsp;&nbsp;&nbsp; 게이트웨이 아이디
 
@@ -609,7 +609,7 @@ content-type: application/json
 `GET https://api.thingplus.net/gateways/abcdefghijkl?fields=model&fields=autoCreateDiscoverable`
 
 --
-#### Response Example
+##### Response Example
 ```javascript
 {
   id: "abcdefghijkl",
@@ -624,16 +624,16 @@ content-type: application/json
 #### 2.3.5 게이트웨이 모델 가지고 오기
 Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 게이트웨이 정보에 있는 모델 번호를 사용하여, 게이트웨이 모델을 가지고 옵니다.
 
-#### Resource URL
+##### Resource URL
 `GET https://api.thingplus.net/gatewayModels/<MODEL_NUMBER>`
-> #####**MODEL_NUMBER** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
+> ###### **MODEL_NUMBER** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
 
 ##### Request Example
 `GET https://api.thingplus.net/gatewayModels/34`
 
 --
-#### Response Body Format and Example
-##### Body Format
+##### Response Body Format and Example
+###### Body Format
 ```javascript
 {
   ctime: "<Gateway Model 생성 시간>",
@@ -691,7 +691,7 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
 > **deviceModels** : 게이트웨이가 가질 수 있는 디바이스에 대한 모델
 >> **discoverable** : 디바이스 디스커버 가능 여부<br>
 >> **idTemplate** : 디바이스 아이디의 형식 정의<br>
->>>디바이스 등록 시 idTemplate 형식으로 디바이스 아이디를 만들어서 등록해야 한다.
+>>> 디바이스 등록 시 idTemplate 형식으로 디바이스 아이디를 만들어서 등록해야 한다.
 
 ##### Example
 ```javacript
@@ -756,7 +756,7 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
 #### 2.3.6 센서 드라이버 가지고 오기
 Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 
-#### Resource URL
+##### Resource URL
 `GET https://api.thingplus.net/sensorDrivers/?filter[id]=<driverName>`
 
 > **driverName** 센서 드라이버 이름
@@ -765,7 +765,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 `GET https://api.thingplus.net/sensorDrivers/?filter[id]=jsonrpcSensor`
 
 --
-#### Response Example
+##### Response Example
 ```javascript
 {
   discoverable: "true",
@@ -804,10 +804,10 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 
 #### 2.3.7 디바이스 등록하기
 
-#### Resource URL
+##### Resource URL
 `POST https://api.thingplus.net/gateways/<GATEWAY_ID>/devices`
 
-#### Post Parameters
+##### Post Parameters
 
 |parameter|description|
 |-----|--------|
@@ -824,7 +824,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 }
 ```
 --
-#### Response Example
+##### Response Example
 ```
 {
   name: 'My Device0',
@@ -837,7 +837,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 ```
 
 --
-#### Error
+##### Error
 |Error Code|Description|
 |---|---|
 |401|body의 게이트웨이 아이디 또는, APIKEY가 틀렸음.
@@ -846,12 +846,12 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 
 #### 2.3.8 센서 등록하기
 
-#### Resource URL
+##### Resource URL
 `POST https://api.thingplus.net/gateways/<GATEWAY_ID>/sensors`
 
 > **GATEAY_ID** 센서가 속한 게이트웨이의 아이디
 
-#### Post Parameter
+##### Post Parameter
 |parameter|description|
 |---|---|
 |network|네트워크 이름|
@@ -881,7 +881,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 }
 ```
 --
-####Response Example
+##### Response Example
 ```
 {
   network: 'jsonrpc',
@@ -900,7 +900,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 }
 ```
 --
-#### Error
+##### Error
 |Error Code|Description|
 |---|---|
 |401|body의 게이트웨이 아이디 또는, APIKEY가 틀렸음.
