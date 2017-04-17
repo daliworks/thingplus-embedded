@@ -442,8 +442,8 @@ The Thing + HTTP Protocol is the main protocol used for the Thing+ REST API. Whe
 }
 ```
 
-   * ReqId: Creates an ID according to the idTemplate type in sensor driver.
-     * Typically, idTemplate is {gatewayID} - {deviceAddress} - {type} - {sequence}.
+  * ReqId: Creates an ID according to the idTemplate type in sensor driver.
+    * Typically, idTemplate is {gatewayID} - {deviceAddress} - {type} - {sequence}.
       * GatewayID: Gateway ID
       * DeviceAddress: You must specify the device where the sensor belongs (is attached to) as the value for identifying the device in the gateway.
       * Type: The sensor type defined by Thing+
@@ -481,7 +481,7 @@ The content type should be application / json.
 Content-type: application / json
 ```
 
-#### 2.3.3 Error Codes
+##### Error Codes
 | Error Code | Description |
 | --- | --- |
 | 401 | Unauthorized |
@@ -493,15 +493,15 @@ Content-type: application / json
 #### 2.3.4 Getting Your Gateway Information
 This is an API that brings in information of the gateway in use.
 
-#### Resource URL
+##### Resource URL
 `GET https://api.thingplus.net/gateways/ <GATEWAY_ID>? Fields = model & fiedlds = autoCreateDiscoverable`
-> ##### ** GATEWAY_ID ** Gateway ID
+> ###### ** GATEWAY_ID ** Gateway ID
 
 ##### Request Example
 `GET https://api.thingplus.net/gateways/abcdefghijkl?Fields=model&fields=autoCreateDiscoverable`
 
 --
-#### Response Example
+##### Response Example
 ```Javascript
 {
   id: "abcdefghijkl",
@@ -524,8 +524,8 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 `GET https: // api.thingplus.net / gatewayModels / 34`
 
 --
-#### Response Body Format and Example
-##### Body Format
+##### Response Body Format and Example
+###### Body Format
 ```Javascript
 {
   ctime: "<Gateway Model creation time>",
@@ -648,7 +648,7 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 #### 2.3.6 Getting the Sensor Driver
 This is an API that handles sensor drivers as defined by Thing+.
 
-#### Resource URL
+##### Resource URL
 `GET https://api.thingplus.net/sensorDrivers/?filter [id] = <driverName>`
 
 > ** driverName ** Sensor driver name
@@ -657,7 +657,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 `GET https://api.thingplus.net/sensorDrivers/?filter [id] = jsonrpcSensor`
 
 --
-#### Response Example
+##### Response Example
 ```Javascript
 {
   ciscoverable: "true",
@@ -696,10 +696,10 @@ This is an API that handles sensor drivers as defined by Thing+.
 
 #### 2.3.7 Registering a Device
 
-#### Resource URL
+##### Resource URL
 `POST https://api.thingplus.net/gateways/<GATEWAY_ID>/devices`
 
-#### Post Parameters
+##### Post Parameters
 
 | Parameter | description |
 | ----- | -------- |
@@ -716,7 +716,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 }
 ```
 --
-#### Response Example
+##### Response Example
 ```
 {
   name: 'My Device0',
@@ -729,7 +729,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 ```
 
 --
-#### Error
+##### Error
 | Error Code | Description |
 | --- | --- |
 | 401 | The gateway ID of the body, or APIKEY is incorrect.
@@ -738,12 +738,12 @@ This is an API that handles sensor drivers as defined by Thing+.
 
 #### 2.3.8 Registering a sensor
 
-#### Resource URL
+##### Resource URL
 `POST https://api.thingplus.net/gateways/ <GATEWAY_ID> / sensors`
 
 > ** GATEAY_ID ** The ID of the gateway to which the sensor belongs
 
-#### Post Parameter
+##### Post Parameter
 | Parameter | description |
 | --- | --- |
 | Network | network name |
@@ -773,7 +773,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 }
 ```
 --
-#### Response Example
+##### Response Example
 ```
 {
   network: 'jsonrpc',
@@ -792,7 +792,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 }
 ```
 --
-#### Error
+##### Error
 | Error Code | Description |
 | --- | --- |
 | 401 | The gateway ID of the body, or APIKEY is incorrect.
