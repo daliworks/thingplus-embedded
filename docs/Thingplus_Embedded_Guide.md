@@ -169,6 +169,8 @@ Thing+에서 사용하는 MQTT 토픽과 데이터 포멧에 대해서 설명합
 #### 2.2.1 MQTT 연결 설정
 Thing+가 사용하는 MQTT 버전은 3이며, 포트는 8883입니다. **thing이 설치되는 네트워크에 8883 포트가 막혀있으면 Thing+에 접속할 수 없습니다.**</br>
 
+Thing+ 브로커에 MQTT 연결시 반드시 SSL을 사용하는 **mqtts** 프로토콜을 사용해야 합니다. 암호화되지 않은 MQTT 연결은 허용되지 않습니다.</br>
+
 MQTT 접속 아이디는 게이트웨이 아이디, 비밀번호는 APIKEY입니다. WiLL 메시지의 토픽은 *v/a/g/{gateway_id}/mqtt/status*이고, 메시지 내용은 'err'이고, Retain은 True 입니다. 재접속 시 세션은 새로 생성하도록 설정해야합니다.</br>
 
 MQTT Connection SPEC|Thing+ Definition

@@ -79,6 +79,8 @@ Error occurred|err
 The version of MQTT used by the Thing+ Platform is 3 and the 8883 port is used for MQTT communication.
 8883 port should be opened before communicating with the Thing+ Platform. <br>
 
+When connecting MQTT to a Thing+ broker, you must use the **mqtts** protocol. Plain MQTT connections are not allowed. <br/>
+
 ** Details of the MQTT Connection Spec  **
 
 MQTT Connection SPEC|Thing+ Definition
