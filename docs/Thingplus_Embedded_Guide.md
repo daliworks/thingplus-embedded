@@ -1411,27 +1411,27 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
 #### 5.1.4 빌드 및 실행방법
 * 빌드
 
-  ```
+```
 $ git submodule init
 $ git submodule update
 $ make
 ```
   * 디버깅 모드 빌드
 
-     ```
+  ```
   $ make ENABLE_DEBUG=1
   ```
 * 실행
 
-  ```
+```
 $ ./thingplus
 ```
 
 * 클린
 
-   ```
-  $ make clean
-  ```
+```
+$ make clean
+```
 
 
 
