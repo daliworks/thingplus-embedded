@@ -141,7 +141,6 @@ HOME0/BEDROOM/TEMERTATURE
 HOME0/BEDROOM/HUMIDITY
 HOME0/LIVING/CO2_LEVEL
 HOME1/KITCHEN/DUST_LEVEL
-
 ```
 
 MQTT는 3단계의 QoS(Quality of Service)를 제공합니다.
@@ -355,14 +354,12 @@ __METHOD__: 수행해야 할 작업 이름
 __PARAMS__: 파라미터
 
 메시지에 {, }, "가 포함됩니다.
-
 ```
 
 ##### Example
 
 ```
 TOPIC: v/a/g/000011112222/req
-
 ```
 
 #### 2.2.9 Thing+가 요청한 작업 결과 전송
@@ -508,16 +505,16 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
    * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
    * 디바이스 모델에서 정의한 idTemplate은 디바이스 등록 시 사용됩니다.
 3. 등록할 디바이스 정보를 만들어 전송합니다. (2.3.6절 참고)
- <br>
-  데이터 포맷은 아래와 같습니다.
 
-  ```javascript
-  {
-      reqId: '<Device ID>',
-      name: '<Device Name>',
-      model: '<Device Model>'
-  }
-  ```
+```javascript
+{
+  reqId: '<Device ID>',
+  name: '<Device Name>',
+  model: '<Device Model>'
+}
+```
+
+##### 데이터 포맷은 아래와 같습니다.
    * reqId: 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
       * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}입니다.
          * gatewayID: 게이트웨이 아이디
