@@ -13,11 +13,11 @@ Thing+ MQTT 프로토콜은 Thing+ Cloud와 하드웨어 사이에 사용하는 
 Thing+와 하드웨어를 연동하는 방법은 3가지가 있습니다.
 
 1. Thing+ MQTT 프로토콜을 참고하여 소프트웨어 작성
-  - 하드웨어 업체는 Thing+ MQTT 프로토콜 문서와 C로 작성된 예제 코드를 참고하여 IoT 기기에 구동되는 Thing+ 연동 소프트웨어를 개발하실 수 있습니다. 개발해야 할 항목은 Thing+ Cloud 연결 및 데이터 송수신, MQTT 메시지 생성 및 분석, 시간동기 등이 있습니다. 개발 자유도가 가장 높으며, 하드웨어에 최적화 된 소프트웨어를 작성하실 수 있습니다.
+   - 하드웨어 업체는 Thing+ MQTT 프로토콜 문서와 C로 작성된 예제 코드를 참고하여 IoT 기기에 구동되는 Thing+ 연동 소프트웨어를 개발하실 수 있습니다. 개발해야 할 항목은 Thing+ Cloud 연결 및 데이터 송수신, MQTT 메시지 생성 및 분석, 시간동기 등이 있습니다. 개발 자유도가 가장 높으며, 하드웨어에 최적화 된 소프트웨어를 작성하실 수 있습니다.
 2. Thing+ Embedded SDK 라이브러리 이용하며 소프트웨어 작성
-  - 하드웨어 업체에서 Thing+ 연동 소프트웨어를 보다 쉽게 개발할 수 있도록 Thing+ Embedded SDK를 제공하고 있습니다. 센서 등록 및 데이터 전송 등을 담당하며, Linux 기반의 H/W에서 사용 가능합니다.
+   - 하드웨어 업체에서 Thing+ 연동 소프트웨어를 보다 쉽게 개발할 수 있도록 Thing+ Embedded SDK를 제공하고 있습니다. 센서 등록 및 데이터 전송 등을 담당하며, Linux 기반의 H/W에서 사용 가능합니다.
 3. Thing+ Gateway를 사용하고, Device Agent 작성
-  - Thing+ Gateway는 Thing+ Cloud와의 연결을 담당하고, Device Agent는 센서값을 읽고 액추에이터를 동작시키는 일을 합니다. 하드웨어 업체든 Device Agent 부분을 작성하시면 됩니다. **단, Thing+ Gatweay를 사용하기 위해선 하드웨어에 Node.js가 설치되어야 하며, RTOS, Micro OS, Firmware를 이용하는 하드웨어는 사용할 수 없습니다.** Thing+ Gateway와 Device Agent 사이의 프로토콜 문서와 예제코드를 참고하실 수 있습니다.
+   - Thing+ Gateway는 Thing+ Cloud와의 연결을 담당하고, Device Agent는 센서값을 읽고 액추에이터를 동작시키는 일을 합니다. 하드웨어 업체든 Device Agent 부분을 작성하시면 됩니다. **단, Thing+ Gatweay를 사용하기 위해선 하드웨어에 Node.js가 설치되어야 하며, RTOS, Micro OS, Firmware를 이용하는 하드웨어는 사용할 수 없습니다.** Thing+ Gateway와 Device Agent 사이의 프로토콜 문서와 예제코드를 참고하실 수 있습니다.
 
 
 ### 1.0 Guidelines for things
