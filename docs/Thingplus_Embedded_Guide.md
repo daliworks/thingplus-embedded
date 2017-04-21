@@ -13,11 +13,11 @@ Thing+ MQTT 프로토콜은 Thing+ Cloud와 하드웨어 사이에 사용하는 
 Thing+와 하드웨어를 연동하는 방법은 3가지가 있습니다.
 
 1. Thing+ MQTT 프로토콜을 참고하여 소프트웨어 작성
- - 하드웨어 업체는 Thing+ MQTT 프로토콜 문서와 C로 작성된 예제 코드를 참고하여 IoT 기기에 구동되는 Thing+ 연동 소프트웨어를 개발하실 수 있습니다. 개발해야 할 항목은 Thing+ Cloud 연결 및 데이터 송수신, MQTT 메시지 생성 및 분석, 시간동기 등이 있습니다. 개발 자유도가 가장 높으며, 하드웨어에 최적화 된 소프트웨어를 작성하실 수 있습니다.
+  - 하드웨어 업체는 Thing+ MQTT 프로토콜 문서와 C로 작성된 예제 코드를 참고하여 IoT 기기에 구동되는 Thing+ 연동 소프트웨어를 개발하실 수 있습니다. 개발해야 할 항목은 Thing+ Cloud 연결 및 데이터 송수신, MQTT 메시지 생성 및 분석, 시간동기 등이 있습니다. 개발 자유도가 가장 높으며, 하드웨어에 최적화 된 소프트웨어를 작성하실 수 있습니다.
 2. Thing+ Embedded SDK 라이브러리 이용하며 소프트웨어 작성
- - (**준비중**)
+  - 하드웨어 업체에서 Thing+ 연동 소프트웨어를 보다 쉽게 개발할 수 있도록 Thing+ Embedded SDK를 제공하고 있습니다. 센서 등록 및 데이터 전송 등을 담당하며, Linux 기반의 H/W에서 사용 가능합니다.
 3. Thing+ Gateway를 사용하고, Device Agent 작성
- - Thing+ Gateway는 Thing+ Cloud와의 연결을 담당하고, Device Agent는 센서값을 읽고 액추에이터를 동작시키는 일을 합니다. 하드웨어 업체든 Device Agent 부분을 작성하시면 됩니다. **단, Thing+ Gatweay를 사용하기 위해선 하드웨어에 Node.js가 설치되어야 하며, RTOS, Micro OS, Firmware를 이용하는 하드웨어는 사용할 수 없습니다.** Thing+ Gateway와 Device Agent 사이의 프로토콜 문서와 예제코드를 참고하실 수 있습니다.
+  - Thing+ Gateway는 Thing+ Cloud와의 연결을 담당하고, Device Agent는 센서값을 읽고 액추에이터를 동작시키는 일을 합니다. 하드웨어 업체든 Device Agent 부분을 작성하시면 됩니다. **단, Thing+ Gatweay를 사용하기 위해선 하드웨어에 Node.js가 설치되어야 하며, RTOS, Micro OS, Firmware를 이용하는 하드웨어는 사용할 수 없습니다.** Thing+ Gateway와 Device Agent 사이의 프로토콜 문서와 예제코드를 참고하실 수 있습니다.
 
 
 ### 1.0 Guidelines for things
@@ -25,31 +25,31 @@ Thing+와 하드웨어를 연동하는 방법은 3가지가 있습니다.
 Thing+와 연동하는 IoT 기기(thing)는 다음사항을 충족시켜야 합니다.
 
 1. 하드웨어는 SSL, TLS, MQTT 이용해 Thing+ Cloud에 접속이 가능해야 합니다.
-- 하드웨어의 로컬시간은 Thing+에서 서버시간과 동기화되어야 합니다.
-- 하드웨어와 Thing+ Cloud간 접속이 끊어졌을 경우 하드웨어는 3시간동안 센서값을 저장하여 데이터 유실을 최소화 해야 합니다.
-- 네트워크가 재연결되면 저장한 센서값을 Thing+ Cloud에 전송해야 합니다.
-- 하드웨어는 주기적으로 기기의 상태와 센서의 상태를 Thing+ Cloud에 전송해야 합니다.
-- 하드웨어에 시리즈 센서가 있을 경우, 전송 주기를 지켜야합니다. 최소 전송 주기는 1분입니다.
-- 전송주기가 변경될 경우, 하드웨어는 새로운 전송 주기에 맞쳐 센서값을 올려야 합니다.
-- 하드웨어는 MQTT 구독을 Thing+에서 정한 토픽만 해야합니다.
+   - 하드웨어의 로컬시간은 Thing+에서 서버시간과 동기화되어야 합니다.
+   - 하드웨어와 Thing+ Cloud간 접속이 끊어졌을 경우 하드웨어는 3시간동안 센서값을 저장하여 데이터 유실을 최소화 해야 합니다.
+   - 네트워크가 재연결되면 저장한 센서값을 Thing+ Cloud에 전송해야 합니다.
+   - 하드웨어는 주기적으로 기기의 상태와 센서의 상태를 Thing+ Cloud에 전송해야 합니다.
+   - 하드웨어에 시리즈 센서가 있을 경우, 전송 주기를 지켜야합니다. 최소 전송 주기는 1분입니다.
+   - 전송주기가 변경될 경우, 하드웨어는 새로운 전송 주기에 맞쳐 센서값을 올려야 합니다.
+   - 하드웨어는 MQTT 구독을 Thing+에서 정한 토픽만 해야합니다.
 
 ### 1.1 Thing+ Embedded에서 정의한 개념 설명
 
 #### 1.1.1 Gateway, Device, Sensor
 ![Gateway_Device_Sensor](./image/Thingplus_Embedded_Guide/Gateway_Device_Sensor.png)
 
-게이트웨이(Gateway) : Thing+가 정의한 게이트웨이는 MQTT 또는, HTTP 연결이 가능한 하드웨어로 Thing+ 서버에 접속하여, 센서 데이터를 전송하고, 액추에이터 명령어를 받는 역할을 하는 장비입니다.
+게이트웨이(Gateway): Thing+가 정의한 게이트웨이는 MQTT 또는, HTTP 연결이 가능한 하드웨어로 Thing+ 서버에 접속하여, 센서 데이터를 전송하고, 액추에이터 명령어를 받는 역할을 하는 장비입니다.
 
-디바이스(Device) : Thing+가 정의한 디바이스는 게이트웨이 안에 연결된 센서의 집합을 의미합니다. 예를 들어, 게이트웨이 내부에, 블루투스로 연결되는 온도, 습도 센서가 있다면, 블루투스 기기가 하나의 디바이스로 정의할 수 있습니다. 디바이스는 물리적인 하드웨어 일 수도 있고, 가상의 센서 집합이 될 수 도 있습니다.
+디바이스(Device): Thing+가 정의한 디바이스는 게이트웨이 안에 연결된 센서의 집합을 의미합니다. 예를 들어, 게이트웨이 내부에, 블루투스로 연결되는 온도, 습도 센서가 있다면, 블루투스 기기가 하나의 디바이스로 정의할 수 있습니다. 디바이스는 물리적인 하드웨어 일 수도 있고, 가상의 센서 집합이 될 수 도 있습니다.
 
-센서(Sensor) : Thing+ 정의한 센서는 온도, 습도 등을 측정하는 하드웨어로 일반적으로 사용하는 센서의 의미와 동일합니다. 또한, 액추에이터도 센서의 한 종류에 포함이 됩니다. 모든 센서는 하나의 게이트웨이에만 속해 있으며,
+센서(Sensor): Thing+ 정의한 센서는 온도, 습도 등을 측정하는 하드웨어로 일반적으로 사용하는 센서의 의미와 동일합니다. 또한, 액추에이터도 센서의 한 종류에 포함이 됩니다. 모든 센서는 하나의 게이트웨이에만 속해 있으며,
 
 #### 1.1.2 Gateway ID, APIKEY, Sensor ID
 게이트웨이 아이디(Gateway ID): Thing+에 연결된 각 게이트웨이가 가지는 고유의 ID를 의미합니다. 12자리 문자열로 구성이 되며, 일반적으로 유선랜의 MAC어드레스를 사용합니다. </br>
 
-APIKEY : Thing+에서 발급하는 KEY로 MQTT 인증에 사용됩니다. Thing+ 포털에 게이트웨이 아이디를 등록하면 APIKEY를 발급하실 수 있으며, **발급된 APIKEY는 해당 게이트웨이에만 유효합니다. 게이트웨이는 발급받은 APIKEY를 저장하고 있어야하며, MQTT 접속 시 인증 비밀번호로 APIKEY를 사용해야 합니다.**
+APIKEY: Thing+에서 발급하는 KEY로 MQTT 인증에 사용됩니다. Thing+ 포털에 게이트웨이 아이디를 등록하면 APIKEY를 발급하실 수 있으며, **발급된 APIKEY는 해당 게이트웨이에만 유효합니다. 게이트웨이는 발급받은 APIKEY를 저장하고 있어야하며, MQTT 접속 시 인증 비밀번호로 APIKEY를 사용해야 합니다.**
 
-센서 아이디(Sensor ID) : 각 센서가 가지는 고유의 ID를 의미합니다. 일반적으로 센서 아이디는 게이트웨이 아이디와 센서 타입의 조합으로 만들 수 있습니다. 센서 아이디는 게이트웨이 관리 페이지에서 확인할 수 있습니다.
+센서 아이디(Sensor ID): 각 센서가 가지는 고유의 ID를 의미합니다. 일반적으로 센서 아이디는 게이트웨이 아이디와 센서 타입의 조합으로 만들 수 있습니다. 센서 아이디는 게이트웨이 관리 페이지에서 확인할 수 있습니다.
 
 #### 1.1.3 Event Sensor, Series Sensor, Report Interval
 Thing+는 센서의 종류에 따라 이벤트(Event) 센서와 시리즈(Series) 센서로 구분하고 있습니다. 이벤트 센서는 센서값이 변할 때 센서값을 즉시 Thing+에 전송하는 센서입니다. 시리즈 센서는 하드웨어에서 센서값을 주기적으로 전송하는 센서입니다. <br>
@@ -146,14 +146,14 @@ HOME1/KITCHEN/DUST_LEVEL
 
 MQTT는 3단계의 QoS(Quality of Service)를 제공합니다.
 
-- QoS0 : 메시지는 한 번만 전송되며, 전송의 성공, 실패를 확인하지 않습니다. 메시지 유실 가능성이 있습니다.
-- **QoS1** : 메시지는 한 번 이상 전송될 수 있습니다. 메시지는 항상 정확하게 전달되며, 전달과정 중 중복으로 전달될 수 있습니다. **Thing+ Cloud는 QoS1을 사용하고 있습니다.**
-- QoS2 : 메시지는 정확히 한번만 전송이 되며, 메시지 유실 및 중복 전송을 유발하지 않습니다. 하지만 메시지 전송에 많은 네트워크 대역폭이 요구됩니다.
+- QoS0: 메시지는 한 번만 전송되며, 전송의 성공, 실패를 확인하지 않습니다. 메시지 유실 가능성이 있습니다.
+- **QoS1**: 메시지는 한 번 이상 전송될 수 있습니다. 메시지는 항상 정확하게 전달되며, 전달과정 중 중복으로 전달될 수 있습니다. **Thing+ Cloud는 QoS1을 사용하고 있습니다.**
+- QoS2: 메시지는 정확히 한번만 전송이 되며, 메시지 유실 및 중복 전송을 유발하지 않습니다. 하지만 메시지 전송에 많은 네트워크 대역폭이 요구됩니다.
 
 MQTT는 클라이언트 접속이 끊어졌을 경우, 다른 클라이언트에게 전송할 메시지를 저장할 수 있는 Last Will and Testament(LWT) 기능을 제공합니다. 클라이언트는 Will 메시지를 정의할 수 있으며, 브로커는 이 메시지를 저장하고 있습니다. 클라이언트가 에러에 의해 접속이 끊어졌을 경우 브로커는 Will 메시지를 다른 클라이언트에게 전송합니다. Thing+는 thing의 에러 상태를 Will 메시지로 사용하고 있으며, thing에 에러가 발생 시 Thing+ Cloud는 즉각 기기의 에러를 알 수 있습니다.
 
 ### 2.2 Thing+ MQTT Protocol
-Thing+에서 사용하는 MQTT 토픽과 데이터 포멧에 대해서 설명합니다. **Thing+와 연동을 원하는 하드웨어 업체는 이 장에서 정의한 토픽과 데이터 포멧에 맞게 센서값을 전송해야하며, Thing+도 이 프로토콜에 기반하여 액추에이터 명령어를 전송합니다.**
+Thing+에서 사용하는 MQTT 토픽과 데이터 포맷에 대해서 설명합니다. **Thing+와 연동을 원하는 하드웨어 업체는 이 장에서 정의한 토픽과 데이터 포맷에 맞게 센서값을 전송해야하며, Thing+도 이 프로토콜에 기반하여 액추에이터 명령어를 전송합니다.**
 
 - MQTT 메시지는 **QoS1**을 사용하며, WiLL 메시지를 제외한 모든 메시지의 RETAIN은 사용하지 않습니다.</br>
 - 시간 값은 [UTC](https://en.wikipedia.org/wiki/Unix_time)를 사용합니다.</br>
@@ -195,7 +195,7 @@ Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
 TOPIC: v/a/g/__GATEWAY_ID__/mqtt/status
 MESSAGE: on
 
-__GATEWAY_ID__ : 게이트웨이 아이디
+__GATEWAY_ID__: 게이트웨이 아이디
 ```
 Example
 
@@ -232,10 +232,10 @@ MESSAGE: on,90
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
 MESSAGE: __SENSOR_STATUS__,__VALID_TIME__
 
-__GATEWAY_ID__ : 게이트웨이 아이디
-__SENSOR_ID__ : 센서 아이디
-__SENSOR_STATUS__ : 센서의 상태. on|off
-__VALID_TIME__ : 상태의 유효시간. sec
+__GATEWAY_ID__: 게이트웨이 아이디
+__SENSOR_ID__: 센서 아이디
+__SENSOR_STATUS__: 센서의 상태. on|off
+__VALID_TIME__: 상태의 유효시간. sec
 ```
 
 Example
@@ -255,11 +255,11 @@ TOPIC: v/a/g/__GATEWAY_ID__/status
 MESSAGE: __HW_STATUS__,__VALID_TIME__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_TIME__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID__TIME__
 }
 
-__GATEWAY_ID__ : 게이트웨이 아이디
-__HW_STATUS__ : 게이트웨이의 상태. on|off
-__VALID_TIME__ : 상태의 유효시간. sec
-__SENSOR_ID__ : 센서 아이디
-__SENSOR_STATUS__ : 센서의 상태. on|off
+__GATEWAY_ID__: 게이트웨이 아이디
+__HW_STATUS__: 게이트웨이의 상태. on|off
+__VALID_TIME__: 상태의 유효시간. sec
+__SENSOR_ID__: 센서 아이디
+__SENSOR_STATUS__: 센서의 상태. on|off
 ```
 
 Example
@@ -278,10 +278,10 @@ MESSAGE: on,90,000011112222-onoff-0,on,90,000011112222-temperature-0,off,90
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
 MESSAGE: __TIME__,__VALUE__, ...(REPEAT FOR VALUES), __TIME__,__VALUE__
 
-__GATEWAY_ID__ : 게이트웨이 아이디
-__SENSOR_ID__ : 센서 아이디
-__TIME__ : 센싱 시간. UTC기준이며 단위는 msec
-__VALUE__ : 센서값
+__GATEWAY_ID__: 게이트웨이 아이디
+__SENSOR_ID__: 센서 아이디
+__TIME__: 센싱 시간. UTC기준이며 단위는 msec
+__VALUE__: 센서값
 ```
 
 Example
@@ -314,10 +314,10 @@ MESSAGE: [146156161000,26.5,146156162000,27.5,146156163000,30]
 TOPIC: v/a/g/__GATEWAY_ID__
 MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__],"__SENSOR_ID__":[__TIME__,__VALUE__,...,__TIME__,__VALUE__], ...(REPEAT FOR SENSORS), "__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__]}
 
-__GATEWAY_ID__ : 게이트웨이 아이디
-__SENSOR_ID__ : 센서 아이디
-__TIME__ : 센싱 시간. UTC기준이며 단위는 msec
-__VALUE__ : 센서값
+__GATEWAY_ID__: 게이트웨이 아이디
+__SENSOR_ID__: 센서 아이디
+__TIME__: 센싱 시간. UTC기준이며 단위는 msec
+__VALUE__: 센서값
 
 메시지에 {, }, [, ], "" 가 포함됩니다.
 ```
@@ -330,20 +330,20 @@ MESSAGE: {"000011112222-temperature-0":[1461563978000,27.5,1461563978000,28.5],"
 
 #### 2.2.8 Thing+가 하드웨어에게 작업을 요청하는 메시지
 
-Thing+는 액추에이터 실행, 하드웨어 환경 설정 등의 작업을 요청(Request)할 수 있으며, 하드웨어는 주어진 포멧에 따라 응답(Reponse)을 해야합니다.
+Thing+는 액추에이터 실행, 하드웨어 환경 설정 등의 작업을 요청(Request)할 수 있으며, 하드웨어는 주어진 포맷에 따라 응답(Reponse)을 해야합니다.
 
-하드웨어는 서버의 작업 요청을 받기 위해 토픽을 구독해야 하여, Thing+가 요청하는 메시지 포멧은 아래와 같습니다.
+하드웨어는 서버의 작업 요청을 받기 위해 토픽을 구독해야 하여, Thing+가 요청하는 메시지 포맷은 아래와 같습니다.
 
 > Thing+가 하드웨어에게 작업 요청
 
 ```
-TOPIC : v/a/g/__GATEWAY_ID__/req
+TOPIC: v/a/g/__GATEWAY_ID__/req
 MESSAGE: {"id": __MESSAGE_ID__, "method": __METHOD__, "params": __PARAMS__}
 
-__GATEWAY_ID__ : 게이트웨이 아이디
-__MESSAGE_ID__ : 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
-__METHOD__ : 수행해야 할 작업 이름
-__PARAMS__ : 파라미터
+__GATEWAY_ID__: 게이트웨이 아이디
+__MESSAGE_ID__: 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
+__METHOD__: 수행해야 할 작업 이름
+__PARAMS__: 파라미터
 
 메시지에 {, }, "가 포함됩니다.
 
@@ -358,7 +358,7 @@ TOPIC: v/a/g/000011112222/req
 
 #### 2.2.9 Thing+가 요청한 작업 결과 전송
 하드웨어는 Thing+가 요청한 작업을 수행한 후 결과를 Thing+에게 알려줘야 합니다.
-하드웨어가 응답하는 메시지 포멧은 작업의 성공, 실패에 따라 달라집니다.
+하드웨어가 응답하는 메시지 포맷은 작업의 성공, 실패에 따라 달라집니다.
 
 > Thing+ 요청 작업의 결과
 
@@ -366,11 +366,11 @@ TOPIC: v/a/g/000011112222/req
 TOPIC: v/a/g/__GATEWAY_ID__/res
 MESSAGE IF SUCCESS": {"id":__MESSAGE_ID__,"result":__RESULT__}
 MESSAGE IF FAILED ": {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__}}
-__GATEWAY_ID__ : 게이트웨이 아이디
-__MESSAGE_ID__ : 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
-__RESULT__ : 작업의 결과
-__ERR_CODE__ : 실패일 경우의 에러코드
-__ERR_MSG__ : 실패 이유
+__GATEWAY_ID__: 게이트웨이 아이디
+__MESSAGE_ID__: 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
+__RESULT__: 작업의 결과
+__ERR_CODE__: 실패일 경우의 에러코드
+__ERR_MSG__: 실패 이유
 
 메시지에 {, }, "가 포함됩니다.
 ```
@@ -381,9 +381,9 @@ __ERR_MSG__ : 실패 이유
 
 Method|Description|Parameters|Param Description
 :---|:---|:---|:---
-timeSync|시간 동기|{"time":\_\_TIME\_\_}|\_\_TIME\_\_ : 서버시간(UTC)
-controlActuator|액추에이터 실행|{"id":\_\_SENSOR_ID\_\_,"cmd":\_\_CMD\_\_,"options",\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : 액추에이터 아이디<br>\_\_CMD\_\_ : 명령어<br>\_\_OPTIONS\_\_ : 명령어 옵션<br>
-setProperty|리포트 인터벌 변경|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_ : 리포트 인터벌
+timeSync|시간 동기|{"time":\_\_TIME\_\_}|\_\_TIME\_\_: 서버시간(UTC)
+controlActuator|액추에이터 실행|{"id":\_\_SENSOR_ID\_\_,"cmd":\_\_CMD\_\_,"options",\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_: 액추에이터 아이디<br>\_\_CMD\_\_: 명령어<br>\_\_OPTIONS\_\_: 명령어 옵션<br>
+setProperty|리포트 인터벌 변경|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_: 리포트 인터벌
 poweroff|하드웨어 종료|None|None
 reboot|하드웨어 재시작|None|None
 restart|소프트웨어 재시작|None|None
@@ -402,14 +402,14 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"timeSync","params":{"time":__SERVER_TIME__}}
 
-RESPONSE IF SUCCESS : {"id":"__MESSAGE_ID__","result":""}
-RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id":"__MESSAGE_ID__","result":""}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 
-__GATEWAY_ID__ : 게이트웨이 아이디
-__MESSAGE_ID__ : 메시지 아이디
-__SERVER_TIME__ : 서버시간. UTC
-__ERR_CODE__ : 에러코드
-__ERR_MSG__ : 에러 메시지
+__GATEWAY_ID__: 게이트웨이 아이디
+__MESSAGE_ID__: 메시지 아이디
+__SERVER_TIME__: 서버시간. UTC
+__ERR_CODE__: 에러코드
+__ERR_MSG__: 에러 메시지
 ```
 
 Example
@@ -417,10 +417,10 @@ Example
 ```
 TOPIC: v/a/g/1928dbc93871/req
 
-REQUEST MESSAGE : {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
+REQUEST MESSAGE: {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
 
-RESPONSE IF SUCCESS : {"id":"e1kcs13b9","result":""}
-REPONSE IF FAILED : {"id":"e1kcs13b9","error":{"code": -32000, "message": "invalid options"}}
+RESPONSE IF SUCCESS: {"id":"e1kcs13b9","result":""}
+REPONSE IF FAILED: {"id":"e1kcs13b9","error":{"code": -32000, "message": "invalid options"}}
 ```
 
 ##### setProperty
@@ -429,22 +429,22 @@ setProperty 메쏘드는 리포트 인터벌을 전달할 때 사용합니다. �
 >setProperty params
 
 ```javascript
-TOPIC : v/a/g/__GATEWAY_ID__/req
+TOPIC: v/a/g/__GATEWAY_ID__/req
 
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"setProperty","params":{"reportInterval":__INTERVAL__}}
 
-RESPONSE IF SUCCESS : {"id" : "__MESSAGE_ID__", "result"}
-RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__", "result"}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
 Example
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
-REQUEST MESSAGE : {"id":"e1kcs13bb","method":"setProperty","params":{"reportInterval":"60000"}}
+REQUEST MESSAGE: {"id":"e1kcs13bb","method":"setProperty","params":{"reportInterval":"60000"}}
 
-RESPONSE IF SUCCESS : {"id":"e1kcs13bb","result":""}
-RESPONSE IF ERROR : {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid interval"}}
+RESPONSE IF SUCCESS: {"id":"e1kcs13bb","result":""}
+RESPONSE IF ERROR: {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid interval"}}
 }
 ```
 
@@ -469,15 +469,15 @@ powerSwitch|off|None
 TOPIC: v/a/g/__GATEWAY_ID__/req
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"controlActuator", "params":{"id":__SENSOR_ID__,"cmd":__CMD__, "options":{__OPTIONS__}}
 
-RESPONSE IF SUCCESS : {"id": "__MESSAGE_ID__", "result":""}
-RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__", "result":""}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
 Example: LED ON
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
-REQUEST MESSAGE : {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
+REQUEST MESSAGE: {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
 RESPONSE IF SUCCESS: {"id":"46h6f8xp3","result":""}
 RESPONSE IF FAILED: {"id":"46h6f8xp3","error": {"code":-32000,"message":"invalid options"}}
 }
@@ -490,16 +490,16 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
 ![Device_Discover](./image/Thingplus_Embedded_Guide/DeviceDiscover.png)
 
 1. 게이트웨이 정보를 얻어옵니다. (2.3.4절 참고)
-  * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
+   * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
       * autoCreateDiscoverable 참조
          * **디스커버 하지 않다면, thing은 디바이스를 등록할 수 없습니다.**
       * 게이트웨이 정보의 model은 게이트웨이 모델을 얻어올 때 사용됩니다.
 2. 게이트웨이 모델을 얻어옵니다. (2.3.5절 참고)
-  * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
-  * 디바이스 모델에서 정의한 idTemplate은 디바이스 등록 시 사용됩니다.
+   * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
+   * 디바이스 모델에서 정의한 idTemplate은 디바이스 등록 시 사용됩니다.
 3. 등록할 디바이스 정보를 만들어 전송합니다. (2.3.6절 참고)
  <br>
-  데이터 포멧은 아래와 같습니다.
+  데이터 포맷은 아래와 같습니다.
 
   ```javascript
   {
@@ -508,33 +508,45 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
       model: '<Device Model>'
   }
   ```
-  * reqId : 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
-     * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}입니다.
-         * gatewayID : 게이트웨이 아이디
-         * deviceAddress : 게이트웨이 내에 디바이스를 구분하기 위한 값으로 게이트웨이 내에서 중복이 되면 안됩니다. 사용자 정의
-  * name : 디바이스 이름. 사용자 정의
-  * model : 사용할 디바이스 모델의 이름. 게이트웨이 모델 정보에서 사용할 디바이스 모델 이름입니다.
+   * reqId: 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
+      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}입니다.
+         * gatewayID: 게이트웨이 아이디
+         * deviceAddress: 게이트웨이 내에 디바이스를 구분하기 위한 값으로 게이트웨이 내에서 중복이 되면 안됩니다. 사용자 정의
+   * name: 디바이스 이름. 사용자 정의
+   * model: 사용할 디바이스 모델의 이름. 게이트웨이 모델 정보에서 사용할 디바이스 모델 이름입니다.
 
 #### 2.3.2 센서 등록 과정
 
 ![SensorDiscover](./image/Thingplus_Embedded_Guide/SensorDiscover.png)
 
 1. 게이트웨이 정보를 얻어옵니다.(2.3.4절 참고)
-  * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
+   * 얻어 온 게이트웨이 정보에서 디스커버가 가능한지 판별합니다.
       * autoCreateDiscoverable 참조
          * **디스커버 하지 않다면, thing은 센서를 등록할 수 없습니다.**
       * 게이트웨이 정보의 model은 게이트웨이 모델을 얻어올 때 사용됩니다.
 2. 게이트웨이 모델을 얻어옵니다. (2.3.5절 참고)
-  * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
-  * 디바이스 모델의 sensors 배열은 디바이스에서 사용할 수 있는 센서 모델 목록 입니다.
-  * 사용할 수 있는 센서 모델 중 network, driverName, model, type, category는 센서 등록 시 사용이 됩니다.
-  * 또한, driverName은 센서 드라이버를 얻어올 때 필요합니다.
+   * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
+   * 디바이스 모델의 sensors 배열은 디바이스에서 사용할 수 있는 센서 모델 목록 입니다.
+   * 사용할 수 있는 센서 모델 중 network, driverName, model, type, category는 센서 등록 시 사용이 됩니다.
+   * 또한, driverName은 센서 드라이버를 얻어올 때 필요합니다.
 3. 센서 드라이버를 가지고 옵니다.
-  * 센서 드라이버에서 정의한 idTemplate은 센서 등록 시 사용됩니다.
+   * 센서 드라이버에서 정의한 idTemplate은 센서 등록 시 사용됩니다.
 4. 등록할 센서 정보를 만들어 전송합니다. (2.3.7절 참고)
- <br>
-  데이터 포멧은 아래와 같습니다.
+   * reqId: 센서 드라이버에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
+      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}-{type}-{sequence}입니다.
+      * gatewayID: 게이트웨이 아이디
+      * deviceAddress: 게이트웨이 내에 디바이스를 구분하기 위한 값으로 센서가 속한 디바이스의 어디레스를 적어줘야합니다.
+      * type: Thing+에서 정의한 센서 타입
+      * sequence: 한 디바이스 안에 동일한 종류의 센서가 2개 이상 있을 때 구분하기 위한 값입니다. 한 개만 있으면 생략하셔도 됩니다. 사용자 정의
+   * category: 등록 할 센서의 카테고리로 센서 모델에 정의되어 있습니다.
+   * type: 센서 타입으로 센서 모델에 정의되어 있습니다.
+   * model: 센서 모델의 이름으로 센서 모델에 정의되어 있습니다.
+   * driverName: 센서가 사용할 드라이버 이름으로 센서 모델에 정의되어 있습니다.
+   * network: 센서가 사용하는 네트워크로 센서 모델에 정의되어 있습니다.
+   * name: 센서 이름입니다. 사용자 정의
+   * deviceId: 센서가 속해있는 디바이스의 아이디입니다.
 
+##### Example
 ```javascript
 {
   reqId: 'abcdefghijkl-0-humidity',
@@ -544,30 +556,12 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   driverName: 'jsonrpcSensor',
   network: 'jsonrpc',
   name: 'My Camera',
-  owner: 'abcdefghijkl',
-  ctime: 1456297274325,
   deviceId: 'abcdefghijkl-0'
 }
 ```
 
-   * reqId : 센서 드라이버에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
-     * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}-{type}-{sequence}입니다.
-      * gatewayID : 게이트웨이 아이디
-      * deviceAddress : 게이트웨이 내에 디바이스를 구분하기 위한 값으로 센서가 속한 디바이스의 어디레스를 적어줘야합니다.
-      * type : Thing+에서 정의한 센서 타입
-      * sequence : 한 디바이스 안에 동일한 종류의 센서가 2개 이상 있을 때 구분하기 위한 값입니다. 한 개만 있으면 생략하셔도 됩니다. 사용자 정의
-  * category : 등록 할 센서의 카테고리로 센서 모델에 정의되어 있습니다.
-  * type : 센서 타입으로 센서 모델에 정의되어 있습니다.
-  * model : 센서 모델의 이름으로 센서 모델에 정의되어 있습니다.
-  * driverName : 센서가 사용할 드라이버 이름으로 센서 모델에 정의되어 있습니다.
-  * network : 센서가 사용하는 네트워크로 센서 모델에 정의되어 있습니다.
-  * name : 센서 이름입니다. 사용자 정의
-  * owner : 센서가 속해 있는 게이트웨이 아이디입니다.
-  * ctime : 센서가 생성 된 시간입니다. UTC
-  * deviceId : 센서가 속해있는 디바이스의 아이디입니다.
-
 #### 2.3.3 기본 설정 및 인증
-REST API의 URL은 다음과 같습니다.<br>
+REST API의 URL은 다음과 같습니다.
 ```
 https://api.thingplus.net
 ```
@@ -580,10 +574,12 @@ https://api.thingplus.net
   apikey: <APIKEY>
 }
 ```
-> GATEWAY_ID: 게이트웨이 아이디<br>
-> APIKEY: Thing+ Portal에서 발급받은 APIKEY
 
-컨텐츠의 type은 application/json을 해주셔야 합니다.
+##### Property
+> **GATEWAY_ID** &nbsp;&nbsp;&nbsp; 게이트웨이 아이디<br>
+> **APIKEY** &nbsp;&nbsp;&nbsp; Thing+ Portal에서 발급받은 APIKEY
+
+컨텐츠의 type은 application/json으로 설정하셔야 합니다.
 
 ```
 content-type: application/json
@@ -603,12 +599,11 @@ content-type: application/json
 
 ##### Resource URL
 `GET https://api.thingplus.net/gateways/<GATEWAY_ID>?fields=model&fiedlds=autoCreateDiscoverable`
-> ##### **GATEWAY_ID** &nbsp;&nbsp;&nbsp; 게이트웨이 아이디
+> **GATEWAY_ID** &nbsp;&nbsp;&nbsp; 게이트웨이 아이디
 
 ##### Request Example
 `GET https://api.thingplus.net/gateways/abcdefghijkl?fields=model&fields=autoCreateDiscoverable`
 
---
 ##### Response Example
 ```javascript
 {
@@ -617,21 +612,19 @@ content-type: application/json
   autoCreateDiscoverable: "y",
 }
 ```
-> **model** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
-<br>
-**autoCreateDiscoverable** &nbsp;&nbsp;&nbsp; 디스커버 기능 지원 여부
+> **model** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호 <br>
+> **autoCreateDiscoverable** &nbsp;&nbsp;&nbsp; 디스커버 기능 지원 여부
 
 #### 2.3.5 게이트웨이 모델 가지고 오기
 Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 게이트웨이 정보에 있는 모델 번호를 사용하여, 게이트웨이 모델을 가지고 옵니다.
 
 ##### Resource URL
 `GET https://api.thingplus.net/gatewayModels/<MODEL_NUMBER>`
-> ###### **MODEL_NUMBER** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
+> **MODEL_NUMBER** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
 
 ##### Request Example
 `GET https://api.thingplus.net/gatewayModels/34`
 
---
 ##### Response Body Format and Example
 ###### Body Format
 ```javascript
@@ -688,10 +681,9 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
 
 ```
 
-> **deviceModels** : 게이트웨이가 가질 수 있는 디바이스에 대한 모델
->> **discoverable** : 디바이스 디스커버 가능 여부<br>
->> **idTemplate** : 디바이스 아이디의 형식 정의<br>
->>> 디바이스 등록 시 idTemplate 형식으로 디바이스 아이디를 만들어서 등록해야 한다.
+> **deviceModels** &nbsp;&nbsp;&nbsp; 게이트웨이가 가질 수 있는 디바이스에 대한 모델 정보
+> **discoverable** &nbsp;&nbsp;&nbsp; 디바이스 디스커버 가능 여부<br>
+> **idTemplate** &nbsp;&nbsp;&nbsp; 디바이스 아이디의 형식 정의. 디바이스 등록 시 idTemplate 형식으로 디바이스 아이디를 만들어서 등록해야 한다.
 
 ##### Example
 ```javacript
@@ -759,12 +751,11 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 ##### Resource URL
 `GET https://api.thingplus.net/sensorDrivers/?filter[id]=<driverName>`
 
-> **driverName** 센서 드라이버 이름
+> **driverName** &nbsp;&nbsp;&nbsp; 센서 드라이버 이름
 
 ##### Request Example
 `GET https://api.thingplus.net/sensorDrivers/?filter[id]=jsonrpcSensor`
 
---
 ##### Response Example
 ```javascript
 {
@@ -800,7 +791,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
   idTemplate: "{gatewayId}-{deviceAddress}-{type}-{sequence}"
 }
 ```
-> **discoverable** 센서의 디스커버 가능 여부
+> **discoverable** &nbsp;&nbsp;&nbsp; 센서의 디스커버 가능 여부
 
 #### 2.3.7 디바이스 등록하기
 
@@ -849,7 +840,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 ##### Resource URL
 `POST https://api.thingplus.net/gateways/<GATEWAY_ID>/sensors`
 
-> **GATEAY_ID** 센서가 속한 게이트웨이의 아이디
+> **GATEAY_ID** &nbsp;&nbsp;&nbsp; 센서가 속한 게이트웨이의 아이디
 
 ##### Post Parameter
 |parameter|description|
@@ -861,8 +852,6 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 |category|센서 or 액츄에이터|
 |reqId|센서 아이디<br>센서 드라이버에서 정한 idTemplate 형식으로 생성해야 함|
 |name|센서이름|
-|owner|센서가 속한 게이트웨이|
-|ctime|센서가 생성된 시간(UTC)|
 |deviceId|센서가 속한 디바이스의 아이디|
 
 ##### Request Body Example
@@ -875,12 +864,9 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
   category: 'actuator',
   reqId: 'abcdefghijkl-0-camera',
   name: 'My Camera',
-  owner: 'abcdefghijkl',
-  ctime: 1456297274325,
   deviceId: 'abcdefghijkl-0'
 }
 ```
---
 ##### Response Example
 ```
 {
@@ -920,7 +906,7 @@ Thing+ Embedded SDK는 C언어로 작성되었으며, openssl, libmosquitto, lib
     - libcurl(https://curl.haxx.se/libcurl/)
 
 ### 3.2 Installation
-- Repository : https://github.com/daliworks/thingplus-embedded
+- Repository: https://github.com/daliworks/thingplus-embedded
 
 ```
 git clone https://github.com/daliworks/thingplus-embedded
@@ -933,141 +919,141 @@ make install
 ### 3.3. API
 #### 3.3.1 thingplus_init
 ```
-- Prototype : void* thingplus_init(char *gw_id, char *apikey, char *mqtt_url, char *restapi_url);
-- Description : Thinglus Embedded SDK를 초기화합니다.
+- Prototype: void* thingplus_init(char *gw_id, char *apikey, char *mqtt_url, char *restapi_url);
+- Description: Thinglus Embedded SDK를 초기화합니다.
 - Parameters
-  - gw_id : 게이트웨이 아이디
-  - apikey : Thing+ Portal에서 발급받은 apikey
-  - mqtt_url : 접속할 MQTT 서버 주소. 일반적으로 "mqtt.thingplus.net"을 사용하여 Non SSL일경우 "dmqtt.thingplus.net"을 사용합니다.
-  - restapi_url : 접속할 HTTPS 서버 주소. "https://api.thingplus.net"을 사용합니다.
+  - gw_id: 게이트웨이 아이디
+  - apikey: Thing+ Portal에서 발급받은 apikey
+  - mqtt_url: 접속할 MQTT 서버 주소. 일반적으로 "mqtt.thingplus.net"을 사용하여 Non SSL일경우 "dmqtt.thingplus.net"을 사용합니다.
+  - restapi_url: 접속할 HTTPS 서버 주소. "https://api.thingplus.net"을 사용합니다.
 - Return Value
-  - !NULL : 성공. SDK 인스턴스를 반환합니다.
-  - NULL : 에러
+  - !NULL: 성공. SDK 인스턴스를 반환합니다.
+  - NULL: 에러
 ```
 
 #### 3.3.2 thingplus_cleanup
 ```
-- Prototype : void thingplus_cleanup(void *t);
-- Description : Thing+ Embedded SDK를 종료합니다. 프로그램 종료 전 호출해야합니다.
+- Prototype: void thingplus_cleanup(void *t);
+- Description: Thing+ Embedded SDK를 종료합니다. 프로그램 종료 전 호출해야합니다.
 - Parameters
-  - t : SDK 인스턴스
+  - t: SDK 인스턴스
 ```
 
 #### 3.3.3 thingplus_callback_set
 ```
 - Prototype: void thingplus_callback_set(void *t, struct thingplus_callback *callback, void *callback_arg);
-- Description : SDK 내부에서 호출할 callback 함수를 설정합니다.
+- Description: SDK 내부에서 호출할 callback 함수를 설정합니다.
 - Parameters
-  - t : SDK 인스턴스
-  - callback : SDK에서 호출 할 callback 함수들. struct thingplus_callback 구조체는 thingplus_types.h에 정의되어 있습니다.
-  - callback_arg : callback 함수 호출 시 같이 받을 Argument
+  - t: SDK 인스턴스
+  - callback: SDK에서 호출 할 callback 함수들. struct thingplus_callback 구조체는 thingplus_types.h에 정의되어 있습니다.
+  - callback_arg: callback 함수 호출 시 같이 받을 Argument
 ```
 
 #### 3.3.4 thingplus_connect
 ```
-- Prototype : int thingplus_connect(void *t, char *ca_file, int keepalive);
-- Description : Thing+ 서버에 접속을 시도합니다. 비동기 함수로, 접속이 되면 thingplus_callback_set 함수에서 설정한 callback함수가 호출 됩니다.
+- Prototype: int thingplus_connect(void *t, char *ca_file, int keepalive);
+- Description: Thing+ 서버에 접속을 시도합니다. 비동기 함수로, 접속이 되면 thingplus_callback_set 함수에서 설정한 callback함수가 호출 됩니다.
 - Parameters
-  - t : SDK 인스턴스
-  - ca_file : SSL 인증서. 만약 NULL이면 Non-SSL로 접속합니다. Non-SSL 접속은 mqtt_url이 "dmqtt.thingplus.net"일 때만 가능합니다.
-  - keepalive : Keepalive 시간. 단위는 초
+  - t: SDK 인스턴스
+  - ca_file: SSL 인증서. 만약 NULL이면 Non-SSL로 접속합니다. Non-SSL 접속은 mqtt_url이 "dmqtt.thingplus.net"일 때만 가능합니다.
+  - keepalive: Keepalive 시간. 단위는 초
 - Return Value
-  - 0 : 성공. 성공은 서버 접속에 성공했음을 뜻하는 것이 아니라, 서버 연결을 시도했다는 뜻입니다.
+  - 0: 성공. 성공은 서버 접속에 성공했음을 뜻하는 것이 아니라, 서버 연결을 시도했다는 뜻입니다.
         서버의 접속 성공 여부는 callback함수에서 확인하셔야 합니다.
-  - < 0 : 실패
+  - < 0: 실패
 ```
 
 #### 3.3.5 thingplus_disconnect
 ```
-- Prototype : int thingplus_disconnect(void *t)
-- Description : Thing+ 서버 연결을 끊습니다. 비동기 함수로, 서버 접속이 끊키면 thingplus_callback_set함수에서 설정한 callback함수가 호출 됩니다.
+- Prototype: int thingplus_disconnect(void *t)
+- Description: Thing+ 서버 연결을 끊습니다. 비동기 함수로, 서버 접속이 끊키면 thingplus_callback_set함수에서 설정한 callback함수가 호출 됩니다.
 - Parameters
-  - t : SDK 인스턴스
+  - t: SDK 인스턴스
   - Return Value
-    - 0 : 성공. 성공는 연결이 끊킴을 뜻하는 것이 아니라, 연결 해제 시도가 성공이라는 뜻입니다.
+    - 0: 성공. 성공는 연결이 끊킴을 뜻하는 것이 아니라, 연결 해제 시도가 성공이라는 뜻입니다.
           연결 해제 결과는 callback함수에서 확인하셔야 합니다.
-    - < 0 : 실패
+    - < 0: 실패
 ```
 
 #### 3.3.6 thingplus_status_publish
 ```
-- Prototype : int thingplus_status_publish(void *t, int nr_status, struct thingplus_status *status)
-- Description : 게이트웨이, 센서, 액츄에이터의 상태를 전송합니다. 
+- Prototype: int thingplus_status_publish(void *t, int nr_status, struct thingplus_status *status)
+- Description: 게이트웨이, 센서, 액츄에이터의 상태를 전송합니다. 
 - Parameters
-  - t : SDK 인스턴스
-  - nr_status : 전송할 상태의 개수
-  - status : 전송할 상태
+  - t: SDK 인스턴스
+  - nr_status: 전송할 상태의 개수
+  - status: 전송할 상태
 - Return Value
-  - 0 : 성공
-  - < 0 : 실패
+  - 0: 성공
+  - < 0: 실패
 ```
 
 #### 3.3.7 thingplus_value_publish
 ```
-- Prototype : int thingplus_value_publish(void *t, int nr_value, struct thingplus_value *values)
-- Description : Thing+에 센서의 값을 전송합니다. 
+- Prototype: int thingplus_value_publish(void *t, int nr_value, struct thingplus_value *values)
+- Description: Thing+에 센서의 값을 전송합니다. 
 - Parameters
-  - t : SDK 인스턴스
-  - nr_value : 전송할 센서값의 개수
-  - values : 전송할 센서값
+  - t: SDK 인스턴스
+  - nr_value: 전송할 센서값의 개수
+  - values: 전송할 센서값
 - Return Value
-  - 0 : 성공
-  - < 0 : 실패  
+  - 0: 성공
+  - < 0: 실패  
 ```
 
 #### 3.3.8 thingplus_device_register
 ```
-- Prototype : int thingplus_device_register(void *t, char *name, int uid, char *device_model_id, char device_id[THINGPLUS_ID_LENGTH])
-- Description : Thing+ 서버에 디바이스를 등록합니다.
+- Prototype: int thingplus_device_register(void *t, char *name, int uid, char *device_model_id, char device_id[THINGPLUS_ID_LENGTH])
+- Description: Thing+ 서버에 디바이스를 등록합니다.
 - Parameters
-  - t : SDK 인스턴스
-  - name : 디바이스 이름
-  - uid : 게이트웨이 내 디바이스 고유의 아이디. 다른 디바이스와 중복되면 안됩니다.
-  - device_model_id : 게이트웨이 모델에 명시된 디바이스 모델의 아이디
-  - device_id : Thing+에서 사용하는 디바이스 아이디. 디바이스 등록이 성공하면, Thing+에서 사용하는 디바이스 아이디가 해당 배열에 채워집니다.
+  - t: SDK 인스턴스
+  - name: 디바이스 이름
+  - uid: 게이트웨이 내 디바이스 고유의 아이디. 다른 디바이스와 중복되면 안됩니다.
+  - device_model_id: 게이트웨이 모델에 명시된 디바이스 모델의 아이디
+  - device_id: Thing+에서 사용하는 디바이스 아이디. 디바이스 등록이 성공하면, Thing+에서 사용하는 디바이스 아이디가 해당 배열에 채워집니다.
 - Return Value
-  - 0 : 성공
-  - < 0 : 실패
+  - 0: 성공
+  - < 0: 실패
 ```
 
 ##### 3.3.9 thingplus_sensor_register
 ```
-- Prototype : int thingplus_sensor_register(void *t, char *name, int uid, char* type, char* device_id, char sensor_id[THINGPLUS_ID_LENGTH])
-- Description : Thing+에 센서를 등록합니다.
+- Prototype: int thingplus_sensor_register(void *t, char *name, int uid, char* type, char* device_id, char sensor_id[THINGPLUS_ID_LENGTH])
+- Description: Thing+에 센서를 등록합니다.
 - Parameters
-  - t : SDK 인스턴스
-  - name : 센서 이름
-  - uid : 디바이스 내 센서 고유의 아이디. 다른 센서와 중복되면 안됩니다.
-  - type : 게이트웨이 모델에 명시된 센서의 종류
-  - device_id : 센서가 소속된 디바이스의 아이디. Thing+에서 발급받은 디바이스 아이디를 사용해야 합니다. 
-  - sensor_id : Thing+에서 사용하는 센서 아이디. 센서 등록이 성공하면, Thing+에서 사용하는 센서 아이디가 해당 배열에 채워집니다.
+  - t: SDK 인스턴스
+  - name: 센서 이름
+  - uid: 디바이스 내 센서 고유의 아이디. 다른 센서와 중복되면 안됩니다.
+  - type: 게이트웨이 모델에 명시된 센서의 종류
+  - device_id: 센서가 소속된 디바이스의 아이디. Thing+에서 발급받은 디바이스 아이디를 사용해야 합니다. 
+  - sensor_id: Thing+에서 사용하는 센서 아이디. 센서 등록이 성공하면, Thing+에서 사용하는 센서 아이디가 해당 배열에 채워집니다.
 - Return Value
-  - 0 : 성공
-  - < 0 : 실패
+  - 0: 성공
+  - < 0: 실패
 ```
 
 #### 3.3.10 thingplus_gatewayinfo
 ```
-- Prototype : int thingplus_gatewayinfo(void *t, struct thingplus_gateway *info)
-- Description : Thing+ 서버에 등록된 게이트웨이 정보를 불러옵니다.
+- Prototype: int thingplus_gatewayinfo(void *t, struct thingplus_gateway *info)
+- Description: Thing+ 서버에 등록된 게이트웨이 정보를 불러옵니다.
 - Parameters
-  - t : SDK 인스턴스
-  - info : 게이트웨이 정보가 담길 구조체
+  - t: SDK 인스턴스
+  - info: 게이트웨이 정보가 담길 구조체
 - Return Value
-  - 0 : 성공
-  - < 0 : 실패
+  - 0: 성공
+  - < 0: 실패
 ```
 
 #### 3.3.11 thingplus_deviceinfo
 ```
-- Prototype : int thingplus_deviceinfo(void *t, struct thingplus_device *info)
-- Description : Thing+ 서버에 등록된 디바이스 정보를 불러옵니다.
+- Prototype: int thingplus_deviceinfo(void *t, struct thingplus_device *info)
+- Description: Thing+ 서버에 등록된 디바이스 정보를 불러옵니다.
 - Parameters
-  - t : SDK 인스턴스
-  - info : 디바이스 정보가 담길 구조체
+  - t: SDK 인스턴스
+  - info: 디바이스 정보가 담길 구조체
 - Return Value
-  - 0 : 성공
-  - < 0 : 실패
+  - 0: 성공
+  - < 0: 실패
 ```
 
 ## 4 Thing+ Gateway
@@ -1084,9 +1070,9 @@ Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며,
 
 > Node.js 실행 환경<br>
 
-- CPU : arm, ia32, x86, x86_64
-- Memory : 128MB 이상
-- OS : linux, win, mac, freeebsd, openbsd, android
+- CPU: arm, ia32, x86, x86_64
+- Memory: 128MB 이상
+- OS: linux, win, mac, freeebsd, openbsd, android
   - **RTOS, MICRO OS에는 사용할 수 없습니다.**
 
 Thing+ Gateway 구동을 위해 필요한 저장공간 사용량은 아래와 같습니다.
@@ -1184,18 +1170,18 @@ Thing+ Gateway가 센서, 액추에이터 목록을 요청
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : discover
-- Request params : 없음
+- Request Method: discover
+- Request params: 없음
 
 Device Agent --> Thing+ Gateway
-- Response Result : [{"deviceAddress": DEV_ID, "deviceModelId": DEVICE_MODEL_ID, "sensors":[{"id":ID, "type":TYPE, "notification": true or false}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}, ... {"deviceAddress": DEV_ID ...}]
+- Response Result: [{"deviceAddress": DEV_ID, "deviceModelId": DEVICE_MODEL_ID, "sensors":[{"id":ID, "type":TYPE, "notification": true or false}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}, ... {"deviceAddress": DEV_ID ...}]
   - deviceAddress: 디바이스 아이디. 디바이스별로 가지는 고유값으로 디바이스 에이전트에서 정하면 됩니다.
-  - deviceModelId : Thing+에서 정의한 디바이스 모델 아이디
+  - deviceModelId: Thing+에서 정의한 디바이스 모델 아이디
   - sensors: 센서 리스트
     - id: 센서 아이디
     - name: 센서 이름
-    - type : Thing+에서 정의한 센서 타입
-    - notification : 이벤트 센서일 경우 true. 이벤트 센서가 아니면 false, 또는 전송 안함.
+    - type: Thing+에서 정의한 센서 타입
+    - notification: 이벤트 센서일 경우 true. 이벤트 센서가 아니면 false, 또는 전송 안함.
 ```
 
 - Request Example (Thing+ Gateway)
@@ -1214,18 +1200,18 @@ Device Agent --> Thing+ Gateway
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : sensor.get
-- Request params : [센서 아이디]
+- Request Method: sensor.get
+- Request params: [센서 아이디]
 
 Device Agent --> Thing+ Gateway
-- Response Result :
+- Response Result:
                     {"value": VALUE} or
                     {"status": "on"|"off"|"err"} or
                     {"status": "err", "message": ERROR REASONE}
 
-  - value : 센서값
-  - status : 센서 상태("on"|"off"|"err"). 센서값이 있으면 "on"으로 간주.
-  - message : 센서 상태가 err일 때의 추가 메시지(선택사항)
+  - value: 센서값
+  - status: 센서 상태("on"|"off"|"err"). 센서값이 있으면 "on"으로 간주.
+  - message: 센서 상태가 err일 때의 추가 메시지(선택사항)
 ```
 
 - Request Example (Thing+ Gateway)
@@ -1248,11 +1234,11 @@ temperature-0"]}\n
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : sensor.set
-- Request Params : [액추에이터 아이디, 명령어, 명령어 옵션]
+- Request Method: sensor.set
+- Request Params: [액추에이터 아이디, 명령어, 명령어 옵션]
 
 Device Agent --> Thing+ Gateway
-- Response Result : 실행 결과
+- Response Result: 실행 결과
 ```
 - Request Example(Thing+ Gateway)
 
@@ -1271,11 +1257,11 @@ Device Agent --> Thing+ Gateway
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : sensor.setNotification
-- Request Params : [센서 아이디]
+- Request Method: sensor.setNotification
+- Request Params: [센서 아이디]
 
 Device Agent --> Thing+ Gateway
-- Response Result : 성공일 경우 "success"
+- Response Result: 성공일 경우 "success"
 ```
 
 - Request Example (Thing+ Gateway)
@@ -1296,15 +1282,15 @@ Device Agent --> Thing+ Gateway
 
 ```
 Device Agent --> Thing+ Gateway
-- Request Method : sensor.notificaion
-- Request Params :
+- Request Method: sensor.notificaion
+- Request Params:
                    [센서 아이디, {"value": 값}]
                    [센서 아이디, {"status": "on"|"off"|"err"}]
                    [센서 아이디, {"status": "err", "message":"ERROR REASON"}]
-- Request Id : 없음              
+- Request Id: 없음              
 
 Device Agent <-- Thing+ Gateway
-- Response : NONE
+- Response: NONE
 
 ```
 - Request Example (Device Agent)
@@ -1320,11 +1306,11 @@ Device Agent의 구동 여부 확인
 
 ```
 Device Agent <-- Thingp+ Gateway
-- Request Method : sensor.setNotification
-- Request Params : 없음
+- Request Method: sensor.setNotification
+- Request Params: 없음
 
 Device Agent --> Thing+ Gateway
-- Response Result : "success"
+- Response Result: "success"
 ```
 - Request Example(Thing+ Gateway)
 ```
@@ -1353,16 +1339,16 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
 
 ### 5.1 Thing+ Embedded Protocol
 
-* 소스위치 : example/protocol/
-* OS : Linux
+* 소스위치: example/protocol/
+* OS: Linux
 * 라이브러리
-  * Paho : MQTT(Daliworks에서 TLS를 위해 포트 수정 함)
-  * cJSON : JSON 파싱
-* 게이트웨이 모델 : Linux - Device
+  * Paho: MQTT(Daliworks에서 TLS를 위해 포트 수정 함)
+  * cJSON: JSON 파싱
+* 게이트웨이 모델: Linux - Device
   * 센서
-     * Series : 온도, 습도
-     * Event : 온오프
-  * 액츄에이터 : LED
+     * Series: 온도, 습도
+     * Event: 온오프
+  * 액츄에이터: LED
 
 센서는 시뮬레이션 하였습니다. 온도, 습도 센서는 랜덤한 값을 생성하도록 하였으며, 온오프 센서는 랜덤한 시간에 센서 값이 변하도록 하였습니다.
 
@@ -1405,8 +1391,8 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
   "caFile": "./cert/ca-cert.pem"
 }
 ```
-> **HW_MAC_ADDRESS** : MAC 어드레스<br>
-> **APIKEY** : Thing+ Portal에서 발급받은 APIKEY
+> **HW_MAC_ADDRESS**: MAC 어드레스<br>
+> **APIKEY**: Thing+ Portal에서 발급받은 APIKEY
 
 #### 5.1.4 빌드 및 실행방법
 * 빌드
@@ -1436,27 +1422,27 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
 #### 게이트웨이, 센서 등록 요청 폼
 ```
 * 게이트웨이 정보
-1. 업체 이름 :
-2. 게이트웨이 이름 : 	
-4. 게이트웨이 ID로 사용할 값 : MAC, IMEI or UUID
+1. 업체 이름:
+2. 게이트웨이 이름: 	
+4. 게이트웨이 ID로 사용할 값: MAC, IMEI or UUID
    (게이트웨이 ID는 각 하드웨어를 구분하는 값으로, 다른 게이트웨이와 중복될 수 없습니다.)
    (위 세 개 항목을 사용할 수 없을 경우 별도로 연락 바랍니다.)
-5. 전송주기(최소 60초) :
-   5.1. Thing+ Portal에서 전송주기 표시 여부 : Yes or No
-   5.1. 전송주기 변경 가능 여부 : Yes or No
-6. 최대 디바이스 개수 :
+5. 전송주기(최소 60초):
+   5.1. Thing+ Portal에서 전송주기 표시 여부: Yes or No
+   5.1. 전송주기 변경 가능 여부: Yes or No
+6. 최대 디바이스 개수:
 
 * 디바이스 정보
-1. 디바이스 이름 :
-2. 디스커버 사용 여부 : Yes or No
+1. 디바이스 이름:
+2. 디스커버 사용 여부: Yes or No
    (디스커버란 하드웨어에 설치된 센서를 찾아서 등록하는 기능입니다.)
 3. 센서정보
-   - 타입 :
-   - 데이터 형식 :
-   - 단위 :
+   - 타입:
+   - 데이터 형식:
+   - 단위:
 4. 액츄에이터 타입
-   - 명령어 :
-     - 파라미터 :
+   - 명령어:
+     - 파라미터:
      (파라미터에는 필요한 값의 내용, 단위, 필수여부를 적어주시고, 추가적인 내용는 자유롭게 기술해주시면 됩니다.)
 ```
 
@@ -1464,61 +1450,61 @@ Thing+에 게이트웨이, 센서 모델 등록이 필요하시면 아래 문서
 
 ```
 * 게이트웨이 정보
-1. 업체 이름 : Libelium
-2. 게이트웨이 이름 : Meshlium
+1. 업체 이름: Libelium
+2. 게이트웨이 이름: Meshlium
 4. 게이트웨이에서 사용할 ID: MAC
-5. 전송주기(최소 60초) : 60초
-   5.1. Thing+ Portal에서 전송주기 표시 여부 : Yes
-   5.1. 전송주기 변경 가능 여부 : Yes
-6. 최대 연결할 수 있는 디바이스 개수 : 3
+5. 전송주기(최소 60초): 60초
+   5.1. Thing+ Portal에서 전송주기 표시 여부: Yes
+   5.1. 전송주기 변경 가능 여부: Yes
+6. 최대 연결할 수 있는 디바이스 개수: 3
 
 * 디바이스 정보
-1. 디바이스 이름 : Plug and Sensor
-2. 디스커버기능 사용 여부 : Yes
+1. 디바이스 이름: Plug and Sensor
+2. 디스커버기능 사용 여부: Yes
 3. 센서정보
-   - 타입 : 온도, 데이터 형식 : 숫자, 단위 : °C
-   - 타입 : 습도, 데이터 형식 : 숫자, 단위 : %
-   - 타입 : 위치, 데이터 형식 : {x:숫자, y:숫자, z:숫자}, 단위 : m/s²
-   - 타입 : 문자센서, 데이터 형식 : 문자열, 단위 : 없음
+   - 타입: 온도, 데이터 형식: 숫자, 단위: °C
+   - 타입: 습도, 데이터 형식: 숫자, 단위: %
+   - 타입: 위치, 데이터 형식: {x:숫자, y:숫자, z:숫자}, 단위: m/s²
+   - 타입: 문자센서, 데이터 형식: 문자열, 단위: 없음
 4. 액츄에이터 정보
-   - 타입 : LED
-     - 명령어 : 켜기
+   - 타입: LED
+     - 명령어: 켜기
        - 파라미터
-         1. 지속시간. 단위 : 초. 필수아님.
-            설명 : 지속시간만큼 지난 후 LED가 꺼집니다. 파라미터는 선택사항이며, 없으면 LED는 계속 켜저있습니다.
-     - 명령어 : 깜빡임
+         1. 지속시간. 단위: 초. 필수아님.
+            설명: 지속시간만큼 지난 후 LED가 꺼집니다. 파라미터는 선택사항이며, 없으면 LED는 계속 켜저있습니다.
+     - 명령어: 깜빡임
        - 파라미터
-         - 1. 인터벌. 단위 : 초. 필수
-              설명 : LED 깜빡이는 빠르기를 조절하는 값입니다. 인터벌 시간동안 켜졌다가, 인터벌 시간만큼 꺼집니다.
-         - 2. 지속시간. 단위 : 초. 필수아님
-     - 명령어 : 끄기
-       - 파라미터 : 없음
+         - 1. 인터벌. 단위: 초. 필수
+              설명: LED 깜빡이는 빠르기를 조절하는 값입니다. 인터벌 시간동안 켜졌다가, 인터벌 시간만큼 꺼집니다.
+         - 2. 지속시간. 단위: 초. 필수아님
+     - 명령어: 끄기
+       - 파라미터: 없음
 ```
 
 ```
 * 게이트웨이 정보
-1. 벤더 이름 : Dell
-2. 게이트웨이 이름 : Edge 5000
+1. 벤더 이름: Dell
+2. 게이트웨이 이름: Edge 5000
 4. 게이트웨이에서 사용할 ID: IMEI
-5. 전송주기(최소 60초) : 90초
-   5.1. Thing+ Portal에서 전송주기 표시 여부 : No
-   5.1. 전송주기 변경 가능 여부 : No
-6. 최대 디바이스 개수 : 5
+5. 전송주기(최소 60초): 90초
+   5.1. Thing+ Portal에서 전송주기 표시 여부: No
+   5.1. 전송주기 변경 가능 여부: No
+6. 최대 디바이스 개수: 5
 
 * 디바이스 정보
-1. 디바이스 이름 : Temerature Monitor
-2. 디스커버기능 사용 여부 : Yes
+1. 디바이스 이름: Temerature Monitor
+2. 디스커버기능 사용 여부: Yes
 3. 센서정보
-   - 타입 : 온도, 단위 : °C
+   - 타입: 온도, 단위: °C
 
 * 디바이스 정보
-1. 디바이스 이름 : Power Switch Controller
-2. 디스커버기능 사용 여부 : Yes
+1. 디바이스 이름: Power Switch Controller
+2. 디스커버기능 사용 여부: Yes
 4. 액츄에이터 정보
-   - 타입 : 파워스위치
-     - 명령어 : 켜기
-       - 파라미터 : 없음
-     - 명령어 : 끄기
-       - 파라미터 : 없음
+   - 타입: 파워스위치
+     - 명령어: 켜기
+       - 파라미터: 없음
+     - 명령어: 끄기
+       - 파라미터: 없음
 
 ```
