@@ -895,7 +895,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
   id: 'abcdefghijkl-0-camera'
 }
 ```
---
+
 ##### Error
 |Error Code|Description|
 |---|---|
@@ -1078,7 +1078,7 @@ Thing+ Gateway를 사용하면 Thing+ MQTT 프로토콜을 직접 구현하는 �
 ### 4.1 Hardware Requirement
 Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며, Node.js로 작성했습니다. **Node.js가 동작하지 않는 시스템에서는 사용할 수 없습니다.**
 
-> Node.js 실행 환경<br>
+#### Node.js 실행 환경<br>
 
 - CPU: arm, ia32, x86, x86_64
 - Memory: 128MB 이상
@@ -1087,7 +1087,7 @@ Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며,
 
 Thing+ Gateway 구동을 위해 필요한 저장공간 사용량은 아래와 같습니다.
 
-> Storage Requirement
+#### Storage Requirement
 
 Category|Size
 :---|---:
@@ -1100,7 +1100,7 @@ StoreDb, Log|5 MB
 ### 4.2 Features
 Thing+ Gateway에는 아래 기능이 있습니다.
 
-> Thing+ Gateway Features
+#### Thing+ Gateway Features
 
 Feature|Description
 :---|:---
@@ -1151,7 +1151,7 @@ result|서비스 또는 메쏘드 실행 결과
 error|에러 오브젝트. 에러가 없으면 null로 표기
 id|Request 시 받은 ID
 
-###**모든 메시지의 끝에는 NEW LINE(\n)이 있어야 합니다.**
+**모든 메시지의 끝에는 NEW LINE(\n)이 있어야 합니다.**
 
 - Error 코드
 
@@ -1338,12 +1338,12 @@ Device Agent --> Thing+ Gateway
 thing에서 선택할 수 있는 연동 방법은 세 가지가 있습니다.
 
 1. Thing+ Embedded Protocol 직접 구현
-  * Thing+에서 정의한 MQTT, HTTP 데이터 형식에 맞쳐 데이터 전송
+   * Thing+에서 정의한 MQTT, HTTP 데이터 형식에 맞쳐 데이터 전송
 2. Thing+ Embedded SDK 사용
-  * Thing+에서 제공하는 SDK를 사용하여 데이터 전송
+   * Thing+에서 제공하는 SDK를 사용하여 데이터 전송
 3. Thing+ Gateway를 사용하고 Device Agent 구현
-  * Thing+ Gateway를 사용하고, 데이터 전송에 관해선 Thing+ Gateway가 담당
-  * 센서, 액츄에이터를 구동하는 코드만 적성
+   * Thing+ Gateway를 사용하고, 데이터 전송에 관해선 Thing+ Gateway가 담당
+   * 센서, 액츄에이터를 구동하는 코드만 적성
 
 Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제공하고 있습니다.
 
@@ -1368,27 +1368,27 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
 3. 예제 코드를 빌드 후 실행시킵니다.
 
 #### 5.1.2 게이트웨이 등록 방법
-##### 1. [Thing+](http://www.thingplus.net) 회원 가입 후 로그인
+1. [Thing+](http://www.thingplus.net) 회원 가입 후 로그인
 
-##### 2. 오른쪽 상단의 "설정" -> "게이트웨이 관리"로 이동<br>
+2. 오른쪽 상단의 "설정" -> "게이트웨이 관리"로 이동<br>
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/1Setting_GatewayManagement.png)
 
-##### 3. 게이트웨이 추가를 위해 "+" 아이콘 누름<br>
+3. 게이트웨이 추가를 위해 "+" 아이콘 누름<br>
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/2GatewayPlus.png)
 
-##### 4. APIKEY 발급을 위하여 "게이트웨이 인증서/API키 발급받기"로 이동<br>
+4. APIKEY 발급을 위하여 "게이트웨이 인증서/API키 발급받기"로 이동<br>
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/3RequestAPIKEY.png)
 
-##### 5. 게이트웨이 모델은 "Linux - Device"로 선택하고, MAC 어드레스 입력<br>
+5. 게이트웨이 모델은 "Linux - Device"로 선택하고, MAC 어드레스 입력<br>
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/4SelectModelEnterMac.png)
 
-##### 6. APIKEY 발급<br>
+6. APIKEY 발급<br>
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/5APIKEY.png)
 
-##### 7. 게이트웨이 이름, 디바이스 이름 설정하고, 디바이스 모델을 "Basic Model"로 선택<br>
+7. 게이트웨이 이름, 디바이스 이름 설정하고, 디바이스 모델을 "Basic Model"로 선택<br>
 ![SelectGatewayManagement](./image/Thingplus_Embedded_Guide/5/protocol/6EnterGWName.png)
 
-##### 8. 게이트웨이 등록 완료
+8. 게이트웨이 등록 완료
 
 #### 5.1.3 소스의 config.json 설정
 ```
