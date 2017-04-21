@@ -188,8 +188,8 @@ Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
 
 #### 2.2.2 MQTT 상태 전송
 하드웨어는 MQTT 접속에 성공한 경우 MQTT의 상태가 정상임을 전송해야합니다.</br>
-> MQTT 접속 상태 전송
 
+##### MQTT 접속 상태 전송
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/mqtt/status
@@ -197,7 +197,7 @@ MESSAGE: on
 
 __GATEWAY_ID__: 게이트웨이 아이디
 ```
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/mqtt/status
@@ -206,16 +206,17 @@ MESSAGE: on
 #### 2.2.3 게이트웨이 상태 전송
 게이트웨이는 주기적으로 게이트웨이 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 게이트웨이 상태를 재수신하지 못하면 해당 thing에 에러가 발생하였다고 판단합니다.<br>
 
->게이트웨이 상태 전송
+##### 게이트웨이 상태 전송
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
 MESSAGE: __HW_STATUS__,__VALID_TIME__
 
-__HW_STATUS__:게이트웨이의 상태. on|off
+__HW_STATUS__: 게이트웨이의 상태. on|off
 __VALID_TIME__: 상태의 유효시간. sec
 ```
-Example
+
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/status
@@ -226,7 +227,7 @@ MESSAGE: on,90
 #### 2.2.4 센서 상태 전송
 게이트웨이는 주기적으로 센서 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 센서 상태를 재수신하지 못하면 해당 센서에 에러가 발생하였다고 판단합니다.<br>
 
-> 센서 상태 전송
+##### 센서 상태 전송
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
@@ -238,7 +239,7 @@ __SENSOR_STATUS__: 센서의 상태. on|off
 __VALID_TIME__: 상태의 유효시간. sec
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/s/000011112222-temperature-0/status
@@ -248,7 +249,7 @@ MESSAGE: on,90
 #### 2.2.5 게이트웨이 상태와 N개의 센서 상태 전송
 게이트웨이 상태 전송 메시지에 센서의 상태를 붙여서 전송 할 수도 있습니다. 하나의 토픽을 이용하여 게이트웨이 상태와 센서의 상태를 같이 전송하기 때문에, 네트워크 비용이 비싼 하드웨어는 이 방법을 이용하면 네트워크 비용을 줄일 수 있습니다. 만약 이 방법을 사용하였다면, 개별 센서의 상태는 별도로 전송하지 않아도 됩니다.
 
->게이트웨이 상태와 N개의 센서 상태 전송
+##### 게이트웨이 상태와 N개의 센서 상태 전송
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
@@ -262,7 +263,7 @@ __SENSOR_ID__: 센서 아이디
 __SENSOR_STATUS__: 센서의 상태. on|off
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/status
@@ -272,7 +273,8 @@ MESSAGE: on,90,000011112222-onoff-0,on,90,000011112222-temperature-0,off,90
 
 #### 2.2.6 센서값 전송
 하드웨어는 개별 센서의 값을 전송할 수 있습니다. 하드웨어는 센서값과 시간을 쌍으로 전송해야하며, 한개의 센서에 대해 여러개의 센서값을 한꺼번에 전송할 수도 있습니다. 여러개의 센서값 전송 시 시간순으로 정렬이 되어있어야 합니다. 센서값과 시간을 배열로 묶은 형태도 전송이 가능합니다. </br>
-> 센서 값 전송
+
+##### 센서 값 전송
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
@@ -284,20 +286,26 @@ __TIME__: 센싱 시간. UTC기준이며 단위는 msec
 __VALUE__: 센서값
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
 MESSAGE: 146156161000,26.5,146156162000,27.5,146156163000,30
 ```
 
-> 센서 값 전송 (시간, 값을 배열로 묶음)
+##### 센서 값 전송 (시간, 값을 배열로 묶음)
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
 MESSAGE: [__TIME__,__VALUE__, ...(REPEAT FOR VALUES)__TIME__,__VALUE__]
+
+__GATEWAY_ID__: 게이트웨이 아이디
+__SENSOR_ID__: 센서 아이디
+__TIME__: 센싱 시간. UTC기준이며 단위는 msec
+__VALUE__: 센서값
 ```
-Example
+
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
@@ -308,7 +316,7 @@ MESSAGE: [146156161000,26.5,146156162000,27.5,146156163000,30]
 #### 2.2.7 N개 센서의 센서값 전송
 하드웨어에 연결된 여러개의 센서 값을 한꺼번에 전송합니다. 각각의 센서에 대해서 여러개의 센서값을 한꺼번에 전송할 수도 있습니다. 센서값은 시간순으로 정렬이 되어있어야 합니다.
 
-> N개 센서의 센서값 전송
+##### N개 센서의 센서값 전송
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__
@@ -321,7 +329,8 @@ __VALUE__: 센서값
 
 메시지에 {, }, [, ], "" 가 포함됩니다.
 ```
-Example
+
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222
@@ -334,7 +343,7 @@ Thing+는 액추에이터 실행, 하드웨어 환경 설정 등의 작업을 �
 
 하드웨어는 서버의 작업 요청을 받기 위해 토픽을 구독해야 하여, Thing+가 요청하는 메시지 포맷은 아래와 같습니다.
 
-> Thing+가 하드웨어에게 작업 요청
+##### Thing+가 하드웨어에게 작업 요청
 
 ```
 TOPIC: v/a/g/__GATEWAY_ID__/req
@@ -349,7 +358,7 @@ __PARAMS__: 파라미터
 
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/req
@@ -360,7 +369,7 @@ TOPIC: v/a/g/000011112222/req
 하드웨어는 Thing+가 요청한 작업을 수행한 후 결과를 Thing+에게 알려줘야 합니다.
 하드웨어가 응답하는 메시지 포맷은 작업의 성공, 실패에 따라 달라집니다.
 
-> Thing+ 요청 작업의 결과
+##### Thing+ 요청 작업의 결과
 
 ```javascritp
 TOPIC: v/a/g/__GATEWAY_ID__/res
@@ -374,10 +383,12 @@ __ERR_MSG__: 실패 이유
 
 메시지에 {, }, "가 포함됩니다.
 ```
+
 에러코드는 [JSONRPC의 에러코드 규칙](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php)을 따르며, 자세한 에러원인은 {error_message} 에 적어주면 됩니다.
 
 #### 2.2.10 Thing+가 요청하는 작업 목록
-> Method List
+
+##### Method List
 
 Method|Description|Parameters|Param Description
 :---|:---|:---|:---
@@ -395,7 +406,7 @@ swInfo|소프트웨어 버전 정보|None|None
 ##### timeSync
 timeSync 메쏘드는 Thing+에서 하드웨어 시간을 설정할 때 사용합니다. thing의 로컬시간이 틀릴 경우, 센서값을 읽은 시간에 오류가 발생합니다. 따라서, Thing+는 하드웨어 시간을 서버시간에 맞출 수 있도록 서버시간을 전송합니다.
 
-> timeSync params
+###### timeSync params
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
@@ -412,7 +423,7 @@ __ERR_CODE__: 에러코드
 __ERR_MSG__: 에러 메시지
 ```
 
-Example
+###### Example
 
 ```
 TOPIC: v/a/g/1928dbc93871/req
@@ -426,7 +437,7 @@ REPONSE IF FAILED: {"id":"e1kcs13b9","error":{"code": -32000, "message": "invali
 ##### setProperty
 setProperty 메쏘드는 리포트 인터벌을 전달할 때 사용합니다. 리포트 인터벌의 단위는 msec입니다. Thing+ 포털에서 리포트 인터벌을 변경할 수 있습니다.
 
->setProperty params
+###### setProperty params
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
@@ -437,7 +448,7 @@ RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__", "result"}
 RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
-Example
+###### Example
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
@@ -452,8 +463,7 @@ RESPONSE IF ERROR: {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid i
 controlActuator 메쏘드는 액추에이터에 명령을 내릴 때 사용합니다. 액추에이터의 명령어 및 옵션는 Thing+에서 정의하고 있으며, 메시지의 파라미터로 전송이 됩니다.<br>
 액추에이터 명령어 및 옵션의 목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인하실 수 있습니다.
 
-
-> 대표적인 액추에이터 명령어 및 명령어 옵션
+######  대표적인 액추에이터 명령어 및 명령어 옵션
 
 Actuator|Command|Option
 :---|:---|:---
@@ -463,7 +473,7 @@ led|blink|duration <br> interval
 powerSwitch|on|duration
 powerSwitch|off|None
 
-> controlActuator params
+###### controlActuator params
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
@@ -473,7 +483,7 @@ RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__", "result":""}
 RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
-Example: LED ON
+###### Example: LED ON
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
