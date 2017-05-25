@@ -114,15 +114,15 @@ MESSAGE: on
 ```
 
 #### 2.2.3 Transmission of the H/W status data  
-Hardware should transmit its status and the valid time of the status data periodically. When Thing+ fails to get the status data of a specific piece of H/W within the valid time period, Thing+ defines its status using the error status
+Hardware should transmit its status and the valid duration of the status data periodically. When Thing+ fails to get the status data of a specific piece of H/W within the valid duration, Thing+ defines its status using the error status
 >­ Transmit the H/W Status Data
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
-MESSAGE: __HW_STATUS__,__VALID_TIME__
+MESSAGE: __HW_STATUS__,__VALID_DURATION__
 
 __HW_STATUS__: "on" or "off"
-__VALID_TIME__: Unit is sec
+__VALID_DURATION__: Unit is sec
 ```
 Example
 
@@ -133,16 +133,16 @@ MESSAGE: on,90
 
 
 #### 2.2.4 Transmission of the sensor status data  
-Hardware should transmit the status of a sensor attached to it and the valid time of the status data periodically. When Thing+ fails to get the status data within the valid time period, Thing+ defines its status using the error status <br>
+Hardware should transmit the status of a sensor attached to it and the valid duration of the status data periodically. When Thing+ fails to get the status data within the valid duration, Thing+ defines its status using the error status <br>
 
 > Transmit the sensor status data
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
-MESSAGE: __SENSOR_STATUS__,__VALID_TIME__
+MESSAGE: __SENSOR_STATUS__,__VALID_DURATION__
 
 __SENSOR_STATUS__ : "on" or "off"
-__VALID_TIME__: Unit is sec
+__VALID_DURATION__: Unit is sec
 ```
 
 Example
@@ -159,11 +159,11 @@ Sensor Status Data can be transmitted along with the H/W status data. It is an e
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
-MESSAGE: __HW_STATUS__,__VALID_TIME__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_TIME__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID__TIME__
+MESSAGE: __HW_STATUS__,__VALID_DURATION__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__
 }
 
 __HW_STATUS__ : "on" or "off"
-__VALID_TIME__: Unit is sec
+__VALID_DURATION__: Unit is sec
 __SENSOR_STATUS__ : "on" or "off"
 ```
 

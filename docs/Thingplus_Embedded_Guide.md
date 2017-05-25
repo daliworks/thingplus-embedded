@@ -209,10 +209,10 @@ MESSAGE: on
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
-MESSAGE: __HW_STATUS__,__VALID_TIME__
+MESSAGE: __HW_STATUS__,__VALID_DURATION__
 
 __HW_STATUS__: 게이트웨이의 상태. on|off
-__VALID_TIME__: 상태의 유효시간. sec
+__VALID_DURATION__: 상태의 유효시간. sec
 ```
 
 ##### Example
@@ -230,12 +230,12 @@ MESSAGE: on,90
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
-MESSAGE: __SENSOR_STATUS__,__VALID_TIME__
+MESSAGE: __SENSOR_STATUS__,__VALID_DURATION__
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __SENSOR_ID__: 센서 아이디
 __SENSOR_STATUS__: 센서의 상태. on|off
-__VALID_TIME__: 상태의 유효시간. sec
+__VALID_DURATION__: 상태의 유효시간. sec
 ```
 
 ##### Example
@@ -252,12 +252,12 @@ MESSAGE: on,90
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
-MESSAGE: __HW_STATUS__,__VALID_TIME__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_TIME__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID__TIME__
+MESSAGE: __HW_STATUS__,__VALID_DURATION__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__
 }
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __HW_STATUS__: 게이트웨이의 상태. on|off
-__VALID_TIME__: 상태의 유효시간. sec
+__VALID_DURATION__: 상태의 유효시간. sec
 __SENSOR_ID__: 센서 아이디
 __SENSOR_STATUS__: 센서의 상태. on|off
 ```
