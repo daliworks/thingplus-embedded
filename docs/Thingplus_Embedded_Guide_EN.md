@@ -65,7 +65,7 @@ MQTT provides a Last Will and Testament (LWT) function that can save messages to
 This chapter describes the MQTT Topic and data format used by Thing+ Platform. Any hardware to be integrated with the Thing+ Cloud Platform should follow the given Thing+ MQTT Specification. When the Thing+ Cloud Platform sends a command to an actuator, the command uses the same Thing+ MQTT Specification.
 
 - Thing+ MQTT Message uses QoS1. ‘RETAIN’ of all messages except that the ‘Will’ Message is not used.
-- Message timezone is always UTC.
+- All the time value of messages is [Unix time](https://en.wikipedia.org/wiki/Unix_time) and it should be converted msec.
 - A thing transmits data regarding the status of the MQTT connection, gateway and sensor.
 - The value for each status is defined as below,
 
@@ -186,6 +186,10 @@ transmitted at a time, they should be ordered by time. An array of multiple sens
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
 MESSAGE: __TIME__,__VALUE__, ...(REPEAT FOR VALUES), __TIME__,__VALUE__
 
+__GATEWAY_ID__: Gateway ID
+__SENSOR_ID__: Sensor ID
+__TIME__: Sensing time. It is Unix time and its unit is msec.
+__VALUE__: Sensor value
 ```
 
 Example
@@ -200,6 +204,11 @@ MESSAGE: 146156161000,26.5,146156162000,27.5,146156163000,30
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
 MESSAGE: [__TIME__,__VALUE__, ...(REPEAT FOR VALUES)__TIME__,__VALUE__]
+
+__GATEWAY_ID__: Gateway ID
+__SENSOR_ID__: Sensor ID
+__TIME__: Sensing time. It is Unix time and its unit is msec.
+__VALUE__: Sensor value
 ```
 Example
 
@@ -218,6 +227,11 @@ should, for a single sensor, be grouped and ordered by time
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__
 MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__],"__SENSOR_ID__":[__TIME__,__VALUE__,...,__TIME__,__VALUE__], ...(REPEAT FOR SENSORS), "__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__]}
+
+__GATEWAY_ID__: Gateway ID
+__SENSOR_ID__: Sensor ID
+__TIME__: Sensing time. It is Unix time and its unit is msec.
+__VALUE__: Sensor value
 
 Messsage includes {, }, [, ], ""
 ```

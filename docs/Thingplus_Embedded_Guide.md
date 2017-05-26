@@ -155,7 +155,7 @@ MQTT는 클라이언트 접속이 끊어졌을 경우, 다른 클라이언트에
 Thing+에서 사용하는 MQTT 토픽과 데이터 포맷에 대해서 설명합니다. **Thing+와 연동을 원하는 하드웨어 업체는 이 장에서 정의한 토픽과 데이터 포맷에 맞게 센서값을 전송해야하며, Thing+도 이 프로토콜에 기반하여 액추에이터 명령어를 전송합니다.**
 
 - MQTT 메시지는 **QoS1**을 사용하며, WiLL 메시지를 제외한 모든 메시지의 RETAIN은 사용하지 않습니다.</br>
-- 시간 값은 [UTC](https://en.wikipedia.org/wiki/Unix_time)를 사용합니다.</br>
+- 시간 값은 [Unix time](https://en.wikipedia.org/wiki/Unix_time)을 사용하며 msec 단위로 변환해야 합니다.</br>
 - 하드웨어는 MQTT 연결 상태, 게이트웨이 상태, 센서 상태 메시지를 전송하며 상태를 정의하는 값은 아래와 같습니다.
 
 >
@@ -281,7 +281,7 @@ MESSAGE: __TIME__,__VALUE__, ...(REPEAT FOR VALUES), __TIME__,__VALUE__
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __SENSOR_ID__: 센서 아이디
-__TIME__: 센싱 시간. UTC기준이며 단위는 msec
+__TIME__: 센싱 시간. Unix time이며 단위는 msec
 __VALUE__: 센서값
 ```
 
@@ -300,7 +300,7 @@ MESSAGE: [__TIME__,__VALUE__, ...(REPEAT FOR VALUES)__TIME__,__VALUE__]
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __SENSOR_ID__: 센서 아이디
-__TIME__: 센싱 시간. UTC기준이며 단위는 msec
+__TIME__: 센싱 시간. Unix time이며 단위는 msec
 __VALUE__: 센서값
 ```
 
@@ -323,7 +323,7 @@ MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __SENSOR_ID__: 센서 아이디
-__TIME__: 센싱 시간. UTC기준이며 단위는 msec
+__TIME__: 센싱 시간. Unix time이며 단위는 msec
 __VALUE__: 센서값
 
 메시지에 {, }, [, ], "" 가 포함됩니다.
