@@ -85,10 +85,10 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 
 |센서|Type|단위|값|비고
 |:---:|:---:|:---:|:---:|:---:
-|색|color|없음|{r:[0~255],g:[0~255],b:[0~255]}
-|가속도|m/s²|accelerometer|{x:값,y:값,z:값}
+|색|color|없음|{r:[0\~255],<br>g:[0\~255],<br>b:[0\~255]}
+|가속도|m/s²|accelerometer|{x:값,<br>y:값,<br>z:값}
 |수면상태|없음|sleepStage|0<br>1<br>2<br>3|AWAKE<br>REM <br> LIGHT <br>DEEP
-|테그|tag|없음|"in", "out" or "tagged"
+|테그|tag|없음|"in"<br>"out"<br>"tagged"
 |풍향|windVane|없음|0<br>22.5<br>45<br>67.5<br>90<br>112.5<br>135<br>157.5<br>180<br>202.5<br>225<br>247.5<br>270<br>292.5<br>315<br>337.5<br>|N<br>NNE<br>NE<br>ENE<br>E<br>ESE<br>SE<br>SSE<br>S<br>SSW<br>SW<br>WSW<br>W<br>WNW<br>NW<br>NNW<br>
 
 ##### 1.1.4.2 이벤트 센서
@@ -100,7 +100,7 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 ##### 1.1.4.3 액추에이터
 
 |액추에이터|Type|명령어|명령어 설명|파라미터|파라미터 설명
-|:---:|:---:|:---:|:---:|:---:|:---:
+|:---:|:---:|:---:|:---:|:---:|:---
 |LED|led|on|켜기|duration|지속시간(단위 ms)
 | | |blink|깜빡임|duration<br>interval|지속시간(단위 ms)<br>깜빡이는 주기(단위 ms)
 | | |off|끄기|없음|
