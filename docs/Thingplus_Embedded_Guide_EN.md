@@ -478,6 +478,12 @@ The URL used for testing and usage of the REST API is: <br>
 https://api.thingplus.net
 ```
 
+단, Sandbox 서버를 사용할 경우에는 아래의 서버를 사용하셔야 하며, 이후의 모든 예제에도 동일하게 적용됩니다.
+If you use sandbox server, please use the below server address. This should be applied to all the following examples.
+```
+https://api.sandbox.thingplus.net
+```
+
 To authenticate, just fill in your username and apikey in the header.
 
 ```Javascript
