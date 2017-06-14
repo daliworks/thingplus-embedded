@@ -100,7 +100,7 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 ##### 1.1.4.3 액추에이터
 
 |액추에이터|Type|명령어|명령어 설명|파라미터|파라미터 설명
-|:---:|:---:|:---:|:---:|:---:|:---
+|:---:|:---:|:---:|:---:|:---:|---
 |LED|led|on|켜기|duration|지속시간(단위 ms)
 | | |blink|깜빡임|duration<br>interval|지속시간(단위 ms)<br>깜빡이는 주기(단위 ms)
 | | |off|끄기|없음|
@@ -160,7 +160,7 @@ Thing+에서 사용하는 MQTT 토픽과 데이터 포맷에 대해서 설명합
 
 >
 상태|값(문자열)
-:---|:---
+:---:|:---:
 켜짐|on
 꺼짐|off
 에러발생|err
@@ -173,7 +173,7 @@ Thing+ 브로커에 MQTT 연결시 반드시 SSL을 사용하는 **mqtts** 프�
 MQTT 접속 아이디는 게이트웨이 아이디, 비밀번호는 APIKEY입니다. WiLL 메시지의 토픽은 *v/a/g/{gateway_id}/mqtt/status*이고, 메시지 내용은 'err'이고, Retain은 True 입니다. 재접속 시 세션은 새로 생성하도록 설정해야합니다.</br>
 
 MQTT Connection SPEC|Thing+ Definition
----|:---
+---|---
 MQTT Version | 3
 PORT | 8883
 MQTT Client ID | {gateway_id}
@@ -388,9 +388,9 @@ __ERR_MSG__: 실패 이유
 ##### Method List
 
 Method|Description|Parameters|Param Description
-:---:|:---|:---:|:---
-timeSync|시간 동기|{"time":\_\_TIME\_\_}|\_\_TIME\_\_: 서버시간(UTC)
-controlActuator|액추에이터 실행|{"id":\_\_SENSOR_ID\_\_,"cmd":\_\_CMD\_\_,"options",\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_: 액추에이터 아이디<br>\_\_CMD\_\_: 명령어<br>\_\_OPTIONS\_\_: 명령어 옵션<br>
+:---:|:---:|---|---
+timeSync|시간 동기|{"time":\_\_TIME\_\_}|\_\_TIME\_\_: 서버시간(msec 단위의 unix time)
+controlActuator|액추에이터 실행|{"id":\_\_SENSOR_ID\_\_,<br>"cmd":\_\_CMD\_\_,<br>"options":\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_: 액추에이터 아이디<br>\_\_CMD\_\_: 명령어<br>\_\_OPTIONS\_\_: 명령어 옵션<br>
 setProperty|리포트 인터벌 변경|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_: 리포트 인터벌
 poweroff|하드웨어 종료|None|None
 reboot|하드웨어 재시작|None|None
@@ -415,7 +415,7 @@ RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "messag
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __MESSAGE_ID__: 메시지 아이디
-__SERVER_TIME__: 서버시간. UTC
+__SERVER_TIME__: 서버시간. Unix time이며 단위는 msec
 __ERR_CODE__: 에러코드
 __ERR_MSG__: 에러 메시지
 ```
@@ -463,10 +463,10 @@ controlActuator 메쏘드는 액추에이터에 명령을 내릴 때 사용합�
 ######  대표적인 액추에이터 명령어 및 명령어 옵션
 
 Actuator|Command|Option
-:---|:---|:---
+:---:|:---:|:---:
 led|on|duration
 led|off|
-led|blink|duration <br> interval
+led|blink|duration<br>interval
 powerSwitch|on|duration
 powerSwitch|off|None
 
@@ -506,11 +506,11 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
    * 디바이스 모델에서 정의한 idTemplate은 디바이스 등록 시 사용됩니다.
 3. 등록할 디바이스 정보를 만들어 전송합니다. (2.3.6절 참고)
 
-```javascript
+```json
 {
-  reqId: '<Device ID>',
-  name: '<Device Name>',
-  model: '<Device Model>'
+  "reqId": "<Device ID>",
+  "name": "<Device Name>",
+  "model": "<Device Model>"
 }
 ```
 
@@ -554,16 +554,16 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
    * deviceId: 센서가 속해있는 디바이스의 아이디입니다.
 
 ##### Example
-```javascript
+```json
 {
-  reqId: 'abcdefghijkl-0-humidity',
-  category: 'sensor',
-  type: 'humidity',
-  model: 'jsonrpcHumi',
-  driverName: 'jsonrpcSensor',
-  network: 'jsonrpc',
-  name: 'My Camera',
-  deviceId: 'abcdefghijkl-0'
+  "reqId": "abcdefghijkl-0-humidity",
+  "category": "sensor",
+  "type": "humidity",
+  "model": "jsonrpcHumi",
+  "driverName": "jsonrpcSensor",
+  "network": "jsonrpc",
+  "name": "My Camera",
+  "deviceId": "abcdefghijkl-0"
 }
 ```
 
@@ -580,10 +580,10 @@ https://api.sandbox.thingplus.net
 
 인증을 위해 Header에 username과 apikey를 채워주시면 됩니다.
 
-``` javascript
+```json
 {
-  username: <GATEWAY_ID>
-  apikey: <APIKEY>
+  "username": "<GATEWAY_ID>"
+  "apikey": "<APIKEY>"
 }
 ```
 
@@ -599,7 +599,7 @@ content-type: application/json
 
 ##### 에러코드
 |Error Code|Description|
-|---|---|
+|:---:|---|
 |401|Unauthorized|
 |403|Forbidden|
 |404|Not Found|
@@ -617,11 +617,11 @@ content-type: application/json
 `GET https://api.thingplus.net/gateways/abcdefghijkl?fields=model&fields=autoCreateDiscoverable`
 
 ##### Response Example
-```javascript
+```json
 {
-  id: "abcdefghijkl",
-  model: "34",
-  autoCreateDiscoverable: "y",
+  "id": "abcdefghijkl",
+  "model": "34",
+  "autoCreateDiscoverable": "y",
 }
 ```
 > **model** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호 <br>
@@ -639,56 +639,56 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
 
 ##### Response Body Format and Example
 ###### Body Format
-```javascript
+```json
 {
-  ctime: "<Gateway Model 생성 시간>",
-  model: "<Gateway Model 이름>",
-  deviceMgmt: {
-    reportInterval: {
-      show: "<리포트 인터벌이 Thing+ Cloud에 표시 여부. y or n>",
-      change: "<리포트 인터벌 변경 가능 여부. y or n>"
+  "ctime": "<Gateway Model 생성 시간>",
+  "model": "<Gateway Model 이름>",
+  "deviceMgmt": {
+    "reportInterval": {
+      "show": "<리포트 인터벌이 Thing+ Cloud에 표시 여부. y or n>",
+      "change": "<리포트 인터벌 변경 가능 여부. y or n>"
     },
-    DM: {
-      poweroff: {
-        support: "<Thing+를 통해 전원 끄기 기능 지원. y or n>"
+    "DM": {
+      "poweroff": {
+        "support": "<Thing+를 통해 전원 끄기 기능 지원. y or n>"
       },
-      reboot: {
-        support: "<Thing+를 통해 재시작 기능 지원. y or n>"
+      "reboot": {
+        "support": "<Thing+를 통해 재시작 기능 지원. y or n>"
       },
-      restart: {
-        support: "<Thing+를 통해 어플리케이션 프로그램 재시작 기능 지원. y or n>"
+      "restart": {
+        "support": "<Thing+를 통해 어플리케이션 프로그램 재시작 기능 지원. y or n>"
       },
-      swUpdate: {
-        support: "<Thing+를 통한 소프트웨어 업데이트 기능 지원. y or n"
+      "swUpdate": {
+        "support": "<Thing+를 통한 소프트웨어 업데이트 기능 지원. y or n"
       },
-      swInfo: {
-        support: "<Thing+에서 소프트웨어 버전 정보를 읽어가는 기능 지원. y or n"
+      "swInfo": {
+        "support": "<Thing+에서 소프트웨어 버전 정보를 읽어가는 기능 지원. y or n"
       }
     }
   },
-  id: "<Model ID>",
-  vendor: "<Vendor Name>",
-  mtime: "<수정된 시간. UTC>",
-  deviceModels: [
+  "id": "<Model ID>",
+  "vendor": "<Vendor Name>",
+  "mtime": "<수정된 시간. unix time(msec)>",
+  "deviceModels": [
     {
-      id: "<디바이스 모델 아이디>",
-      displayName: "<디바이스 모델 이름>",
-      idTemplate: "<디바이스 아이디 형식>",
-      discoverable: "<디스커버 가능 여부. y or n>",
-      sensors: [
+      "id": "<디바이스 모델 아이디>",
+      "displayName": "<디바이스 모델 이름>",
+      "idTemplate": "<디바이스 아이디 형식>",
+      "discoverable": "<디스커버 가능 여부. y or n>",
+      "sensors": [
         {
-          network: "<센서가 사용하는 네트워크>",
-          driverName: "<센서 드라이버 이름>",
-          model: "<센서 모델>",
-          type: "<센서 타입>",
-          category: "<카테고리. sensor or actuator>"
+          "network": "<센서가 사용하는 네트워크>",
+          "driverName": "<센서 드라이버 이름>",
+          "model": "<센서 모델>",
+          "type": "<센서 타입>",
+          "category": "<카테고리. sensor or actuator>"
         },
         ...,
       ],
-      max: <사용할 수 있는 디바이스 개수>
+      "max": <사용할 수 있는 디바이스 개수>
     }
   ],
-  displayName: "<게이트웨이 이름>"
+  "displayName": "<게이트웨이 이름>"
 }
 
 ```
@@ -698,62 +698,62 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
 > **idTemplate** &nbsp;&nbsp;&nbsp; 디바이스 아이디의 형식 정의. 디바이스 등록 시 idTemplate 형식으로 디바이스 아이디를 만들어서 등록해야 한다.
 
 ##### Example
-```javacript
+```json
 {
-  ctime: "1456122659103",
-  model: "openHardwareCustom",
-  deviceMgmt: {
-    reportInterval: {
-      show: "y",
-      change: "y"
+  "ctime": "1456122659103",
+  "model": "openHardwareCustom",
+  "deviceMgmt": {
+    "reportInterval": {
+      "show": "y",
+      "change": "y"
     },
-    DM: {
-      poweroff: {
-        support: "n"
+    "DM": {
+      "poweroff": {
+        "support": "n"
       },
-      reboot: {
-        support: "n"
+      "reboot": {
+        ""support": "n"
       },
-      restart: {
-        support: "y"
+      "restart": {
+        support": "y"
       },
-      swUpdate: {
-        support: "y"
+      "swUpdate": {
+        "support": "y"
       },
-      swInfo: {
-        support: "y"
+      "swInfo": {
+        "support": "y"
       }
     }
   },
-  id: "34",
-  vendor: "OPEN SOURCE HARDWARE",
-  mtime: "1456122659103",
-  deviceModels: [
+  "id": "34",
+  "vendor": "OPEN SOURCE HARDWARE",
+  "mtime": "1456122659103",
+  "deviceModels": [
     {
-      id: "jsonrpcFullV1.0",
-      displayName: "Open Source Device",
-      idTemplate: "{gatewayId}-{deviceAddress}",
-      discoverable: "y",
-      sensors: [
+      "id": "jsonrpcFullV1.0",
+      "displayName": "Open Source Device",
+      "idTemplate": "{gatewayId}-{deviceAddress}",
+      "discoverable": "y",
+      "sensors": [
         {
-          network: "jsonrpc",
-          driverName: "jsonrpcSensor",
-          model: "jsonrpcNumber",
-          type: "number",
-          category: "sensor"
+          "network": "jsonrpc",
+          "driverName": "jsonrpcSensor",
+          "model": "jsonrpcNumber",
+          "type": "number",
+          "category": "sensor"
         },
         {
-          network: "jsonrpc",
-          driverName: "jsonrpcSensor",
-          model: "jsonrpcString",
-          type: "string",
-          category: "sensor"
+          "network": "jsonrpc",
+          "driverName": "jsonrpcSensor",
+          "model": "jsonrpcString",
+          "type": "string",
+          "category": "sensor"
         }
       ],
-      max: 1
+      "max": 1
     }
   ],
-  displayName: "Open Source Gateway"
+  "displayName": "Open Source Gateway"
 }
 ```
 
@@ -769,38 +769,38 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 `GET https://api.thingplus.net/sensorDrivers/?filter[id]=jsonrpcSensor`
 
 ##### Response Example
-```javascript
+```json
 {
-  discoverable: "true",
-  ctime: "1456122653281",
-  id: "jsonrpcSensor",
-  displayName: "jsonrpc Sensor",
-  models: [
+  "discoverable": "true",
+  "ctime": "1456122653281",
+  "id": "jsonrpcSensor",
+  "displayName": "jsonrpc Sensor",
+  "models": [
     "jsonrpcNumber",
     "jsonrpcString",
     ...,
     "jsonrpcReader"
   ],
-  supportedNetworks: [
+  "supportedNetworks": [
     "jsonrpc"
   ],
-  mtime: "1456122653281",
-  category: "sensor",
-  addressable: "false",
-  dataTypes: {
-    jsonrpcNumber: [
+  "mtime": "1456122653281",
+  "category": "sensor",
+  "addressable": "false",
+  "dataTypes": {
+    "jsonrpcNumber": [
       "number"
     ],
-    jsonrpcString: [
+    "jsonrpcString": [
       "string"
     ],
     ...,
-    jsonrpcReader: [
+    "jsonrpcReader": [
       "reader"
     ]
   },
-  driverName: "jsonrpcSensor",
-  idTemplate: "{gatewayId}-{deviceAddress}-{type}-{sequence}"
+  "driverName": "jsonrpcSensor",
+  "idTemplate": "{gatewayId}-{deviceAddress}-{type}-{sequence}"
 }
 ```
 > **discoverable** &nbsp;&nbsp;&nbsp; 센서의 디스커버 가능 여부
@@ -813,36 +813,36 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 ##### Post Parameters
 
 |parameter|description|
-|-----|--------|
-|reqId|디바이스 아이디<br>&nbsp;게이트웨이 모델에서 정한 idTemplate 형식으로 생성해야 한다.<br>&nbsp;idTemplate은 게이트웨이 모델의 deviceModels 배열의 사용하는 디바이스의 idTemplate을 사용하면 된다.
+|:-----:|--------|
+|reqId|디바이스 아이디. 게이트웨이 모델에서 정한 idTemplate 형식으로 생성해야 한다. idTemplate은 게이트웨이 모델의 deviceModels 배열의 사용하는 디바이스의 idTemplate을 사용하면 된다.
 |name|디바이스 이름|
-|model|디바이스가 사용하는 모델 아이디<br>&nbsp;게이트웨이 모델의 deviceModels 배열 중 thing이 사용 할 디바이스의 ID를 넣어준다.|
+|model|디바이스가 사용하는 모델 아이디. 게이트웨이 모델의 deviceModels 배열 중 thing이 사용할 디바이스의 ID를 넣어준다.|
 
 ##### Request Body Example
-```javascript
+```json
 {
-  reqId: 'abcdefghijkl-0',
-  name: 'My Device0',
-  model: 'jsonrpcFullV1.0' }
+  "reqId": "abcdefghijkl-0",
+  "name": "My Device0",
+  "model": "jsonrpcFullV1.0"
 }
 ```
 --
 ##### Response Example
-```
+```json
 {
-  name: 'My Device0',
-  model: 'jsonrpcFullV1.0',
-  owner: 'abcdefghijkl',
-  mtime: 1456297274619,
-  ctime: 1456297274619,
-  id: 'abcdefghijkl-0'
+  "name": "My Device0",
+  "model": "jsonrpcFullV1.0",
+  "owner": "abcdefghijkl",
+  "mtime": 1456297274619,
+  "ctime": 1456297274619,
+  "id": "abcdefghijkl-0"
 }
 ```
 
 --
 ##### Error
 |Error Code|Description|
-|---|---|
+|:---:|---|
 |401|body의 게이트웨이 아이디 또는, APIKEY가 틀렸음.
 |404|등록이 안된 게이트웨이에 디바이스 추가를 시도 함.
 |471|요금제에 의해 디바이스 추가를 할 수 없음.
@@ -855,7 +855,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 > **GATEAY_ID** &nbsp;&nbsp;&nbsp; 센서가 속한 게이트웨이의 아이디
 
 ##### Post Parameter
-|parameter|description|
+|:parameter:|description|
 |---|---|
 |network|네트워크 이름|
 |driverName|센서가 사용하는 드라이버 이름|
@@ -867,40 +867,40 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 |deviceId|센서가 속한 디바이스의 아이디|
 
 ##### Request Body Example
-```javascript
+```json
 {
-  network: 'jsonrpc',
-  driverName: 'jsonrpcActuator',
-  model: 'jsonrpcCamera',
-  type: 'camera',
-  category: 'actuator',
-  reqId: 'abcdefghijkl-0-camera',
-  name: 'My Camera',
-  deviceId: 'abcdefghijkl-0'
+  "network": "jsonrpc",
+  "driverName": "jsonrpcActuator",
+  "model": "jsonrpcCamera",
+  "type": "camera",
+  "category": "actuator",
+  "reqId": "abcdefghijkl-0-camera",
+  "name": "My Camera",
+  "deviceId": "abcdefghijkl-0"
 }
 ```
 ##### Response Example
-```
+```json
 {
-  network: 'jsonrpc',
-  driverName: 'jsonrpcActuator',
-  model: 'jsonrpcCamera',
-  type: 'camera',
-  category: 'actuator',
-  name: 'My Camera',
-  address: '0',
-  options: {},
-  deviceId: 'abcdefghijkl-0',
-  owner: 'abcdefghijkl',
-  mtime: 1456297274458,
-  ctime: 1456297274458,
-  id: 'abcdefghijkl-0-camera'
+  "network": "jsonrpc",
+  "driverName": "jsonrpcActuator",
+  "model": "jsonrpcCamera",
+  "type": "camera",
+  "category": "actuator",
+  "name": "My Camera",
+  "address": "0",
+  "options": {},
+  "deviceId": "abcdefghijkl-0",
+  "owner": "abcdefghijkl",
+  "mtime": 1456297274458,
+  "ctime": 1456297274458,
+  "id": "abcdefghijkl-0-camera"
 }
 ```
 
 ##### Error
 |Error Code|Description|
-|---|---|
+|:---:|---|
 |401|body의 게이트웨이 아이디 또는, APIKEY가 틀렸음.
 |404|등록이 안된 게이트웨이에 디바이스 추가를 시도 함.
 |471|요금제에 의해 디바이스 추가를 할 수 없음.
@@ -1092,7 +1092,7 @@ Thing+ Gateway 구동을 위해 필요한 저장공간 사용량은 아래와 �
 #### Storage Requirement
 
 Category|Size
-:---|---:
+---|---
 Thing+ Gateway|11 MB
 Node.js(binary)| 9 MB
 Node.js Modules|5 MB
@@ -1105,7 +1105,7 @@ Thing+ Gateway에는 아래 기능이 있습니다.
 #### Thing+ Gateway Features
 
 Feature|Description
-:---|:---
+:---:|---
 Connection|Thing+ Cloud 연결
 Discover|연결된 센서, 액추에이터 탐색
 TimeSync|시간 동기
@@ -1129,7 +1129,7 @@ thing의 시간이 서버시간과 다를경우 thing의 로컬시간은 서버�
 디바이스 에이전트는 하드웨어의 센서값을 읽고, 액추에이터를 구동하는 프로그램입니다. 이 프로그램은 하드웨어 업체에서 하드웨어의 구성에 맞게 작성을 해야합니다. Thing+ 게이트웨이와 Device Agent사이에는 JSONRPC로 연결합니다. JSONRPC 서버는 Device Agent가 맡게 되며 사용하는 포트는 50800입니다.
 
 Server|Device Agent
-:---|:---
+:---:|---
 **PORT**|**50800**
 Client|Thing+ Gateway
 
@@ -1140,7 +1140,7 @@ JSONRPC는 두 프로세스간의 통신을 위한 프로토콜로 JSON 형식�
 - Request 형식
 
 property|description
-:---|:---|
+:---:|---|
 method|실행해야 할 서비스 또는 메쏘드 이름
 params|파라미터
 id|Request ID. Response 할 때 돌려줘야 한다.
@@ -1148,7 +1148,7 @@ id|Request ID. Response 할 때 돌려줘야 한다.
 - Response
 
 property|description
-:---|:---|
+:---:|---|
 result|서비스 또는 메쏘드 실행 결과
 error|에러 오브젝트. 에러가 없으면 null로 표기
 id|Request 시 받은 ID
@@ -1158,7 +1158,7 @@ id|Request 시 받은 ID
 - Error 코드
 
 Code|message
-:---|:---
+:---:|---
 -32700|Parse error
 -32600|Invald Request
 -32601|Method not found
@@ -1169,7 +1169,7 @@ Code|message
 #### 4.3.2 Device Agent method
 
 Method|Description
-:---|:---
+:---:|---
 discover|하드웨어에 연결된 센서, 액츄에이터 목록을 요청
 sensor.get|시리즈 센서값 요청
 sensor.set|액추에이터 실행
@@ -1393,7 +1393,7 @@ Thing+는 하드웨어 업체를 위하여 각 방법에 대한 예제코드 제
 8. 게이트웨이 등록 완료
 
 #### 5.1.3 소스의 config.json 설정
-```
+```json
 {
   "gatewayId": "<HW_MAC_ADDRESS>",
   "host": "dmqtt.thingplus.net",

@@ -7,7 +7,7 @@ Thing+ Embedded is composed of the Thing+ Embedded Protocol, Thing+ Embedded SDK
 The Thing+ Embedded Protocol can be implemented in hardware ranging from the low end such as WiFi chips to the high end. Firmware or any OS can be used. The ability to connect a MQTT server, sense sensors, actuate actuators, compose MQTT, and send HTTP messages are required in order to function correctly.
 
 Category|Description
-:---|:---
+---|---
 **Application requirement**|Sensing sensors<br> Actuating actuators<br> MQTT, HTTP connection<br> Composing MQTT, HTTP message<br> Sending status and values periodically.
 Target hardware| Low end to high end
 Dependency|None
@@ -16,16 +16,16 @@ Dependency|None
 The Thing+ Embedded SDK is a C library that can be implemented typically in middle end to high end hardware. The SDK's depencies include libmosquitto, libcurl, libjson-c, openssl. The SDK's primary purpose is to connect hardware to the Thing+ Cloud server and compose MQTT and HTTP messages. Sensing sensors, actuating actuators, sending status messages and values are required features of any hardware used.
 
 Category|Descriptions
-:---|:---
-**Application requirement**|Sensing sensors<br> Actuating actuators<br>  Sending status and value periodically.
+---|---
+**Application requirement**|Sensing sensors<br>Actuating actuators<br>Sending status and value periodically.
 Target hardware|Middle end to high end
-Dependency|libcurl<br> libjson-c<br> libmosquitto<br> openssl<br> C or C++ application
+Dependency|libcurl<br>libjson-c<br>libmosquitto<br>openssl<br>C or C++ application
 
 #### 1.1.3 Thing+ Gateway
 The Thing+ Gateway can be implemented on high end hardware. The Thing+ Gateway is a Node.js application program. Whatever hardware is used must have the ability to run node.js. There is another protocol between the Thing+ Gateway and hardware/device applications we call the "Device Agent". The Thing+ Gateway connects hardware to the Thing+ Cloud server and composes MQTT & HTTP messages with the purpose of sending status and data/values to the server. Sensing sensors, actuating actuators and running a JSONRPC server must be possible on any hardware you use to set up a Thing+ gateway.
 
 Category|Descriptions
-:---|:---
+---|---
 **Application requirement**|Sensing a sensors<br> Actuating actuators<br> Sending sensor event values<br> JSONRPC Server
 Target hardware|High end
 Dependency|Node.js
@@ -70,7 +70,7 @@ This chapter describes the MQTT Topic and data format used by Thing+ Platform. A
 - The value for each status is defined as below,
 
 Status|Value(strings)
-:---|:---
+:---:|:---:
 turned-on|on
 turned-off|off
 Error occurred|err
@@ -84,7 +84,7 @@ When connecting MQTT to a Thing+ broker, you must use the **mqtts** protocol. Pl
 ** Details of the MQTT Connection Spec  **
 
 MQTT Connection SPEC|Thing+ Definition
----|:---
+---|---
 MQTT Version | 3
 PORT | 8883
 MQTT Client ID | {gateway_id}
@@ -289,9 +289,9 @@ TOPIC: v/a/g/000011112222/req
 > Method List
 
 Method|Description|Parameters|Param Description
-:---|:---|:---|:---
-timeSync|Synchronize the local time of a hardware with Thing+ server time|{"time":\_\_TIME\_\_}|\_\_TIME\_\_ : current time in UTC
-controlActuator|execute a command on an actuator|{"id":\_\_SENSOR_ID\_\_,"cmd":\_\_CMD\_\_,"options",\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : ID of an actuator<br>\_\_CMD\_\_ : Command for an actator<br>\_\_OPTIONS\_\_ : Options for a command<br>
+:---:|---|---|---
+timeSync|Synchronize the local time of a hardware with Thing+ server time|{"time":\_\_TIME\_\_}|\_\_TIME\_\_ : current unix time as msec
+controlActuator|Execute a command on an actuator|{"id":\_\_SENSOR_ID\_\_,<br>"cmd":\_\_CMD\_\_,<br>"options":\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : ID of an actuator<br>\_\_CMD\_\_ : Command for an actator<br>\_\_OPTIONS\_\_ : Options for a command<br>
 setProperty|Environment configuration|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_ : frequency for reporting sensor value in msec
 poweroff|Turn off the device|None|None
 reboot|Reboot the H/W|None|None
@@ -314,7 +314,7 @@ REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"timeSync","params":{"time":__
 RESPONSE IF SUCCESS : {"id":"__MESSAGE_ID__","result":""}
 RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 
-__SERVER_TIME__ : UTC
+__SERVER_TIME__ : Server time. It is Unix time and its unit is msec.
 ```
 
 Example
@@ -362,10 +362,10 @@ actuator are defined by Thing+. The examples of commands and options for some ac
 > Commonly used actuator commands and options
 
 Actuator|Command|Option
-:---|:---|:---
+:---:|:---:|:---:
 led|on|duration
 led|off|
-led|blink|duration <br> interval
+led|blink|duration<br>interval
 powerSwitch|on|duration
 powerSwitch|off|None
 
@@ -407,11 +407,11 @@ The Thing + HTTP Protocol is the main protocol used for the Thing+ REST API. Whe
  <br>
   The data format is as follows.
 
-  ```Javascript
+  ```json
   {
-      reqId: '<Device ID>',
-      name: '<Device Name>',
-      model: '<Device Model>'
+      "reqId": "<Device ID>",
+      "name": "<Device Name>",
+      "model": "<Device Model>"
   }
   ```
   * ReqId: Creates an ID for the idTemplate type in the device model.
@@ -443,16 +443,16 @@ The Thing + HTTP Protocol is the main protocol used for the Thing+ REST API. Whe
 
 ```Javascript
 {
-  reqId: 'abcdefghijkl-0-humidity',
-  category: 'sensor',
-  type: 'humidity',
-  model: 'jsonrpcHumi',
-  driverName: 'jsonrpcSensor'
-  network: 'jsonrpc',
-  name: 'My Camera',
-  owner: 'abcdefghijkl',
-  ctime: 1456297274325,
-  deviceId: 'abcdefghijkl-0'
+  "reqId": "abcdefghijkl-0-humidity",
+  "category": "sensor",
+  "type": "humidity",
+  "model": "jsonrpcHumi",
+  "driverName": "jsonrpcSensor"
+  "network": "jsonrpc",
+  "name": "My Camera",
+  "owner": "abcdefghijkl",
+  "ctime": 1456297274325,
+  "deviceId": "abcdefghijkl-0"
 }
 ```
 
@@ -486,10 +486,10 @@ https://api.sandbox.thingplus.net
 
 To authenticate, just fill in your username and apikey in the header.
 
-```Javascript
+```json
 {
-  username: <GATEWAY_ID>
-  apikey: <APIKEY>
+  "username": "<GATEWAY_ID>",
+  "apikey": "<APIKEY>"
 }
 ```
 > GATEWAY_ID: Gateway ID <br>
@@ -503,7 +503,7 @@ Content-type: application / json
 
 ##### Error Codes
 | Error Code | Description |
-| --- | --- |
+|:---:| --- |
 | 401 | Unauthorized |
 | 403 | Forbidden |
 | 404 | Not Found |
@@ -522,11 +522,11 @@ This is an API that brings in information of the gateway in use.
 
 --
 ##### Response Example
-```Javascript
+```json
 {
-  id: "abcdefghijkl",
-  model: "34",
-  autoCreateDiscoverable: "y",
+  "id": "abcdefghijkl",
+  "model": "34",
+  "autoCreateDiscoverable": "y",
 }
 ```
 > ** model ** Gateway model number
@@ -546,56 +546,56 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 --
 ##### Response Body Format and Example
 ###### Body Format
-```Javascript
+```json
 {
-  ctime: "<Gateway Model creation time>",
-  model: "<Gateway Model name>",
-  deviceMgmt: {
-    reportInterval: {
-      show: "<Whether the report interval is visible in Thing + Cloud, y or n>",
-      change: "<report interval changeable y or n>"
+  "ctime": "<Gateway Model creation time>",
+  "model": "<Gateway Model name>",
+  "deviceMgmt": {
+    "reportInterval": {
+      "show": "<Whether the report interval is visible in Thing + Cloud, y or n>",
+      "change": "<report interval changeable y or n>"
     },
-    dM: {
-      poweroff: {
-        support: "<Supports power off via thing + y or n>"
+    "DM": {
+      "poweroff": {
+        "support": "<Supports power off via thing + y or n>"
       },
-      reboot: {
-        support: "<Restart support via Thing +. Y or n>"
+      "reboot": {
+        "support": "<Restart support via Thing +. Y or n>"
       },
-      restart: {
-        support: "<Support for restarting application programs via Thing+. Y or n>"
+      "restart": {
+        "support": "<Support for restarting application programs via Thing+. Y or n>"
       },
-      swUpdate: {
-        support: "<Software support for Thing +. Y or n"
+      "swUpdate": {
+        "support": "<Software support for Thing +. Y or n"
       },
-      swInfo: {
-        support: "<Thing + supports reading software version information from y or n"
+      "swInfo": {
+        "support": "<Thing + supports reading software version information from y or n"
       }
     }
   },
-  id: "<Model ID>",
-  vendor: "<Vendor Name>",
-  mtime: "<Modified time in UTC>",
-  deviceModels: [
+  "id": "<Model ID>",
+  "vendor": "<Vendor Name>",
+  "mtime": "<Modified time in unix time(msec)>",
+  "deviceModels": [
     {
-      id: "<device model ID>",
-      displayName: "<device model name>",
-      idTemplate: "<device id format>",
-      discoverable: "<Discoverability, y or n>",
-      sensors: [
+      "id": "<device model ID>",
+      "displayName": "<device model name>",
+      "idTemplate": "<device id format>",
+      "discoverable": "<Discoverability, y or n>",
+      "sensors": [
         {
-          network: "<network used by the sensor>",
-          nriverName: "<Sensor Driver Name>",
-          model: "<sensor model>",
-          type: "<sensor type>",
-          category: "<category. Sensor or actuator>"
+          "network": "<network used by the sensor>",
+          "nriverName": "<Sensor Driver Name>",
+          "model": "<sensor model>",
+          "type": "<sensor type>",
+          "category": "<category. Sensor or actuator>"
         },
         ...,
       ],
-      max: <number of available devices>
+      "max": <number of available devices>
     }
   ],
-  displayName: "<gateway name>"
+  "displayName": "<gateway name>"
 }
 
 ```
@@ -606,62 +606,62 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 >>> When you register the device, you need to create and register the device ID in idTemplate format.
 
 ##### Example
-```Javacript
+```json
 {
-  ctime: "1456122659103",
-  model: "openHardwareCustom",
-  deviceMgmt: {
-    reportInterval: {
-      show: "y",
-      change: "y"
+  "ctime": "1456122659103",
+  "model": "openHardwareCustom",
+  "deviceMgmt": {
+    "reportInterval": {
+      "show": "y",
+      "change": "y"
     },
-    DM: {
-      poweroff: {
-        support: "n"
+    "DM": {
+      "poweroff": {
+        "support": "n"
       },
-      reboot: {
-        support: "n"
+      "reboot": {
+        "support": "n"
       },
-      restart: {
-        support: "y"
+      "restart": {
+        "support": "y"
       },
-      swUpdate: {
-        support: "y"
+      "swUpdate": {
+        "support": "y"
       },
-      swInfo: {
-        support: "y"
+      "swInfo": {
+        "support": "y"
       }
     }
   },
-  id: "34",
-  vendor: "OPEN SOURCE HARDWARE",
-  mtime: "1456122659103",
-  deviceModels:
+  "id": "34",
+  "vendor": "OPEN SOURCE HARDWARE",
+  "mtime": "1456122659103",
+  "deviceModels":
     {
-      id: "jsonrpcFullV1.0",
-      displayName: "Open Source Device",
-      idTemplate: "{gatewayId} - {deviceAddress}",
-      discoverable: "y",
-      sensors: [
+      "id": "jsonrpcFullV1.0",
+      "displayName": "Open Source Device",
+      "idTemplate": "{gatewayId} - {deviceAddress}",
+      "discoverable": "y",
+      "sensors": [
         {
-          network: "jsonrpc",
-          driverName: "jsonrpcSensor",
-          model: "jsonrpcNumber",
-          type: "number",
-          category: "sensor"
+          "network": "jsonrpc",
+          "driverName": "jsonrpcSensor",
+          "model": "jsonrpcNumber",
+          "type": "number",
+          "category": "sensor"
         },
         {
-          network: "jsonrpc",
-          driverName: "jsonrpcSensor",
-          model: "jsonrpcString",
-          type: "string",
-          category: "sensor"
+          "network": "jsonrpc",
+          "driverName": "jsonrpcSensor",
+          "model": "jsonrpcString",
+          "type": "string",
+          "category": "sensor"
         }
       ],
-      max: 1
+      "max": 1
     }
   ],
-  displayName: "Open Source Gateway"
+  "displayName": "Open Source Gateway"
 }
 ```
 
@@ -678,38 +678,38 @@ This is an API that handles sensor drivers as defined by Thing+.
 
 --
 ##### Response Example
-```Javascript
+```json
 {
-  ciscoverable: "true",
-  ctime: "1456122653281",
-  id: "jsonrpcSensor",
-  displayName: "jsonrpc Sensor",
-  models: [
+  "discoverable": "true",
+  "ctime": "1456122653281",
+  "id": "jsonrpcSensor",
+  "displayName": "jsonrpc Sensor",
+  "models": [
     "JsonrpcNumber",
     "JsonrpcString"
     ...,
     "JsonrpcReader"
   ],
-  supportedNetworks: [
+  "supportedNetworks": [
     "Jsonrpc"
   ],
-  mtime: "1456122653281",
-  category: "sensor",
-  addressable: "false"
-  dataTypes: {
-    jsonrpcNumber: [
+  "mtime": "1456122653281",
+  "category": "sensor",
+  "addressable": "false"
+  "dataTypes": {
+    "jsonrpcNumber": [
       "Number"
     ],
-    jsonrpcString: [
+    "jsonrpcString": [
       "String"
     ],
     ...,
-    jsonrpcReader: [
+    "jsonrpcReader": [
       "Reader"
     ]
   },
-  driverName: "jsonrpcSensor",
-  idTemplate: "{gatewayId} - {deviceAddress} - {type} - {sequence}"
+  "driverName": "jsonrpcSensor",
+  "idTemplate": "{gatewayId} - {deviceAddress} - {type} - {sequence}"
 }
 ```
 > ** discoverable ** Whether the sensor is discoverable
@@ -721,37 +721,37 @@ This is an API that handles sensor drivers as defined by Thing+.
 
 ##### Post Parameters
 
-| Parameter | description |
-| ----- | -------- |
+| Parameter | Description |
+|:-----:| -------- |
 | ReqId | Device ID <br>  The idTemplate must be created in the gateway model. <br> <br> The idTemplate is the idTemplate of the device in the deviceModels array of the gateway model.
-| Name | device name |
+| Name | Device name |
 | Model | The model ID used by the device. <br> <br> Of the deviceModels array of the gateway model, insert the ID of the device to use.
 
 ##### Request Body Example
-```Javascript
+```json
 {
-  reqId: 'abcdefghijkl-0'
-  name: 'My Device0',
-  model: 'jsonrpcFullV1.0'}
+  "reqId": "abcdefghijkl-0"
+  "name": "My Device0",
+  "model": "jsonrpcFullV1.0"
 }
 ```
 --
 ##### Response Example
-```
+```json
 {
-  name: 'My Device0',
-  model: 'jsonrpcFullV1.0',
-  owner: 'abcdefghijkl',
-  mtime: 1456297274619,
-  ctime: 1456297274619,
-  id: 'abcdefghijkl-0'
+  "name": "My Device0",
+  "model": "jsonrpcFullV1.0",
+  "owner": "abcdefghijkl",
+  "mtime": 1456297274619,
+  "ctime": 1456297274619,
+  "id": "abcdefghijkl-0"
 }
 ```
 
 --
 ##### Error
 | Error Code | Description |
-| --- | --- |
+|:---:| --- |
 | 401 | The gateway ID of the body, or APIKEY is incorrect.
 | 404 | Attempt to add device to unregistered gateway.
 | 471 | Device can not be added by plan.
@@ -764,57 +764,57 @@ This is an API that handles sensor drivers as defined by Thing+.
 > ** GATEAY_ID ** The ID of the gateway to which the sensor belongs
 
 ##### Post Parameter
-| Parameter | description |
-| --- | --- |
-| Network | network name |
+| Parameter | Description |
+|:---:| --- |
+| Network | Network name |
 | DriverName | The name of the driver used by the sensor |
-| Model | sensor model |
+| Model | Sensor model |
 | Type | Sensor type |
 | Category | Sensor or actuator |
 | ReqId | Sensor ID | Need to create in idTemplate format defined by sensor driver |
-| Name | sensor name |
+| Name | Sensor name |
 | Owner | Gateway to which the sensor belongs |
 | Ctime | Time the sensor was created (UTC) |
 | DeviceId | The ID of the device to which the sensor belongs |
 
 ##### Request Body Example
-```Javascript
+```json
 {
-  network: 'jsonrpc',
-  driverName: 'jsonrpcActuator',
-  model: 'jsonrpcCamera',
-  type: 'camera',
-  category: 'actuator',
-  reqId: 'abcdefghijkl-0-camera',
-  name: 'My Camera',
-  owner: 'abcdefghijkl',
-  ctime: 1456297274325,
-  deviceId: 'abcdefghijkl-0'
+  "network": "jsonrpc",
+  "driverName": "jsonrpcActuator",
+  "model": "jsonrpcCamera",
+  "type": "camera",
+  "category": "actuator",
+  "reqId": "abcdefghijkl-0-camera",
+  "name": "My Camera",
+  "owner": "abcdefghijkl",
+  "ctime": 1456297274325,
+  "deviceId": "abcdefghijkl-0"
 }
 ```
 --
 ##### Response Example
-```
+```json
 {
-  network: 'jsonrpc',
-  driverName: 'jsonrpcActuator',
-  model: 'jsonrpcCamera',
-  type: 'camera',
-  category: 'actuator',
-  name: 'My Camera',
-  address: '0',
-  options: {},
-  deviceId: 'abcdefghijkl-0',
-  owner: 'abcdefghijkl',
-  mtime: 1456297274458,
-  ctime: 1456297274458,
-  id: 'abcdefghijkl-0-camera'
+  "network": "jsonrpc",
+  "driverName": "jsonrpcActuator",
+  "model": "jsonrpcCamera",
+  "type": "camera",
+  "category": "actuator",
+  "name": "My Camera",
+  "address": "0",
+  "options": {},
+  "deviceId": "abcdefghijkl-0",
+  "owner": "abcdefghijkl",
+  "mtime": 1456297274458,
+  "ctime": 1456297274458,
+  "id": "abcdefghijkl-0-camera"
 }
 ```
 --
 ##### Error
 | Error Code | Description |
-| --- | --- |
+|:---:| --- |
 | 401 | The gateway ID of the body, or APIKEY is incorrect.
 | 404 | Attempt to add device to unregistered gateway.
 | 471 | Device can not be added by plan.
@@ -836,7 +836,7 @@ The Thing+ Embedded SDK is written in C and uses openssl, libmosquitto, libjson-
 
 ```
 git clone https://github.com/daliworks/thingplus-embedded
-cd thingplus-embedded / library
+cd thingplus-embedded/library
 cmake.
 make
 make install
@@ -886,7 +886,7 @@ make install
 - Return Value
   - 0: Success. Success does not mean that the server connection was successful, but it means that you tried to connect to the server.
         The callback function should check whether the connection of the server is successful.
-  - <0: Failed
+  - < 0: Failed
 ```
 
 #### 3.3.5 thingplus_disconnect
@@ -898,7 +898,7 @@ make install
   - Return Value
     - 0: Success. Success does not mean that the connection is broken, but it means that the attempt to disconnect is successful.
           The result of the disconnection must be confirmed by the callback function.
-    - <0: Failed
+    - < 0: Failed
 ```
 
 #### 3.3.6 thingplus_status_publish
@@ -911,7 +911,7 @@ make install
   - status: status to transmit
 - Return Value
   - 0: Success
-  - <0: Failed
+  - < 0: Failed
 ```
 
 #### 3.3.7 thingplus_value_publish
@@ -924,7 +924,7 @@ make install
   - values: the sensor value to send
 - Return Value
   - 0: Success
-  - <0: Failed
+  - < 0: Failed
 ```
 
 #### 3.3.8 thingplus_device_register
@@ -939,7 +939,7 @@ make install
   - device_id: The device ID used by Thing +. If the device registration succeeds, the device ID used by Thing + is filled in the corresponding array.
 - Return Value
   - 0: Success
-  - <0: Failed
+  - < 0: Failed
 ```
 
 ##### 3.3.9 thingplus_sensor_register
@@ -955,7 +955,7 @@ make install
   - sensor_id: Sensor ID used by Thing +. If the sensor registration succeeds, the sensor ID used by Thing + is filled in the corresponding array.
 - Return Value
   - 0: Success
-  - <0: Failed
+  - < 0: Failed
 ```
 
 #### 3.3.10 thingplus_gatewayinfo
@@ -967,7 +967,7 @@ make install
   - info: Structure to hold gateway information
 - Return Value
   - 0: Success
-  - <0: Failed
+  - < 0: Failed
 ```
 
 #### 3.3.11 thingplus_deviceinfo
@@ -979,7 +979,7 @@ make install
   - info: Structure to hold device information
 - Return Value
   - 0: Success
-  - <0: Failed
+  - < 0: Failed
 ```
 
 ## 4. Thing+ Gateway
@@ -1004,7 +1004,7 @@ Thing+ Gateways run on embedded hardware, and is written via Node.js. Your hardw
 > Storage Requirement <br>
 
 Category|Size
-:---|---:
+---|---
 Thing+ Gateway|11 MB
 Node.js(binary)| 9 MB
 Node.js Modules|5 MB
@@ -1015,7 +1015,7 @@ StoreDb, Log|5 MB
 > Thing+ Gateway Features
 
 Feature|Description
-:---|:---
+:---:|---
 Connection|Connecting hardware and Thing+ Cloud Server
 Discover|Discover connected sensors and actuators and register it.
 TimeSync|Syncronize system time automatically
@@ -1040,7 +1040,7 @@ If your network is disconnected, the Thing+ Gateway saves sensors values to loca
 Device Agent is a program that reads sensors values and actuates actuators. It is programed directly by hardware vendors. The Thing+ Gateway connects to the Device Agent with JSONRPC. The Thing+ Gateway is a JSONRPC Client and the Device Agent acts as a JSONRPC Server with a port number of 50800.
 
 Server|Device Agent
-:---|:---
+:---:|:---:
 **PORT**|**50800**
 Client|Thing+ Gateway
 
@@ -1049,26 +1049,26 @@ JSONRPC is light-weight remote procedure call protocol. It uses JSON as it's dat
 
 - Request format
 
-property|description
-:---|:---|
+property|Description
+:---:|---|
 method|Name of executino method or service
-params|parameters
+params|Parameters
 id|Request ID. Use this id when reponse.
 
 - Response
 
-property|description
-:---|:---|
+property|Description
+:---:|---|
 result|The result of executed service or method
-error|error object. Null if no error
+error|Error object. Null if no error
 id|The ID from request message
 
 ### ** Every message MUST end with NEW LINE(\n)**
 
 - Error codes
 
-Code|message
-:---|:---
+Code|Message
+:---:|---
 -32700|Parse error
 -32600|Invald Request
 -32601|Method not found
@@ -1079,7 +1079,7 @@ Code|message
 #### 4.3.2 Device Agent method
 
 Method|Description
-:---|:---
+:---:|---
 discover|Request connected sensors and actuator lists.
 sensor.get|Request series sensors value
 sensor.set|Request actuating actuators
@@ -1140,8 +1140,7 @@ Device Agent --> Thing+ Gateway
 - Request Example (Thing+ Gateway)
 
 ```
-{"id":2,"method":"sensor.get","params":["0a0b0c0d0e00-
-temperature-0"]}\n
+{"id":2,"method":"sensor.get","params":["0a0b0c0d0e00-temperature-0"]}\n
 ```
 
 - Response Example (Device Agent)
@@ -1230,7 +1229,7 @@ Device Agent <-- Thing+ Gateway
 Check if the Device Agent is working or not
 
 ```
-Device Agent <-- Thingp+ Gateway
+Device Agent <-- Thing+ Gateway
 - Request Method : sensor.setNotification
 - Request Params : None
 
