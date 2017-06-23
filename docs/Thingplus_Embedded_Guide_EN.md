@@ -147,7 +147,7 @@ Hardware should transmit the status of a sensor attached to it and the valid dur
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
 MESSAGE: __SENSOR_STATUS__,__VALID_DURATION__
 
-__SENSOR_STATUS__ : "on" or "off"
+__SENSOR_STATUS__: "on" or "off"
 __VALID_DURATION__: Unit is sec
 ```
 
@@ -168,9 +168,9 @@ TOPIC: v/a/g/__GATEWAY_ID__/status
 MESSAGE: __HW_STATUS__,__VALID_DURATION__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__
 }
 
-__HW_STATUS__ : "on" or "off"
+__HW_STATUS__: "on" or "off"
 __VALID_DURATION__: Unit is sec
-__SENSOR_STATUS__ : "on" or "off"
+__SENSOR_STATUS__: "on" or "off"
 ```
 
 ##### Example
@@ -233,7 +233,7 @@ should, for a single sensor, be grouped and ordered by time
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__
-MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__],"__SENSOR_ID__":[__TIME__,__VALUE__,...,__TIME__,__VALUE__], ...(REPEAT FOR SENSORS), "__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__]}
+MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__],"__SENSOR_ID__":[__TIME__,__VALUE__,...,__TIME__,__VALUE__], ...(REPEAT FOR SENSORS),"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__]}
 
 __GATEWAY_ID__: Gateway ID
 __SENSOR_ID__: Sensor ID
@@ -258,12 +258,12 @@ hardware can subscribe a MQTT message only for it.
 ##### MQTT Topic and Message subscribed by a hardware
 
 ```
-TOPIC : v/a/g/__GATEWAY_ID__/req
-MESSAGE: {"id": __MESSAGE_ID__, "method": __METHOD__, "params": __PARAMS__}
+TOPIC: v/a/g/__GATEWAY_ID__/req
+MESSAGE: {"id": __MESSAGE_ID__,"method": __METHOD__,"params": __PARAMS__}
 
-__MESSAGE_ID__ : It is a unique id for identifying each message and reporting the result of each request.
-__METHOD__ : List of requests from Thing+ Platform.
-__PARAMS__ : : Parameters for a method. each method has its own parameters List of Methods defined by the Thing+ platform as below,
+__MESSAGE_ID__: It is a unique id for identifying each message and reporting the result of each request.
+__METHOD__: List of requests from Thing+ Platform.
+__PARAMS__: Parameters for a method. each method has its own parameters List of Methods defined by the Thing+ platform as below,
 
 ```
 
@@ -289,7 +289,7 @@ MESSAGE: {"id":__MESSAGE_ID__,"result":__RESULT__}
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/res
-MESSAGE: {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__}}
+MESSAGE: {"id":__MESSAGE_ID__,"error":{"code":__ERR_CODE__,"message":__ERR_MSG__}}
 ```
 
 In case of `__ERR_CODE__`, it is the error code of the failed case. Thing+ follows the [JSONRPC Error Code Rule](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php).
@@ -302,9 +302,9 @@ In case of `__ERR_CODE__`, it is the error code of the failed case. Thing+ follo
 
 Method|Description|Parameters|Param Description
 :---:|---|---|---
-timeSync|Synchronize the local time of a hardware with Thing+ server time|{"time":\_\_TIME\_\_}|\_\_TIME\_\_ : current unix time as msec
-controlActuator|Execute a command on an actuator|{"id":\_\_SENSOR_ID\_\_,<br>"cmd":\_\_CMD\_\_,<br>"options":\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : ID of an actuator<br>\_\_CMD\_\_ : Command for an actator<br>\_\_OPTIONS\_\_ : Options for a command
-setProperty|Environment configuration|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_ : frequency for reporting sensor value in msec
+timeSync|Synchronize the local time of a hardware with Thing+ server time|{"time":\_\_TIME\_\_}|\_\_TIME\_\_: current unix time as msec
+controlActuator|Execute a command on an actuator|{"id":\_\_SENSOR_ID\_\_,<br>"cmd":\_\_CMD\_\_,<br>"options":\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_: ID of an actuator<br>\_\_CMD\_\_: Command for an actator<br>\_\_OPTIONS\_\_: Options for a command
+setProperty|Environment configuration|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_: frequency for reporting sensor value in msec
 poweroff|Turn off the device|None|None
 reboot|Reboot the H/W|None|None
 restart|Restart the embedded software|None|None
@@ -322,12 +322,12 @@ received time value.
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
 
-REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"timeSync","params":{"time":__SERVER_TIME__}}
+REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"timeSync","params":{"time":__SERVER_TIME__}}
 
-RESPONSE IF SUCCESS : {"id":"__MESSAGE_ID__","result":""}
-RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id":"__MESSAGE_ID__","result":""}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 
-__SERVER_TIME__ : Server time. It is Unix time and its unit is msec.
+__SERVER_TIME__: Server time. It is Unix time and its unit is msec.
 ```
 
 ###### Example
@@ -335,10 +335,10 @@ __SERVER_TIME__ : Server time. It is Unix time and its unit is msec.
 ```
 TOPIC: v/a/g/1928dbc93871/req
 
-REQUEST MESSAGE : {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
+REQUEST MESSAGE: {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
 
-RESPONSE IF SUCCESS : {"id":"e1kcs13b9","result":""}
-REPONSE IF FAILED : {"id":"e1kcs13b9","error":{"code": -32000, "message": "invalid options"}}
+RESPONSE IF SUCCESS: {"id":"e1kcs13b9","result":""}
+REPONSE IF FAILED: {"id":"e1kcs13b9","error":{"code": -32000,"message": "invalid options"}}
 ```
 
 ##### setProperty
@@ -348,22 +348,22 @@ provides the UI for changing the report interval.
 ###### setProperty params
 
 ```javascript
-TOPIC : v/a/g/__GATEWAY_ID__/req
+TOPIC: v/a/g/__GATEWAY_ID__/req
 
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"setProperty","params":{"reportInterval":__INTERVAL__}}
 
-RESPONSE IF SUCCESS : {"id" : "__MESSAGE_ID__", "result"}
-RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id":"__MESSAGE_ID__","result"}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
-REQUEST MESSAGE : {"id":"e1kcs13bb","method":"setProperty","params":{"reportInterval":"60000"}}
+REQUEST MESSAGE: {"id":"e1kcs13bb","method":"setProperty","params":{"reportInterval":"60000"}}
 
-RESPONSE IF SUCCESS : {"id":"e1kcs13bb","result":""}
-RESPONSE IF ERROR : {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid interval"}}
+RESPONSE IF SUCCESS: {"id":"e1kcs13bb","result":""}
+RESPONSE IF ERROR: {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid interval"}}
 }
 ```
 
@@ -386,20 +386,20 @@ powerSwitch|off|None
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
-REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"controlActuator", "params":{"id":__SENSOR_ID__,"cmd":__CMD__, "options":{__OPTIONS__}}
+REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"controlActuator","params":{"id":__SENSOR_ID__,"cmd":__CMD__,"options":{__OPTIONS__}}
 
-RESPONSE IF SUCCESS : {"id": "__MESSAGE_ID__", "result":""}
-RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__","result":""}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example: LED ON
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
-REQUEST MESSAGE : {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
+REQUEST MESSAGE: {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
+
 RESPONSE IF SUCCESS: {"id":"46h6f8xp3","result":""}
-RESPONSE IF FAILED: {"id":"46h6f8xp3","error": {"code":-32000,"message":"invalid options"}}
-}
+RESPONSE IF FAILED: {"id":"46h6f8xp3","error":{"code":-32000,"message":"invalid options"}}
 ```
 
 ### 2.3 Thing+ HTTP Protocol
@@ -418,7 +418,7 @@ The Thing+ HTTP Protocol is the main protocol used for the Thing+ REST API. When
    * IdTemplate defined in the device model is used when registering the device.
 3. Create and transmit device information in order to register with Thing+. (See Section 2.3.6) The data format is as follows:
    * reqId: Creates an ID for the idTemplate type in the device model.
-      * Typically, the idTemplate is {gatewayID}-{deviceAddress}.
+      * Typically, the idTemplate is `{gatewayID}-{deviceAddress}`.
          * gatewayID: Gateway ID
          * deviceAddress: This value is used to identify the device in the gateway. It should not be duplicated within the gateway. Custom
    * name: The device name. Custom
@@ -448,7 +448,7 @@ The Thing+ HTTP Protocol is the main protocol used for the Thing+ REST API. When
    * Also, driverName is needed when getting a sensor driver.
 3. Grab the sensor driver.
    * The idTemplate defined by the sensor driver is used when registering the sensor.
-4. Create and send sensor information for registration. (See Section 2.3.7)<br>The data format is as follows.
+4. Create and send sensor information for registration. (See Section 2.3.7)
    * ReqId: Creates an ID according to the idTemplate type in sensor driver.
       * Typically, idTemplate is `{gatewayID}-{deviceAddress}-{type}-{sequence}`.
       * gatewayID: Gateway ID
@@ -461,8 +461,6 @@ The Thing+ HTTP Protocol is the main protocol used for the Thing+ REST API. When
    * driverName: The driver name to be used by the sensor, which is defined in the sensor model.
    * network: The network used by the sensor, which is defined in the sensor model.
    * name: The name of the sensor. Custom
-   * owner: The gateway ID to which the sensor belongs.
-   * ctime: Time at which the sensor was created. UTC
    * deviceId: The ID of the device to which the sensor belongs.
 
 ```json
@@ -474,8 +472,6 @@ The Thing+ HTTP Protocol is the main protocol used for the Thing+ REST API. When
   "driverName": "jsonrpcSensor"
   "network": "jsonrpc",
   "name": "My Camera",
-  "owner": "abcdefghijkl",
-  "ctime": 1456297274325,
   "deviceId": "abcdefghijkl-0"
 }
 ```
@@ -501,13 +497,16 @@ To authenticate, just fill in your username and apikey in the header.
   "apikey": "<APIKEY>"
 }
 ```
-> GATEWAY_ID: Gateway ID
-> APIKEY: APIKEY from Thing+ Portal (Gateway registration section)
+
+##### Properties
+
+> **GATEWAY_ID**: &nbsp;&nbsp;&nbsp; Gateway ID<br>
+> **APIKEY**: &nbsp;&nbsp;&nbsp; APIKEY from Thing+ Portal (Gateway registration section)
 
 The content type should be application / json.
 
 ```
-Content-type: application / json
+Content-Type: application / json
 ```
 
 ##### Error Codes
@@ -524,12 +523,11 @@ This is an API that brings in information of the gateway in use.
 
 ##### Resource URL
 `GET https://api.thingplus.net/gateways/<GATEWAY_ID>?fields=model&fiedlds=autoCreateDiscoverable`
-> **GATEWAY_ID** Gateway ID
+> **GATEWAY_ID** &nbsp;&nbsp;&nbsp; Gateway ID
 
 ##### Request Example
 `GET https://api.thingplus.net/gateways/abcdefghijkl?Fields=model&fields=autoCreateDiscoverable`
 
---
 ##### Response Example
 ```json
 {
@@ -538,15 +536,15 @@ This is an API that brings in information of the gateway in use.
   "autoCreateDiscoverable": "y",
 }
 ```
-> **model** Gateway model ID
-> **autoCreateDiscoverable**  Whether the disk function is supported
+> **model** &nbsp;&nbsp;&nbsp; Gateway model ID<br>
+> **autoCreateDiscoverable** &nbsp;&nbsp;&nbsp; Whether the disk function is supported
 
 #### 2.3.5 Getting the Gateway Model
 This is an API that brings in a gateway model defined by Thing+. Using the model ID in the gateway information, you can grab the gateway model.
 
 #### Resource URL
 `GET https://api.thingplus.net/gatewayModels/<MODEL_ID>`
-> **MODEL_ID**  Gateway model ID
+> **MODEL_ID** &nbsp;&nbsp;&nbsp; Gateway model ID
 
 ##### Request Example
 `GET https://api.thingplus.net/gatewayModels/34`
@@ -607,9 +605,9 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 
 ```
 
-> **deviceModels**: Model for devices that the gateway can connect with<br>
-> **discoverable**: Whether the device is discoverable<br>
-> **idTemplate**: Defining the format of the device id. When you register the device, you need to create and register the device ID in idTemplate format.
+> **deviceModels**: &nbsp;&nbsp;&nbsp; Model for devices that the gateway can connect with<br>
+> **discoverable**: &nbsp;&nbsp;&nbsp; Whether the device is discoverable<br>
+> **idTemplate**: &nbsp;&nbsp;&nbsp; Defining the format of the device id. When you register the device, you need to create and register the device ID in idTemplate format.
 
 ##### Example
 ```json
@@ -642,7 +640,7 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
   "id": "34",
   "vendor": "OPEN SOURCE HARDWARE",
   "mtime": "1456122659103",
-  "deviceModels":
+  "deviceModels": [
     {
       "id": "jsonrpcFullV1.0",
       "displayName": "Open Source Device",
@@ -677,12 +675,11 @@ This is an API that handles sensor drivers as defined by Thing+.
 ##### Resource URL
 `GET https://api.thingplus.net/sensorDrivers/?filter[id]=<driverName>`
 
-> **driverName** Sensor driver name
+> **driverName** &nbsp;&nbsp;&nbsp; Sensor driver name
 
 ##### Request Example
 `GET https://api.thingplus.net/sensorDrivers/?filter[id]=jsonrpcSensor`
 
---
 ##### Response Example
 ```json
 {
@@ -691,34 +688,34 @@ This is an API that handles sensor drivers as defined by Thing+.
   "id": "jsonrpcSensor",
   "displayName": "jsonrpc Sensor",
   "models": [
-    "JsonrpcNumber",
-    "JsonrpcString"
+    "jsonrpcNumber",
+    "jsonrpcString",
     ...,
-    "JsonrpcReader"
+    "jsonrpcReader"
   ],
   "supportedNetworks": [
-    "Jsonrpc"
+    "jsonrpc"
   ],
   "mtime": "1456122653281",
   "category": "sensor",
-  "addressable": "false"
+  "addressable": "false",
   "dataTypes": {
     "jsonrpcNumber": [
-      "Number"
+      "number"
     ],
     "jsonrpcString": [
-      "String"
+      "string"
     ],
     ...,
     "jsonrpcReader": [
-      "Reader"
+      "reader"
     ]
   },
   "driverName": "jsonrpcSensor",
   "idTemplate": "{gatewayId}-{deviceAddress}-{type}-{sequence}"
 }
 ```
-> **discoverable** Whether the sensor is discoverable
+> **discoverable** &nbsp;&nbsp;&nbsp; Whether the sensor is discoverable
 
 #### 2.3.7 Registering a Device
 
@@ -766,21 +763,19 @@ This is an API that handles sensor drivers as defined by Thing+.
 ##### Resource URL
 `POST https://api.thingplus.net/gateways/<GATEWAY_ID>/sensors`
 
-> **GATEAY_ID** The ID of the gateway to which the sensor belongs
+> **GATEAY_ID** &nbsp;&nbsp;&nbsp; The ID of the gateway to which the sensor belongs
 
 ##### Post Parameter
 | Parameter | Description |
 |:---:|---|
-| Network | Network name |
-| DriverName | The name of the driver used by the sensor |
-| Model | Sensor model |
-| Type | Sensor type |
-| Category | Sensor or actuator |
-| ReqId | Sensor ID | Need to create in idTemplate format defined by sensor driver |
-| Name | Sensor name |
-| Owner | Gateway to which the sensor belongs |
-| Ctime | Time the sensor was created (UTC) |
-| DeviceId | The ID of the device to which the sensor belongs |
+| network | Network name |
+| driverName | The name of the driver used by the sensor |
+| model | Sensor model |
+| type | Sensor type |
+| category | Sensor or actuator |
+| reqId | Sensor ID. Need to create in idTemplate format defined by sensor driver |
+| name | Sensor name |
+| deviceId | The ID of the device to which the sensor belongs |
 
 ##### Request Body Example
 ```json
@@ -792,8 +787,6 @@ This is an API that handles sensor drivers as defined by Thing+.
   "category": "actuator",
   "reqId": "abcdefghijkl-0-camera",
   "name": "My Camera",
-  "owner": "abcdefghijkl",
-  "ctime": 1456297274325,
   "deviceId": "abcdefghijkl-0"
 }
 ```
@@ -1001,9 +994,9 @@ Thing+ Gateways run on embedded hardware, and is written via Node.js. Your hardw
 
 > Node.js Running Environment<br>
 
-- CPU : ARM, ia32, x86, x86_64
-- Memory : Minimum 128MB
-- OS : LINUX, WINDOWS, MAC, FREEBSD, OPENBSD, android
+- CPU: ARM, ia32, x86, x86_64
+- Memory: Minimum 128MB
+- OS: LINUX, WINDOWS, MAC, FREEBSD, OPENBSD, android
   - Can NOT support RTOS, MICRO OS
 
 > Storage Requirement<br>
@@ -1097,19 +1090,18 @@ Thing+ Gateway requests a sensor and actuator list
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : discover
-- Request params : N/A
+- Request Method: discover
+- Request params: N/A
 
 Device Agent --> Thing+ Gateway
-- Response Result : [{"deviceAddress": DEV_ID, deviceModelId: DEVICE_MODEL_ID, "sensors":["id":ID, "type":TYPE, "notification": TRUE or FALSE}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}]
+- Response Result: [{"deviceAddress": DEV_ID, "deviceModelId": DEVICE_MODEL_ID, "sensors":[{"id":ID, "type":TYPE, "notification": true or false}, ..., {"id":ID, "type": TYPE, "notification":true or false}]}, ... {"deviceAddress": DEV_ID ...}]
   - deviceAddress: Device ID defined by Device Agent. Each device has unique ID.
-
-  - deviceModelId : Device Model ID defined by Thing+
+  - deviceModelId: Device Model ID defined by Thing+
   - sensors: Sensors and actuator lists
-    - id: ID
-    - name: NAME
-    - type : Sensor types defined by Thing+
-    - notification : True if event sensor.
+    - id: Sensor ID
+    - name: Sensor name
+    - type: Sensor types defined by Thing+
+    - notification: True if event sensor
 ```
 
 - Request Example (Thing+ Gateway)
@@ -1128,18 +1120,18 @@ Request a series of sensor values
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : sensor.get
-- Request params : [SENSOR ID]
+- Request Method: sensor.get
+- Request params: [SENSOR ID]
 
 Device Agent --> Thing+ Gateway
-- Response Result :
+- Response Result:
                     {"value": VALUE} or
                     {"status": "on"|"off"|"err"} or
                     {"status": "err", "message": ERROR REASONE}
 
-  - value : Sensor value
-  - status : Sensor status.("on"|"off"|"err"). If the sensor value is exists and status is empty, the status is gussing it being "on"
-  - message : If status is error, additional message (for error reasons(optional)).
+  - value: Sensor value
+  - status: Sensor status.("on"|"off"|"err"). If the sensor value is exists and status is empty, the status is gussing it being "on"
+  - message: If status is error, additional message (for error reasons(optional)).
 ```
 
 - Request Example (Thing+ Gateway)
@@ -1161,11 +1153,11 @@ Request actuating actuator
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : sensor.set
-- Request Params : [Actuator ID, Command, Command Options]
+- Request Method: sensor.set
+- Request Params: [Actuator ID, Command, Command Options]
 
 Device Agent --> Thing+ Gateway
-- Response Result : Result
+- Response Result: Result
 ```
 - Request Example(Thing+ Gateway)
 
@@ -1185,11 +1177,11 @@ Request to set a sensor event
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : sensor.setNotification
-- Request Params : [Sensor ID]
+- Request Method: sensor.setNotification
+- Request Params: [Sensor ID]
 
 Device Agent --> Thing+ Gateway
-- Response Result : "success" if success
+- Response Result: "success" if success
 ```
 
 - Request Example (Thing+ Gateway)
@@ -1211,15 +1203,15 @@ Response event with sensor values and status
 
 ```
 Device Agent --> Thing+ Gateway
-- Request Method : sensor.notificaion
-- Request Params :
+- Request Method: sensor.notificaion
+- Request Params:
                    [Sensor ID, {"value": value}]
                    [Sensor ID, {"status": "on"|"off"|"err"}]
                    [Sensor ID, {"status": "err", "message":"ERROR REASON"}]
-- Request Id : 없음
+- Request Id: None
 
 Device Agent <-- Thing+ Gateway
-- Response : NONE
+- Response: None
 
 ```
 - Request Example (Device Agent)
@@ -1235,11 +1227,11 @@ Check if the Device Agent is working or not
 
 ```
 Device Agent <-- Thing+ Gateway
-- Request Method : sensor.setNotification
-- Request Params : None
+- Request Method: sensor.setNotification
+- Request Params: None
 
 Device Agent --> Thing+ Gateway
-- Response Result : "success"
+- Response Result: "success"
 ```
 - Request Example (Thing+ Gateway)
 ```
@@ -1259,27 +1251,27 @@ If you need to register your gateway and sensor model in Thing+, please fill out
 #### Gateway, Sensor Registration From
 ```
 * Gateway infomation
-1. Vendor name :
-2. Gateway name : 	
-3. The value to use on the gateway ID : MAC, IMEI or UUID
+1. Vendor name:
+2. Gateway name: 	
+3. The value to use on the gateway ID: MAC, IMEI or UUID
    (The gateway ID is a value that distinguishes each hardware and can not be duplicated with other gateways.)
    (Please contact us if you can not use the above three items.)
-4. Report interval (Minium is 60 second) :
-   4.1. Whether Thing+ Portal displays the report interval : Yes or No
-   4.1. Whether the report interval can be changed : Yes or No
-5. Maximum number of devices :
+4. Report interval (Minium is 60 second):
+   4.1. Whether Thing+ Portal displays the report interval: Yes or No
+   4.1. Whether the report interval can be changed: Yes or No
+5. Maximum number of devices:
 
 * Device information
-1. Device name :
-2. Whether using 'Discover' function : Yes or No
+1. Device name:
+2. Whether using 'Discover' function: Yes or No
    (Discover is a function to find and register the sensors installed in the hardware.)
 3. Sensor infomation
-   - type :
-   - data format :
-   - unit :
+   - type:
+   - data format:
+   - unit:
 4. Actuator infomation
-   - Command :
-     - Parameter :
+   - Command:
+     - Parameter:
      (In the parameter, specify the content of the required value, unit, and whether it is required.)
 ```
 
@@ -1287,61 +1279,61 @@ If you need to register your gateway and sensor model in Thing+, please fill out
 
 ```
 - Gateway information
-1. Vendor name : Libelium
-2. Gateway name : Meshlium
+1. Vendor name: Libelium
+2. Gateway name: Meshlium
 3. The value to use on the gateway ID: MAC
-4. Report interval : 60 sec
-   4.1. Whether Thing+ Portal displays the report interval : Yes
-   4.1. Whether the report interval can be changed : Yes
-5. Maximum number of devices : 3
+4. Report interval: 60 sec
+   4.1. Whether Thing+ Portal displays the report interval: Yes
+   4.1. Whether the report interval can be changed: Yes
+5. Maximum number of devices: 3
 
 - Device information
-1. Device name : Plug and Sensor
-2. Whether using 'Discover' function : Yes
+1. Device name: Plug and Sensor
+2. Whether using 'Discover' function: Yes
 3. Sensor infomation
-   - type : Temperature, format : Number, Unit : °C
-   - type : Humidity, format : Number, unit : %
-   - type : Position, format : {x:number, y:number, z:number}, unit : m/s²
-   - type : String Sensor, format : String, unit : None
+   - type: Temperature, format: Number, Unit: °C
+   - type: Humidity, format: Number, unit: %
+   - type: Position, format: {x:number, y:number, z:number}, unit: m/s²
+   - type: String Sensor, format: String, unit: None
 4. Actuator information
-   - type : LED
-     - command : On
+   - type: LED
+     - command: On
        - parameter
-         1. Duration. unit : sec. Optional.
-            Description : The LED will turn off after the duration. The parameter is optional; if not, the LED remains on.
-     - command : Blink
+         1. Duration. unit: sec. Optional.
+            Description: The LED will turn off after the duration. The parameter is optional; if not, the LED remains on.
+     - command: Blink
        - parameter
-         - 1. Interval. unit : sec. necessary
-              Description : LED blinking is the value to control the speed. It lights up for interval time and turns off for interval time.
-         - 2. Duration. unit : sec. Optional.
-     - command : Off
-       - parameter : None
+         - 1. Interval. unit: sec. necessary
+              Description: LED blinking is the value to control the speed. It lights up for interval time and turns off for interval time.
+         - 2. Duration. unit: sec. Optional.
+     - command: Off
+       - parameter: None
 ```
 
 ```
 - Gateway information
-1. Vendor name : Dell
-2. Gateway name : Edge 5000
+1. Vendor name: Dell
+2. Gateway name: Edge 5000
 3. ID to use on the gateway: IMEI
-4. Report interval : 90 seconds
-   4.1. Whether Thing+ Portal displays the report interval : No
-   4.1. Whether the report interval can be changed : No
-5. Maximum number of devices : 5
+4. Report interval: 90 seconds
+   4.1. Whether Thing+ Portal displays the report interval: No
+   4.1. Whether the report interval can be changed: No
+5. Maximum number of devices: 5
 
 - Device information
-1. Device name : Temerature Monitor
-2. Whether using 'Discover' function : Yes
+1. Device name: Temerature Monitor
+2. Whether using 'Discover' function: Yes
 3. Sensor infomation
-   - type : Temperature, unit : °C
+   - type: Temperature, unit: °C
 
 - Device information
-1. Device name : Power Switch Controller
-2. Whether using 'Discover' function : Yes
+1. Device name: Power Switch Controller
+2. Whether using 'Discover' function: Yes
 4. Actuation infomation
-   - type : Power Switch
-     - command : On
-       - parameter : None
-     - command : Off
-       - parameter : None
+   - type: Power Switch
+     - command: On
+       - parameter: None
+     - command: Off
+       - parameter: None
 
 ```

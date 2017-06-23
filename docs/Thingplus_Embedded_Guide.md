@@ -45,20 +45,22 @@ Thing+와 연동하는 IoT 기기(thing)는 다음사항을 충족시켜야 합�
 센서(Sensor): Thing+ 정의한 센서는 온도, 습도 등을 측정하는 하드웨어로 일반적으로 사용하는 센서의 의미와 동일합니다. 또한, 액추에이터도 센서의 한 종류에 포함이 됩니다. 모든 센서는 하나의 게이트웨이에만 속해 있으며,
 
 #### 1.1.2 Gateway ID, APIKEY, Sensor ID
-게이트웨이 아이디(Gateway ID): Thing+에 연결된 각 게이트웨이가 가지는 고유의 ID를 의미합니다. 12자리 문자열로 구성이 되며, 일반적으로 유선랜의 MAC어드레스를 사용합니다. </br>
+게이트웨이 아이디(Gateway ID): Thing+에 연결된 각 게이트웨이가 가지는 고유의 ID를 의미합니다. 12자리 문자열로 구성이 되며, 일반적으로 유선랜의 MAC어드레스를 사용합니다.
 
 APIKEY: Thing+에서 발급하는 KEY로 MQTT 인증에 사용됩니다. Thing+ 포털에 게이트웨이 아이디를 등록하면 APIKEY를 발급하실 수 있으며, **발급된 APIKEY는 해당 게이트웨이에만 유효합니다. 게이트웨이는 발급받은 APIKEY를 저장하고 있어야하며, MQTT 접속 시 인증 비밀번호로 APIKEY를 사용해야 합니다.**
 
 센서 아이디(Sensor ID): 각 센서가 가지는 고유의 ID를 의미합니다. 일반적으로 센서 아이디는 게이트웨이 아이디와 센서 타입의 조합으로 만들 수 있습니다. 센서 아이디는 게이트웨이 관리 페이지에서 확인할 수 있습니다.
 
 #### 1.1.3 Event Sensor, Series Sensor, Report Interval
-Thing+는 센서의 종류에 따라 이벤트(Event) 센서와 시리즈(Series) 센서로 구분하고 있습니다. 이벤트 센서는 센서값이 변할 때 센서값을 즉시 Thing+에 전송하는 센서입니다. 시리즈 센서는 하드웨어에서 센서값을 주기적으로 전송하는 센서입니다. <br>
+Thing+는 센서의 종류에 따라 이벤트(Event) 센서와 시리즈(Series) 센서로 구분하고 있습니다. 이벤트 센서는 센서값이 변할 때 센서값을 즉시 Thing+에 전송하는 센서입니다. 시리즈 센서는 하드웨어에서 센서값을 주기적으로 전송하는 센서입니다.
+
 리포트 인터벌(Report Interval)은 시리즈 센서의 전송 주기를 의미하며, 최소 리포트 인터벌은 60초입니다.
 
 #### 1.1.4 Sensor, Actuator lists
 Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. 센서, 액추에이터 타입은 Thing+에서 정한 고유의 문자열이며 IoT 기기 제조사들은 Thing+에서 정한 타입을 사용해야 합니다. 만약 잘못된 타입을 사용하면, Thing+ Portal에 아이콘, 그래프 등이 잘못 표시될 수 있습니다.
 
-대표적인 센서의 목록은 아래와 같습니다.<br>
+대표적인 센서의 목록은 아래와 같습니다.
+
 ##### 1.1.4.1 시리즈 센서
 - 숫자를 값으로 가지는 센서
 
@@ -322,7 +324,7 @@ MESSAGE: [1461561631000,26.5,1461561632000,27.5,1461561633000,30]
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__
-MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__],"__SENSOR_ID__":[__TIME__,__VALUE__,...,__TIME__,__VALUE__], ...(REPEAT FOR SENSORS), "__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__]}
+MESSAGE: {"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__],"__SENSOR_ID__":[__TIME__,__VALUE__,...,__TIME__,__VALUE__], ...(REPEAT FOR SENSORS),"__SENSOR_ID__":[__TIME__,__VALUE__,...(REPEAT FOR VALUES),__TIME__,__VALUE__]}
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __SENSOR_ID__: 센서 아이디
@@ -349,7 +351,7 @@ Thing+는 액추에이터 실행, 하드웨어 환경 설정 등의 작업을 �
 
 ```
 TOPIC: v/a/g/__GATEWAY_ID__/req
-MESSAGE: {"id": __MESSAGE_ID__, "method": __METHOD__, "params": __PARAMS__}
+MESSAGE: {"id": __MESSAGE_ID__,"method": __METHOD__,"params": __PARAMS__}
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __MESSAGE_ID__: 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
@@ -374,7 +376,7 @@ TOPIC: v/a/g/000011112222/req
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/res
 MESSAGE IF SUCCESS": {"id":__MESSAGE_ID__,"result":__RESULT__}
-MESSAGE IF FAILED ": {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__}}
+MESSAGE IF FAILED ": {"id":__MESSAGE_ID__,"error":{"code":__ERR_CODE__,"message":__ERR_MSG__}}
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __MESSAGE_ID__: 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
@@ -382,7 +384,7 @@ __RESULT__: 작업의 결과
 __ERR_CODE__: 실패일 경우의 에러코드
 __ERR_MSG__: 실패 이유
 
-메시지에 {, }, "가 포함됩니다.
+메시지에 {, }, ""가 포함됩니다.
 ```
 
 에러코드는 [JSONRPC의 에러코드 규칙](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php)을 따르며, 자세한 에러원인은 `__ERR_MSG__`에 적어주면 됩니다.
@@ -412,10 +414,10 @@ timeSync 메쏘드는 Thing+에서 하드웨어 시간을 설정할 때 사용�
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
 
-REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"timeSync","params":{"time":__SERVER_TIME__}}
+REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"timeSync","params":{"time":__SERVER_TIME__}}
 
 RESPONSE IF SUCCESS: {"id":"__MESSAGE_ID__","result":""}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __MESSAGE_ID__: 메시지 아이디
@@ -432,7 +434,7 @@ TOPIC: v/a/g/1928dbc93871/req
 REQUEST MESSAGE: {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
 
 RESPONSE IF SUCCESS: {"id":"e1kcs13b9","result":""}
-REPONSE IF FAILED: {"id":"e1kcs13b9","error":{"code": -32000, "message": "invalid options"}}
+REPONSE IF FAILED: {"id":"e1kcs13b9","error":{"code": -32000,"message": "invalid options"}}
 ```
 
 ##### setProperty
@@ -445,8 +447,8 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"setProperty","params":{"reportInterval":__INTERVAL__}}
 
-RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__", "result"}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__","result"}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example
@@ -477,10 +479,10 @@ powerSwitch|off|None
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
-REQUEST MESSAGE: {"id":"__MESSAGE_ID__", "method":"controlActuator", "params":{"id":__SENSOR_ID__,"cmd":__CMD__, "options":{__OPTIONS__}}
+REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"controlActuator","params":{"id":__SENSOR_ID__,"cmd":__CMD__,"options":{__OPTIONS__}}
 
-RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__", "result":""}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
+RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__","result":""}
+RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example: LED ON
@@ -488,9 +490,9 @@ RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "messag
 ```
 TOPIC: v/a/g/1928dbc93781/req
 REQUEST MESSAGE: {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
+
 RESPONSE IF SUCCESS: {"id":"46h6f8xp3","result":""}
-RESPONSE IF FAILED: {"id":"46h6f8xp3","error": {"code":-32000,"message":"invalid options"}}
-}
+RESPONSE IF FAILED: {"id":"46h6f8xp3","error":{"code":-32000,"message":"invalid options"}}
 ```
 
 ### 2.3 Thing+ HTTP Protocol
@@ -509,7 +511,7 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
    * 디바이스 모델에서 정의한 idTemplate은 디바이스 등록 시 사용됩니다.
 3. 등록할 디바이스 정보를 만들어 전송합니다. (2.3.6절 참고)
    * reqId: 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
-      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}입니다.
+      * 일반적으로 idTemplate은 `{gatewayID}-{deviceAddress}`입니다.
          * gatewayID: 게이트웨이 아이디
          * deviceAddress: 게이트웨이 내에 디바이스를 구분하기 위한 값으로 게이트웨이 내에서 중복이 되면 안됩니다. 사용자 정의
    * name: 디바이스 이름. 사용자 정의
@@ -583,7 +585,7 @@ https://api.sandbox.thingplus.net
 
 ```json
 {
-  "username": "<GATEWAY_ID>"
+  "username": "<GATEWAY_ID>",
   "apikey": "<APIKEY>"
 }
 ```
@@ -595,7 +597,7 @@ https://api.sandbox.thingplus.net
 컨텐츠의 type은 application/json으로 설정하셔야 합니다.
 
 ```
-content-type: application/json
+Content-Type: application/json
 ```
 
 ##### 에러코드
@@ -716,7 +718,7 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
         "support": "n"
       },
       "restart": {
-        support": "y"
+        "support": "y"
       },
       "swUpdate": {
         "support": "y"
@@ -827,7 +829,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
   "model": "jsonrpcFullV1.0"
 }
 ```
---
+
 ##### Response Example
 ```json
 {
@@ -840,7 +842,6 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 }
 ```
 
---
 ##### Error
 |Error Code|Description|
 |:---:|---|
@@ -862,8 +863,8 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
 |driverName|센서가 사용하는 드라이버 이름|
 |model|센서모델|
 |type|센서타입|
-|category|센서 or 액츄에이터|
-|reqId|센서 아이디<br>센서 드라이버에서 정한 idTemplate 형식으로 생성해야 함|
+|category|센서 혹은 액츄에이터|
+|reqId|센서 아이디. 센서 드라이버에서 정한 idTemplate 형식으로 생성해야 함|
 |name|센서이름|
 |deviceId|센서가 속한 디바이스의 아이디|
 
@@ -880,6 +881,7 @@ Thing+에서 정의한 센서 드라이버를 가지고 오는 API입니다.
   "deviceId": "abcdefghijkl-0"
 }
 ```
+
 ##### Response Example
 ```json
 {
@@ -1220,7 +1222,7 @@ Device Agent --> Thing+ Gateway
 - Response Result:
                     {"value": VALUE} or
                     {"status": "on"|"off"|"err"} or
-                    {"status": "err", "message": ERROR REASONE}
+                    {"status": "err", "message": ERROR REASON}
 
   - value: 센서값
   - status: 센서 상태("on"|"off"|"err"). 센서값이 있으면 "on"으로 간주.
