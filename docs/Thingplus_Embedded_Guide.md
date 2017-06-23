@@ -508,6 +508,12 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
    * 게이트웨이 모델의 deviceModels 배열에서 사용할 디바이스 모델을 선택합니다.
    * 디바이스 모델에서 정의한 idTemplate은 디바이스 등록 시 사용됩니다.
 3. 등록할 디바이스 정보를 만들어 전송합니다. (2.3.6절 참고)
+   * reqId: 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
+      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}입니다.
+         * gatewayID: 게이트웨이 아이디
+         * deviceAddress: 게이트웨이 내에 디바이스를 구분하기 위한 값으로 게이트웨이 내에서 중복이 되면 안됩니다. 사용자 정의
+   * name: 디바이스 이름. 사용자 정의
+   * model: 사용할 디바이스 모델의 이름. 게이트웨이 모델 정보에서 사용할 디바이스 모델 이름입니다.
 
 ```json
 {
@@ -516,14 +522,6 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
   "model": "<Device Model>"
 }
 ```
-
-##### 데이터 포맷은 아래와 같습니다.
-   * reqId: 디바이스 모델에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
-      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}입니다.
-         * gatewayID: 게이트웨이 아이디
-         * deviceAddress: 게이트웨이 내에 디바이스를 구분하기 위한 값으로 게이트웨이 내에서 중복이 되면 안됩니다. 사용자 정의
-   * name: 디바이스 이름. 사용자 정의
-   * model: 사용할 디바이스 모델의 이름. 게이트웨이 모델 정보에서 사용할 디바이스 모델 이름입니다.
 
 #### 2.3.2 센서 등록 과정
 
@@ -543,9 +541,9 @@ Thing+ HTTP Protocol은 thing이 사용하는 REST API에 관한 프로토콜입
    * 센서 드라이버에서 정의한 idTemplate은 센서 등록 시 사용됩니다.
 4. 등록할 센서 정보를 만들어 전송합니다. (2.3.7절 참고)
    * reqId: 센서 드라이버에 있는 idTemplate 형식에 맞게 ID를 생성합니다.
-      * 일반적으로 idTemplate은 {gatewayID}-{deviceAddress}-{type}-{sequence}입니다.
+      * 일반적으로 idTemplate은 `{gatewayID}-{deviceAddress}-{type}-{sequence}`입니다.
       * gatewayID: 게이트웨이 아이디
-      * deviceAddress: 게이트웨이 내에 디바이스를 구분하기 위한 값으로 센서가 속한 디바이스의 어디레스를 적어줘야합니다.
+      * deviceAddress: 게이트웨이 내에 디바이스를 구분하기 위한 값으로 센서가 속한 디바이스의 어드레스를 적어줘야합니다.
       * type: Thing+에서 정의한 센서 타입
       * sequence: 한 디바이스 안에 동일한 종류의 센서가 2개 이상 있을 때 구분하기 위한 값입니다. 한 개만 있으면 생략하셔도 됩니다. 사용자 정의
    * category: 등록 할 센서의 카테고리로 센서 모델에 정의되어 있습니다.
@@ -696,7 +694,7 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
 
 ```
 
-> **deviceModels** &nbsp;&nbsp;&nbsp; 게이트웨이가 가질 수 있는 디바이스에 대한 모델 정보
+> **deviceModels** &nbsp;&nbsp;&nbsp; 게이트웨이가 가질 수 있는 디바이스에 대한 모델 정보<br>
 > **discoverable** &nbsp;&nbsp;&nbsp; 디바이스 디스커버 가능 여부<br>
 > **idTemplate** &nbsp;&nbsp;&nbsp; 디바이스 아이디의 형식 정의. 디바이스 등록 시 idTemplate 형식으로 디바이스 아이디를 만들어서 등록해야 한다.
 
@@ -1138,7 +1136,7 @@ Client|Thing+ Gateway
 
 
 #### 4.3.1 JSONRPC 프로토콜
-JSONRPC는 두 프로세스간의 통신을 위한 프로토콜로 JSON 형식의 메시지를 주고 받습니다.([WIKI](http://www.jsonrpc.org/ "Title"))
+JSONRPC는 두 프로세스간의 통신을 위한 프로토콜로 JSON 형식의 메시지를 주고 받습니다.([WIKI](http://www.jsonrpc.org))
 
 - Request 형식
 

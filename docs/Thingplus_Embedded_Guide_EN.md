@@ -35,11 +35,11 @@ The Thing+ defined message protocol used to communicate between hardware and the
 Thing+ Embedded Prococol is based on HTTP and MQTT. Sensor values and actuator commands are sent via MQTT between sensors and devices - data coming out of devices to a gateway is passed via HTTP.
 
 #### 2.1 MQTT
-Message Queuing Telemetry Transport (MQTT) is a lightweight messaging protocol used between an IoT device that uses low bandwidth and low power and the Thing + Cloud. MQTT has a publish / subscribe structure and is implemented via TCP / IP. You can use TLS to secure your data and provide a USERNAME / PASSWORD based authentication method.
+Message Queuing Telemetry Transport (MQTT) is a lightweight messaging protocol used between an IoT device that uses low bandwidth and low power and the Thing+ Cloud. MQTT has a publish / subscribe structure and is implemented via TCP / IP. You can use TLS to secure your data and provide a USERNAME / PASSWORD based authentication method.
 ![MQTT_thing](./image/Thingplus_Embedded_Guide/MQTT_thing.png)
 
 
-The MQTT broker is responsible for delivering messages to various clients for sending and receiving messages. Thing + Cloud provides an MQTT broker. IoT devices send sensor values to the MQTT broker provided by the Thing+ Cloud, receive actuators commands, and operate according to commands.
+The MQTT broker is responsible for delivering messages to various clients for sending and receiving messages. Thing+ Cloud provides an MQTT broker. IoT devices send sensor values to the MQTT broker provided by the Thing+ Cloud, receive actuators commands, and operate according to commands.
 
 The client that generates the message publishes the message with a Topic before it, and the subscriber that subscribes to the message registers the topic to be received with the broker. The MQTT broker relays messages based on topics. Topics have a hierarchy and use slashes (/) to separate them.<br>
 
@@ -55,10 +55,10 @@ HOME1 / KITCHEN / DUST_LEVEL
 MQTT provides three levels of quality of service (QoS).
 
 - QoS0: The message is sent only once and does not check the success or failure of the transmission. Possible message loss.
-- **QoS1**: Messages can be sent more than once. Messages are always delivered accurately and can be delivered in duplicates during the delivery process. **Thing + Cloud uses QoS1**
+- **QoS1**: Messages can be sent more than once. Messages are always delivered accurately and can be delivered in duplicates during the delivery process. **Thing+ Cloud uses QoS1**
 - QoS2: The message is transmitted exactly once and does not cause message loss and duplicate transmission. However, a large amount of network bandwidth is required for message transmission.
 
-MQTT provides a Last Will and Testament (LWT) function that can save messages to other clients when a client connection is lost. The client can define a Will message, which the broker is storing. If the client is disconnected due to an error, the broker sends a Will message to the other client. Thing + uses the error status of the thing as a Will message. When an error occurs in the thing, Thing + Cloud can immediately detect the error of the device.
+MQTT provides a Last Will and Testament (LWT) function that can save messages to other clients when a client connection is lost. The client can define a Will message, which the broker is storing. If the client is disconnected due to an error, the broker sends a Will message to the other client. Thing+ uses the error status of the thing as a Will message. When an error occurs in the thing, Thing+ Cloud can immediately detect the error of the device.
 
 
 #### 2.2 Thing+ MQTT Protocol
@@ -95,7 +95,7 @@ Will Topic | v/a/g/{gateway_id}/mqtt/status
 Will Message | err
 Will Message Retain | TRUE
 Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
- 
+
 TLS 1.0 / SSL 3.0 or lower is not supported, and TLS 1.2(minimum 1.1) is required to connect to Thing+.
 
 #### 2.2.2 Transmission of the MQTT Connection status data
@@ -115,7 +115,7 @@ TOPIC: v/a/g/000011112222/mqtt/status
 MESSAGE: on
 ```
 
-#### 2.2.3 Transmission of the H/W status data  
+#### 2.2.3 Transmission of the H/W status data
 Hardware should transmit its status and the valid duration of the status data periodically. When Thing+ fails to get the status data of a specific piece of H/W within the valid duration, Thing+ defines its status using the error status
 >­ Transmit the H/W Status Data
 
@@ -134,7 +134,7 @@ MESSAGE: on,90
 ```
 
 
-#### 2.2.4 Transmission of the sensor status data  
+#### 2.2.4 Transmission of the sensor status data
 Hardware should transmit the status of a sensor attached to it and the valid duration of the status data periodically. When Thing+ fails to get the status data within the valid duration, Thing+ defines its status using the error status.<br>
 
 > Transmit the sensor status data
@@ -177,12 +177,12 @@ MESSAGE: on,90,000011112222-onoff-0,on,90,000011112222-temperature-0,off,90
 ```
 
 
-#### 2.2.6 Transmission of the sensor value data  
+#### 2.2.6 Transmission of the sensor value data
 A single sensor value and multiple sensor values for a specific sensor can be transmitted in one go. A sensor
 value should be paired with the time value when the hardware reads it. When multiple sensor values are
 transmitted at a time, they should be ordered by time. An array of multiple sensor values is allowed.
 
-> Transmit of the sensor value data  
+> Transmit of the sensor value data
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
@@ -220,7 +220,7 @@ MESSAGE: [1461561631000,26.5,1461561632000,27.5,1461561633000,30]
 ```
 
 
-#### 2.2.7 Transmission of the sensor value data for multiple sensors  
+#### 2.2.7 Transmission of the sensor value data for multiple sensors
 Multiple sensor values for multiple sensors can be transmitted at a time. At this time, the sensor value
 should, for a single sensor, be grouped and ordered by time
 
@@ -263,7 +263,7 @@ MESSAGE: {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__
 In case of _errCode_, it is the error code of the failed case. Thing+ follows the ​[JSONRPC Error Code Rule​](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php). ​
 _errMessge_ ​ should have the details about the root cause of the error.
 
-#### 2.2.9  MQTT Messages from Thing+ Platform  
+#### 2.2.9  MQTT Messages from Thing+ Platform
 
 A hardware should subscribe below topic for getting the MQTT Message published by Thing+ Platform. Each
 hardware can subscribe a MQTT message only for it.
@@ -391,59 +391,70 @@ RESPONSE IF FAILED: {"id":"46h6f8xp3","error": {"code":-32000,"message":"invalid
 }
 ```
 
-### 2.3 Thing + HTTP Protocol
-The Thing + HTTP Protocol is the main protocol used for the Thing+ REST API. When the Discover function is implemented, the IoT device informs Thing+ of the device and sensor information connected to it through the REST API. The Thing+ HTTP Protocol implementation is required to use the Discover function.
+### 2.3 Thing+ HTTP Protocol
+The Thing+ HTTP Protocol is the main protocol used for the Thing+ REST API. When the Discover function is implemented, the IoT device informs Thing+ of the device and sensor information connected to it through the REST API. The Thing+ HTTP Protocol implementation is required to use the Discover function.
 
 #### 2.3.1 Device Registration Process
 ![Device_Discover](./image/Thingplus_Embedded_Guide/DeviceDiscover.png)
 
 1. Obtaining gateway information. (See Section 2.3.4)
-  * Determine if discovery is possible from the obtained gateway information.
-    * Refer to autoCreateDiscoverable
-      * **If not dismounted, thing+ can not register a device.**
-    * The "gateway information model" is used to get the correct gateway model.
+   * Determine if discovery is possible from the obtained gateway information.
+      * Refer to autoCreateDiscoverable
+         * **If not dismounted, Thing+ can not register a device.**
+      * The "gateway information model" is used to get the correct gateway model.
 2. Get the gateway model. (See Section 2.3.5)
-  * Select the device model to use in the deviceModels array of the gateway model. Note: These are Gateways that currently are supported by Thing+.
-  * IdTemplate defined in the device model is used when registering the device.
-3. Create and transmit device information in order to register with Thing+. (See Section 2.3.6)
- <br>
-  The data format is as follows.
+   * Select the device model to use in the deviceModels array of the gateway model. Note: These are Gateways that currently are supported by Thing+.
+   * IdTemplate defined in the device model is used when registering the device.
+3. Create and transmit device information in order to register with Thing+. (See Section 2.3.6) The data format is as follows:
+   * reqId: Creates an ID for the idTemplate type in the device model.
+      * Typically, the idTemplate is {gatewayID}-{deviceAddress}.
+         * gatewayID: Gateway ID
+         * deviceAddress: This value is used to identify the device in the gateway. It should not be duplicated within the gateway. Custom
+   * name: The device name. Custom
+   * model: The name of the device model to use. The device model name to be used in the gateway model information.
 
-  ```json
-  {
-      "reqId": "<Device ID>",
-      "name": "<Device Name>",
-      "model": "<Device Model>"
-  }
-  ```
-  * ReqId: Creates an ID for the idTemplate type in the device model.
-    * Typically, the idTemplate is {gatewayID} - {deviceAddress}.
-      * GatewayID: Gateway ID
-      * DeviceAddress: This value is used to identify the device in the gateway. It should not be duplicated within the gateway. Custom
-  * Name: The device name. Custom
-  * Model: The name of the device model to use. The device model name to be used in the gateway model information.
+```json
+{
+  "reqId": "<Device ID>",
+  "name": "<Device Name>",
+  "model": "<Device Model>"
+}
+```
 
 #### 2.3.2 Sensor Registration Process
 
 ![SensorDiscover](./image/Thingplus_Embedded_Guide/SensorDiscover.png)
 
-1. Obtain gateway information (see Section 2.3.4).
-  * Determine if discovery is possible from the obtained gateway information.
+1. Obtain gateway information (See Section 2.3.4).
+   * Determine if discovery is possible from the obtained gateway information.
       * See autoCreateDiscoverable
-         * **Without discovery, thing+ can not register sensors.**
+         * **Without discovery, Thing+ can not register sensors.**
       * The "gateway information model" is used to get the correct gateway model.
 2. Get the gateway model. (See Section 2.3.5)
-  * Select the device model to use in the deviceModels array of the gateway model. Note: These are Gateways that currently are supported by Thing+.
-  * The sensors array in the device model is a list of sensor models available on the device.
-  * Among available sensor models, the network, driverName, model, type and category are used for sensor registration.
-  * Also, driverName is needed when getting a sensor driver.
+   * Select the device model to use in the deviceModels array of the gateway model. Note: These are Gateways that currently are supported by Thing+.
+   * The sensors array in the device model is a list of sensor models available on the device.
+   * Among available sensor models, the network, driverName, model, type and category are used for sensor registration.
+   * Also, driverName is needed when getting a sensor driver.
 3. Grab the sensor driver.
-  * The idTemplate defined by the sensor driver is used when registering the sensor.
-4. Create and send sensor information for registration. (See Section 2.3.7)
- <br>
-  The data format is as follows.
+   * The idTemplate defined by the sensor driver is used when registering the sensor.
+4. Create and send sensor information for registration. (See Section 2.3.7)<br>The data format is as follows.
+   * ReqId: Creates an ID according to the idTemplate type in sensor driver.
+      * Typically, idTemplate is `{gatewayID}-{deviceAddress}-{type}-{sequence}`.
+      * gatewayID: Gateway ID
+      * deviceAddress: You must specify the device where the sensor belongs (is attached to) as the value for identifying the device in the gateway.
+      * type: The sensor type defined by Thing+
+      * sequence: It is a value to distinguish when there are two or more sensors of the same type in one device. If you only have one, you can omit it. Custom
+   * category: The category of the sensor to be registered. It is defined in the sensor model.
+   * type: Sensor type, which is defined in the sensor model.
+   * model: The name of the sensor model, which is defined in the sensor model.
+   * driverName: The driver name to be used by the sensor, which is defined in the sensor model.
+   * network: The network used by the sensor, which is defined in the sensor model.
+   * name: The name of the sensor. Custom
+   * owner: The gateway ID to which the sensor belongs.
+   * ctime: Time at which the sensor was created. UTC
+   * deviceId: The ID of the device to which the sensor belongs.
 
-```Javascript
+```json
 {
   "reqId": "abcdefghijkl-0-humidity",
   "category": "sensor",
@@ -457,22 +468,6 @@ The Thing + HTTP Protocol is the main protocol used for the Thing+ REST API. Whe
   "deviceId": "abcdefghijkl-0"
 }
 ```
-
-  * ReqId: Creates an ID according to the idTemplate type in sensor driver.
-    * Typically, idTemplate is {gatewayID} - {deviceAddress} - {type} - {sequence}.
-      * GatewayID: Gateway ID
-      * DeviceAddress: You must specify the device where the sensor belongs (is attached to) as the value for identifying the device in the gateway.
-      * Type: The sensor type defined by Thing+
-      * Sequence: It is a value to distinguish when there are two or more sensors of the same type in one device. If you only have one, you can omit it. Custom
-  * Category: The category of the sensor to be registered. It is defined in the sensor model.
-  * Type: Sensor type, which is defined in the sensor model.
-  * Model: The name of the sensor model, which is defined in the sensor model.
-  * DriverName: The driver name to be used by the sensor, which is defined in the sensor model.
-  * Network: The network used by the sensor, which is defined in the sensor model.
-  * Name: The name of the sensor. Custom
-  * Owner: The gateway ID to which the sensor belongs.
-  * Ctime: Time at which the sensor was created. UTC
-  * DeviceId: The ID of the device to which the sensor belongs.
 
 #### 2.3.3 Preferences and Authentication
 The URL used for testing and usage of the REST API is:
@@ -506,7 +501,7 @@ Content-type: application / json
 
 ##### Error Codes
 | Error Code | Description |
-|:---:| --- |
+|:---:|---|
 | 401 | Unauthorized |
 | 403 | Forbidden |
 | 404 | Not Found |
@@ -517,8 +512,8 @@ Content-type: application / json
 This is an API that brings in information of the gateway in use.
 
 ##### Resource URL
-`GET https://api.thingplus.net/gateways/ <GATEWAY_ID>? Fields = model & fiedlds = autoCreateDiscoverable`
-> ###### **GATEWAY_ID** Gateway ID
+`GET https://api.thingplus.net/gateways/<GATEWAY_ID>?fields=model&fiedlds=autoCreateDiscoverable`
+> **GATEWAY_ID** Gateway ID
 
 ##### Request Example
 `GET https://api.thingplus.net/gateways/abcdefghijkl?Fields=model&fields=autoCreateDiscoverable`
@@ -554,24 +549,24 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
   "model": "<Gateway Model name>",
   "deviceMgmt": {
     "reportInterval": {
-      "show": "<Whether the report interval is visible in Thing + Cloud, y or n>",
+      "show": "<Whether the report interval is visible in Thing+ Cloud, y or n>",
       "change": "<report interval changeable y or n>"
     },
     "DM": {
       "poweroff": {
-        "support": "<Supports power off via thing + y or n>"
+        "support": "<Supports power off via Thing+ y or n>"
       },
       "reboot": {
-        "support": "<Restart support via Thing +. Y or n>"
+        "support": "<Restart support via Thing+. Y or n>"
       },
       "restart": {
         "support": "<Support for restarting application programs via Thing+. Y or n>"
       },
       "swUpdate": {
-        "support": "<Software support for Thing +. Y or n"
+        "support": "<Software support for Thing+. Y or n"
       },
       "swInfo": {
-        "support": "<Thing + supports reading software version information from y or n"
+        "support": "<Thing+ supports reading software version information from y or n"
       }
     }
   },
@@ -602,10 +597,9 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 
 ```
 
-> **deviceModels**: Model for devices that the gateway can connect with
->> **discoverable**: Whether the device is discoverable<br>
->> **idTemplate**: Defining the format of the device id<br>
->>> When you register the device, you need to create and register the device ID in idTemplate format.
+> **deviceModels**: Model for devices that the gateway can connect with<br>
+> **discoverable**: Whether the device is discoverable<br>
+> **idTemplate**: Defining the format of the device id. When you register the device, you need to create and register the device ID in idTemplate format.
 
 ##### Example
 ```json
@@ -642,7 +636,7 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
     {
       "id": "jsonrpcFullV1.0",
       "displayName": "Open Source Device",
-      "idTemplate": "{gatewayId} - {deviceAddress}",
+      "idTemplate": "{gatewayId}-{deviceAddress}",
       "discoverable": "y",
       "sensors": [
         {
@@ -671,12 +665,12 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 This is an API that handles sensor drivers as defined by Thing+.
 
 ##### Resource URL
-`GET https://api.thingplus.net/sensorDrivers/?filter [id] = <driverName>`
+`GET https://api.thingplus.net/sensorDrivers/?filter[id]=<driverName>`
 
 > **driverName** Sensor driver name
 
 ##### Request Example
-`GET https://api.thingplus.net/sensorDrivers/?filter [id] = jsonrpcSensor`
+`GET https://api.thingplus.net/sensorDrivers/?filter[id]=jsonrpcSensor`
 
 --
 ##### Response Example
@@ -711,7 +705,7 @@ This is an API that handles sensor drivers as defined by Thing+.
     ]
   },
   "driverName": "jsonrpcSensor",
-  "idTemplate": "{gatewayId} - {deviceAddress} - {type} - {sequence}"
+  "idTemplate": "{gatewayId}-{deviceAddress}-{type}-{sequence}"
 }
 ```
 > **discoverable** Whether the sensor is discoverable
@@ -724,10 +718,10 @@ This is an API that handles sensor drivers as defined by Thing+.
 ##### Post Parameters
 
 | Parameter | Description |
-|:-----:| -------- |
-| ReqId | Device ID. The idTemplate must be created in the gateway model.<br><br>The idTemplate is the idTemplate of the device in the deviceModels array of the gateway model.
+|:-----:|--------|
+| ReqId | Device ID. The idTemplate must be created in the gateway model. The idTemplate is the idTemplate of the device in the deviceModels array of the gateway model.
 | Name | Device name |
-| Model | The model ID used by the device.<br><br>Of the deviceModels array of the gateway model, insert the ID of the device to use.
+| Model | The model ID used by the device. Of the deviceModels array of the gateway model, insert the ID of the device to use.
 
 ##### Request Body Example
 ```json
@@ -737,7 +731,7 @@ This is an API that handles sensor drivers as defined by Thing+.
   "model": "jsonrpcFullV1.0"
 }
 ```
---
+
 ##### Response Example
 ```json
 {
@@ -750,10 +744,9 @@ This is an API that handles sensor drivers as defined by Thing+.
 }
 ```
 
---
 ##### Error
 | Error Code | Description |
-|:---:| --- |
+|:---:|---|
 | 401 | The gateway ID of the body, or APIKEY is incorrect.
 | 404 | Attempt to add device to unregistered gateway.
 | 471 | Device can not be added by plan.
@@ -767,7 +760,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 
 ##### Post Parameter
 | Parameter | Description |
-|:---:| --- |
+|:---:|---|
 | Network | Network name |
 | DriverName | The name of the driver used by the sensor |
 | Model | Sensor model |
@@ -794,7 +787,7 @@ This is an API that handles sensor drivers as defined by Thing+.
   "deviceId": "abcdefghijkl-0"
 }
 ```
---
+
 ##### Response Example
 ```json
 {
@@ -813,15 +806,15 @@ This is an API that handles sensor drivers as defined by Thing+.
   "id": "abcdefghijkl-0-camera"
 }
 ```
---
+
 ##### Error
 | Error Code | Description |
-|:---:| --- |
+|:---:|---|
 | 401 | The gateway ID of the body, or APIKEY is incorrect.
 | 404 | Attempt to add device to unregistered gateway.
 | 471 | Device can not be added by plan.
 
-## 3. Thing + Embedded SDK
+## 3. Thing+ Embedded SDK
 The Thing+ Embedded SDK is a library created to help easily use Thing+'s Embedded Protocol. It provides sensor values, sensor status transmissions, and sensor and device registration functions. With the Thing+ Embedded SDK, Thing+ can be easily interfaced with and API calls can be used without directly configuring MQTT and HTTP messages.
 
 ### 3.1 Software Requirements
@@ -847,11 +840,11 @@ make install
 ### 3.3. API
 #### 3.3.1 thingplus_init
 ```
-- Prototype: void * thingplus_init (char * gw_id, char * apikey, char * mqtt_url, char * restapi_url);
+- Prototype: void* thingplus_init(char *gw_id, char *apikey, char *mqtt_url, char *restapi_url);
 - Description: Initialize the Thinglus Embedded SDK.
 - Parameters
   - gw_id: Gateway ID
-  - apikey: apikey from Thing + Portal
+  - apikey: apikey from Thing+ Portal
   - mqtt_url: The MQTT server address to connect to. In general, use "mqtt.thingplus.net" and use "dmqtt.thingplus.net" for non-TLS.
   - restapi_url: HTTPS server address to connect to. Use "https://api.thingplus.net".
 - Return Value
@@ -861,15 +854,15 @@ make install
 
 #### 3.3.2 thingplus_cleanup
 ```
-- Prototype: void thingplus_cleanup (void * t);
-- Description: Exit the Thing + Embedded SDK. Must be called before program termination.
+- Prototype: void thingplus_cleanup(void *t);
+- Description: Exit the Thing+ Embedded SDK. Must be called before program termination.
 - Parameters
   - t: SDK instance
 ```
 
 #### 3.3.3 thingplus_callback_set
 ```
-- Prototype: void thingplus_callback_set (void * t, struct thingplus_callback * callback, void * callback_arg);
+- Prototype: void thingplus_callback_set(void * t, struct thingplus_callback * callback, void * callback_arg);
 - Description: Sets the callback function to be called from the SDK.
 - Parameters
   - t: SDK instance
@@ -879,8 +872,8 @@ make install
 
 #### 3.3.4 thingplus_connect
 ```
-- Prototype: int thingplus_connect (void * t, char * ca_file, int keepalive);
-- Description: Attempt to connect to Thing + server. Asynchronous function, callback function set by thingplus_callback_set function is called when connected.
+- Prototype: int thingplus_connect(void * t, char * ca_file, int keepalive);
+- Description: Attempt to connect to Thing+ server. Asynchronous function, callback function set by thingplus_callback_set function is called when connected.
 - Parameters
   - t: SDK instance
   - ca_file: TLS certificate. If NULL, connect with non-TLS. Non-TLS connections are only possible when mqtt_url is "dmqtt.thingplus.net".
@@ -893,8 +886,8 @@ make install
 
 #### 3.3.5 thingplus_disconnect
 ```
-- Prototype: int thingplus_disconnect (void * t)
-- Description: Thing + disconnects the server. Asynchronous function, callback function set by thingplus_callback_set function is called when a server connection is disconnected.
+- Prototype: int thingplus_disconnect(void * t)
+- Description: Thing+ disconnects the server. Asynchronous function, callback function set by thingplus_callback_set function is called when a server connection is disconnected.
 - Parameters
   - t: SDK instance
   - Return Value
@@ -905,7 +898,7 @@ make install
 
 #### 3.3.6 thingplus_status_publish
 ```
-- Prototype: int thingplus_status_publish (void * t, int nr_status, struct thingplus_status * status)
+- Prototype: int thingplus_status_publish(void * t, int nr_status, struct thingplus_status * status)
 - Description: Transmits the status of the gateway, sensor, and actuator.
 - Parameters
   - t: SDK instance
@@ -918,8 +911,8 @@ make install
 
 #### 3.3.7 thingplus_value_publish
 ```
-- Prototype: int thingplus_value_publish (void * t, int nr_value, struct thingplus_value * values)
-- Description: Transmit the sensor value to Thing +.
+- Prototype: int thingplus_value_publish(void * t, int nr_value, struct thingplus_value * values)
+- Description: Transmit the sensor value to Thing+.
 - Parameters
   - t: SDK instance
   - nr_value: number of sensor values ​​to transmit
@@ -931,14 +924,14 @@ make install
 
 #### 3.3.8 thingplus_device_register
 ```
-- Prototype: int thingplus_device_register (void * t, char * name, int uid, char * device_model_id, char device_id [THINGPLUS_ID_LENGTH]
-- Description: Register the device on Thing + server.
+- Prototype: int thingplus_device_register(void * t, char * name, int uid, char * device_model_id, char device_id [THINGPLUS_ID_LENGTH]
+- Description: Register the device on Thing+ server.
 - Parameters
   - t: SDK instance
   - name: the device name
   - uid: The unique ID of the device in the gateway. It should not overlap with other devices.
   - device_model_id: ID of the device model specified in the gateway model
-  - device_id: The device ID used by Thing +. If the device registration succeeds, the device ID used by Thing + is filled in the corresponding array.
+  - device_id: The device ID used by Thing+. If the device registration succeeds, the device ID used by Thing+ is filled in the corresponding array.
 - Return Value
   - 0: Success
   - < 0: Failed
@@ -946,15 +939,15 @@ make install
 
 ##### 3.3.9 thingplus_sensor_register
 ```
-- Prototype: int thingplus_sensor_register (void * t, char * name, int uid, char * type, char * device_id, char sensor_id [THINGPLUS_ID_LENGTH]
-- Description: Register sensor in Thing +.
+- Prototype: int thingplus_sensor_register(void * t, char * name, int uid, char * type, char * device_id, char sensor_id [THINGPLUS_ID_LENGTH]
+- Description: Register sensor in Thing+.
 - Parameters
   - t: SDK instance
   - name: Sensor name
   - uid: The unique ID of the sensor in the device. It should not overlap with other sensors.
   - type: the type of sensor specified in the gateway model
-  - device_id: ID of the device to which the sensor belongs. You must use the device ID issued by Thing +.
-  - sensor_id: Sensor ID used by Thing +. If the sensor registration succeeds, the sensor ID used by Thing + is filled in the corresponding array.
+  - device_id: ID of the device to which the sensor belongs. You must use the device ID issued by Thing+.
+  - sensor_id: Sensor ID used by Thing+. If the sensor registration succeeds, the sensor ID used by Thing+ is filled in the corresponding array.
 - Return Value
   - 0: Success
   - < 0: Failed
@@ -962,8 +955,8 @@ make install
 
 #### 3.3.10 thingplus_gatewayinfo
 ```
-- Prototype: int thingplus_gatewayinfo (void * t, struct thingplus_gateway * info)
-- Description: Thing + retrieves the gateway information registered in the server.
+- Prototype: int thingplus_gatewayinfo(void * t, struct thingplus_gateway * info)
+- Description: Thing+ retrieves the gateway information registered in the server.
 - Parameters
   - t: SDK instance
   - info: Structure to hold gateway information
@@ -974,8 +967,8 @@ make install
 
 #### 3.3.11 thingplus_deviceinfo
 ```
-- Prototype: int thingplus_deviceinfo (void * t, struct thingplus_device * info)
-- Description: Thing + brings up device information registered in server.
+- Prototype: int thingplus_deviceinfo(void * t, struct thingplus_device * info)
+- Description: Thing+ brings up device information registered in server.
 - Parameters
   - t: SDK instance
   - info: Structure to hold device information
@@ -1047,7 +1040,7 @@ Server|Device Agent
 Client|Thing+ Gateway
 
 #### 4.3.1 JSONRPC Protocol
-JSONRPC is light-weight remote procedure call protocol. It uses JSON as it's data format.([WIKI](http://www.jsonrpc.org/ "Title"))
+JSONRPC is light-weight remote procedure call protocol. It uses JSON as it's data format.([WIKI](http://www.jsonrpc.org))
 
 - Request format
 
@@ -1213,7 +1206,7 @@ Device Agent --> Thing+ Gateway
                    [Sensor ID, {"value": value}]
                    [Sensor ID, {"status": "on"|"off"|"err"}]
                    [Sensor ID, {"status": "err", "message":"ERROR REASON"}]
-- Request Id : 없음              
+- Request Id : 없음
 
 Device Agent <-- Thing+ Gateway
 - Response : NONE
@@ -1238,12 +1231,12 @@ Device Agent <-- Thing+ Gateway
 Device Agent --> Thing+ Gateway
 - Response Result : "success"
 ```
-- Request Example(Thing+ Gateway)
+- Request Example (Thing+ Gateway)
 ```
 {"id":6,"method":"ping","params":[]}\n
 ```
 
-- Response Example(Device Agent)
+- Response Example (Device Agent)
 ```
 {"id":6,"result":"success","error":null}\n
 ```
@@ -1251,7 +1244,7 @@ Device Agent --> Thing+ Gateway
 ## Appendix
 
 ### A. Gateway, Sensor Registration Request Form
-If you need to register your gateway and sensor model in Thing +, please fill out the following document form and send it to us.
+If you need to register your gateway and sensor model in Thing+, please fill out the following document form and send it to us.
 
 #### Gateway, Sensor Registration From
 ```
@@ -1262,7 +1255,7 @@ If you need to register your gateway and sensor model in Thing +, please fill ou
    (The gateway ID is a value that distinguishes each hardware and can not be duplicated with other gateways.)
    (Please contact us if you can not use the above three items.)
 4. Report interval (Minium is 60 second) :
-   4.1. Whether Thing + Portal displays the report interval : Yes or No
+   4.1. Whether Thing+ Portal displays the report interval : Yes or No
    4.1. Whether the report interval can be changed : Yes or No
 5. Maximum number of devices :
 
@@ -1288,7 +1281,7 @@ If you need to register your gateway and sensor model in Thing +, please fill ou
 2. Gateway name : Meshlium
 3. The value to use on the gateway ID: MAC
 4. Report interval : 60 sec
-   4.1. Whether Thing + Portal displays the report interval : Yes
+   4.1. Whether Thing+ Portal displays the report interval : Yes
    4.1. Whether the report interval can be changed : Yes
 5. Maximum number of devices : 3
 
@@ -1321,7 +1314,7 @@ If you need to register your gateway and sensor model in Thing +, please fill ou
 2. Gateway name : Edge 5000
 3. ID to use on the gateway: IMEI
 4. Report interval : 90 seconds
-   4.1. Whether Thing + Portal displays the report interval : No
+   4.1. Whether Thing+ Portal displays the report interval : No
    4.1. Whether the report interval can be changed : No
 5. Maximum number of devices : 5
 
