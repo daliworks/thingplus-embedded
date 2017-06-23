@@ -24,7 +24,7 @@ Thing+와 하드웨어를 연동하는 방법은 3가지가 있습니다.
 
 Thing+와 연동하는 IoT 기기(thing)는 다음사항을 충족시켜야 합니다.
 
-1. 하드웨어는 SSL, TLS, MQTT 이용해 Thing+ Cloud에 접속이 가능해야 합니다.
+1. 하드웨어는 MQTT와 TLS를 이용해서 Thing+ Cloud에 접속이 가능해야 합니다.
    - 하드웨어의 로컬시간은 Thing+에서 서버시간과 동기화되어야 합니다.
    - 하드웨어와 Thing+ Cloud간 접속이 끊어졌을 경우 하드웨어는 3시간동안 센서값을 저장하여 데이터 유실을 최소화 해야 합니다.
    - 네트워크가 재연결되면 저장한 센서값을 Thing+ Cloud에 전송해야 합니다.
@@ -128,7 +128,7 @@ Thing+와 IoT 기기들 사이 사용하는 네트워크 프로토콜은 MQTT와
 
 
 ### 2.1 MQTT
-MQTT(Message Queuing Telemetry Transport)는 경량 메시지 프로토콜로 낮은 대역폭과 낮은 전력을 사용하는 IoT 기기와 Thing+ Cloud 사이에 사용되는 프로토콜입니다. MQTT는 Publish/Subscribe 구조로 되어으며, TCP/IP를 통해 구현됩니다. SSL 및 TLS를 사용하여 데이터 보안을 할 수 있고, USERNAME/PASSWORD 기반의 인증방법을 제공하고 있습니다.
+MQTT(Message Queuing Telemetry Transport)는 경량 메시지 프로토콜로 낮은 대역폭과 낮은 전력을 사용하는 IoT 기기와 Thing+ Cloud 사이에 사용되는 프로토콜입니다. MQTT는 Publish/Subscribe 구조로 되어으며, TCP/IP를 통해 구현됩니다. TLS를 사용하여 데이터 보안을 할 수 있고, USERNAME/PASSWORD 기반의 인증방법을 제공하고 있습니다.
 ![MQTT_thing](./image/Thingplus_Embedded_Guide/MQTT_thing.png)
 
 MQTT 브로커(Broker)는 다양한 클라이언트들이 메시지를 주고 받을 수 있도록 메시지를 전달하는 역할을 합니다. Thing+ Cloud는 MQTT 브로커를 제공하고 있으며, IoT 기기는 Thing+ Cloud가 제공하는 MQTT 브로커에게 센서값을 전송(Publish)하고, 액추에이터 명령을 수신(Subscribe)하여 명령에 맞는 동작하면 됩니다.
@@ -137,6 +137,7 @@ MQTT 브로커(Broker)는 다양한 클라이언트들이 메시지를 주고 �
 
 ```
 토픽 예)
+
 HOME0/BEDROOM/TEMERTATURE
 HOME0/BEDROOM/HUMIDITY
 HOME0/LIVING/CO2_LEVEL
@@ -168,7 +169,7 @@ Thing+에서 사용하는 MQTT 토픽과 데이터 포맷에 대해서 설명합
 #### 2.2.1 MQTT 연결 설정
 Thing+가 사용하는 MQTT 버전은 3이며, 포트는 8883입니다. **thing이 설치되는 네트워크에 8883 포트가 막혀있으면 Thing+에 접속할 수 없습니다.**</br>
 
-Thing+ 브로커에 MQTT 연결시 반드시 SSL을 사용하는 **mqtts** 프로토콜을 사용해야 합니다. 암호화되지 않은 MQTT 연결은 허용되지 않습니다.</br>
+Thing+ 브로커에 MQTT 연결시 반드시 TLS를 사용하는 **MQTTS(MQTT over TLS)** 프로토콜을 사용해야 합니다. 암호화되지 않은 MQTT 연결은 허용되지 않습니다.</br>
 
 MQTT 접속 아이디는 게이트웨이 아이디, 비밀번호는 APIKEY입니다. WiLL 메시지의 토픽은 *v/a/g/{gateway_id}/mqtt/status*이고, 메시지 내용은 'err'이고, Retain은 True 입니다. 재접속 시 세션은 새로 생성하도록 설정해야합니다.</br>
 
@@ -184,6 +185,8 @@ Will Topic | v/a/g/{gateway_id}/mqtt/status
 Will Message | err
 Will Message Retain | TRUE
 Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
+
+TLS 1.0 / SSL 3.0 이하는 지원하지 않으며, TLS 1.2(최소 1.1)를 이용하여야만 Thing+에 연결할 수 있습니다.
 
 #### 2.2.2 MQTT 상태 전송
 하드웨어는 MQTT 접속에 성공한 경우 MQTT의 상태가 정상임을 전송해야합니다.</br>
@@ -624,15 +627,15 @@ content-type: application/json
   "autoCreateDiscoverable": "y",
 }
 ```
-> **model** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호 <br>
+> **model** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 ID<br>
 > **autoCreateDiscoverable** &nbsp;&nbsp;&nbsp; 디스커버 기능 지원 여부
 
 #### 2.3.5 게이트웨이 모델 가지고 오기
-Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 게이트웨이 정보에 있는 모델 번호를 사용하여, 게이트웨이 모델을 가지고 옵니다.
+Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 게이트웨이 정보에 있는 모델 ID를 사용하여, 게이트웨이 모델을 가지고 옵니다.
 
 ##### Resource URL
-`GET https://api.thingplus.net/gatewayModels/<MODEL_NUMBER>`
-> **MODEL_NUMBER** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 번호
+`GET https://api.thingplus.net/gatewayModels/<MODEL_ID>`
+> **MODEL_ID** &nbsp;&nbsp;&nbsp; 게이트웨이 모델 ID
 
 ##### Request Example
 `GET https://api.thingplus.net/gatewayModels/34`
@@ -712,7 +715,7 @@ Thing+에서 정의한 게이트웨이 모델을 가지고 오는 API입니다. 
         "support": "n"
       },
       "reboot": {
-        ""support": "n"
+        "support": "n"
       },
       "restart": {
         support": "y"
@@ -936,7 +939,7 @@ make install
 - Parameters
   - gw_id: 게이트웨이 아이디
   - apikey: Thing+ Portal에서 발급받은 apikey
-  - mqtt_url: 접속할 MQTT 서버 주소. 일반적으로 "mqtt.thingplus.net"을 사용하여 Non SSL일경우 "dmqtt.thingplus.net"을 사용합니다.
+  - mqtt_url: 접속할 MQTT 서버 주소. 일반적으로 "mqtt.thingplus.net"을 사용하여 Non-TLS일경우 "dmqtt.thingplus.net"을 사용합니다.
   - restapi_url: 접속할 HTTPS 서버 주소. "https://api.thingplus.net"을 사용합니다.
 - Return Value
   - !NULL: 성공. SDK 인스턴스를 반환합니다.
@@ -967,7 +970,7 @@ make install
 - Description: Thing+ 서버에 접속을 시도합니다. 비동기 함수로, 접속이 되면 thingplus_callback_set 함수에서 설정한 callback함수가 호출 됩니다.
 - Parameters
   - t: SDK 인스턴스
-  - ca_file: SSL 인증서. 만약 NULL이면 Non-SSL로 접속합니다. Non-SSL 접속은 mqtt_url이 "dmqtt.thingplus.net"일 때만 가능합니다.
+  - ca_file: TLS 인증서. 만약 NULL이면 Non-TLS로 접속합니다. Non-TLS 접속은 mqtt_url이 "dmqtt.thingplus.net"일 때만 가능합니다.
   - keepalive: Keepalive 시간. 단위는 초
 - Return Value
   - 0: 성공. 성공은 서버 접속에 성공했음을 뜻하는 것이 아니라, 서버 연결을 시도했다는 뜻입니다.
