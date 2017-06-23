@@ -22,7 +22,7 @@ Target hardware|Middle end to high end
 Dependency|libcurl<br>libjson-c<br>libmosquitto<br>openssl<br>C or C++ application
 
 #### 1.1.3 Thing+ Gateway
-The Thing+ Gateway can be implemented on high end hardware. The Thing+ Gateway is a Node.js application program. Whatever hardware is used must have the ability to run node.js. There is another protocol between the Thing+ Gateway and hardware/device applications we call the "Device Agent". The Thing+ Gateway connects hardware to the Thing+ Cloud server and composes MQTT & HTTP messages with the purpose of sending status and data/values to the server. Sensing sensors, actuating actuators and running a JSONRPC server must be possible on any hardware you use to set up a Thing+ gateway.
+The Thing+ Gateway can be implemented on high end hardware. The Thing+ Gateway is a Node.js application program. Whatever hardware is used must have the ability to run node.js. There is another protocol between the Thing+ Gateway and hardware/device applications we call the "Device Agent". The Thing+ Gateway connects hardware to the Thing+ Cloud server and composes MQTT & HTTP messages with the purpose of sending status and data/values to the server. Sensing sensors, actuating actuators and running a JSONRPC server must be possible on any hardware you use to set up a Thing+ Gateway.
 
 Category|Descriptions
 ---|---
@@ -96,19 +96,21 @@ Will Message | err
 Will Message Retain | TRUE
 Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
 
-TLS 1.0 / SSL 3.0 or lower is not supported, and TLS 1.2(minimum 1.1) is required to connect to Thing+.
+**TLS 1.0 / SSL 3.0 or lower is not supported, and TLS 1.2(minimum 1.1) is required to connect to Thing+.**
 
 #### 2.2.2 Transmission of the MQTT Connection status data
 Hardware should transmit the status of the MQTT Connection to the Thing+ Platform after the MQTT
 connection has been created successfully.
->­ Transmit the MQTT Connection Success Status
+
+##### Transmit the MQTT Connection Success Status
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/mqtt/status
 MESSAGE: on
 
 ```
-Example
+
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/mqtt/status
@@ -117,7 +119,8 @@ MESSAGE: on
 
 #### 2.2.3 Transmission of the H/W status data
 Hardware should transmit its status and the valid duration of the status data periodically. When Thing+ fails to get the status data of a specific piece of H/W within the valid duration, Thing+ defines its status using the error status
->­ Transmit the H/W Status Data
+
+##### Transmit the H/W Status Data
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
@@ -126,7 +129,8 @@ MESSAGE: __HW_STATUS__,__VALID_DURATION__
 __HW_STATUS__: "on" or "off"
 __VALID_DURATION__: Unit is sec
 ```
-Example
+
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/status
@@ -135,9 +139,9 @@ MESSAGE: on,90
 
 
 #### 2.2.4 Transmission of the sensor status data
-Hardware should transmit the status of a sensor attached to it and the valid duration of the status data periodically. When Thing+ fails to get the status data within the valid duration, Thing+ defines its status using the error status.<br>
+Hardware should transmit the status of a sensor attached to it and the valid duration of the status data periodically. When Thing+ fails to get the status data within the valid duration, Thing+ defines its status using the error status.
 
-> Transmit the sensor status data
+##### Transmit the sensor status data
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__/status
@@ -147,7 +151,7 @@ __SENSOR_STATUS__ : "on" or "off"
 __VALID_DURATION__: Unit is sec
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/s/000011112222-temperature-0/status
@@ -157,7 +161,7 @@ MESSAGE: on,90
 #### 2.2.5 Transmission of the H/W status and sensor's status data
 Sensor Status Data can be transmitted along with the H/W status data. It is an efficient way to send the sensor status data combined with the H/W status data in one topic in order to save on network bandwidth cost. When hardware has multiple sensors and/or actuators, each sensor/actuator should have a unique value for identifying it from other sensors/actuators on the hardware. You can also define it by yourself. If you use this method, you can skip chapter 2.2.4
 
-> Transmit H/W status and sensors status data
+##### Transmit H/W status and sensors status data
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
@@ -169,7 +173,7 @@ __VALID_DURATION__: Unit is sec
 __SENSOR_STATUS__ : "on" or "off"
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/status
@@ -182,7 +186,7 @@ A single sensor value and multiple sensor values for a specific sensor can be tr
 value should be paired with the time value when the hardware reads it. When multiple sensor values are
 transmitted at a time, they should be ordered by time. An array of multiple sensor values is allowed.
 
-> Transmit of the sensor value data
+##### Transmit of the sensor value data
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
@@ -194,14 +198,14 @@ __TIME__: Sensing time. It is Unix time and its unit is msec.
 __VALUE__: Sensor value
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
 MESSAGE: 1461561631000,26.5,1461561632000,27.5,1461561633000,30
 ```
 
-> Transmit the sensor value data as array
+##### Transmit the sensor value data as array
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/s/__SENSOR_ID__
@@ -212,7 +216,8 @@ __SENSOR_ID__: Sensor ID
 __TIME__: Sensing time. It is Unix time and its unit is msec.
 __VALUE__: Sensor value
 ```
-Example
+
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/s/000011112222-temperature-0
@@ -224,7 +229,7 @@ MESSAGE: [1461561631000,26.5,1461561632000,27.5,1461561633000,30]
 Multiple sensor values for multiple sensors can be transmitted at a time. At this time, the sensor value
 should, for a single sensor, be grouped and ordered by time
 
->­ Transmit multiple sensor values for multiple sensors
+##### Transmit multiple sensor values for multiple sensors
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__
@@ -237,63 +242,68 @@ __VALUE__: Sensor value
 
 Messsage includes {, }, [, ], ""
 ```
-Example
+
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222
 MESSAGE: {"000011112222-temperature-0":[1461563978000,27.5,1461563978000,28.5],"000011112222-humidity-0":[1461561631000,30,1461561632000,35,1461561633000,40]}
 ```
 
-#### 2.2.8 Transmission of the result of a request from Thing+
-Hardware should be able to report the result of a request from the Thing+ Platform. the request can be the command for an actuator or a configuration request.
-
-> Transmit the result of a request from Thing+ - Success Case
-
-```javascritp
-TOPIC: v/a/g/__GATEWAY_ID__/res
-MESSAGE: {"id":__MESSAGE_ID__,"result":__RESULT__}
-```
-
-> Transmit the result of a request from Thing+ - Failed Case
-
-```javascritp
-TOPIC: v/a/g/__GATEWAY_ID__/res
-MESSAGE: {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__}}
-```
-In case of _errCode_, it is the error code of the failed case. Thing+ follows the ​[JSONRPC Error Code Rule​](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php). ​
-_errMessge_ ​ should have the details about the root cause of the error.
-
-#### 2.2.9  MQTT Messages from Thing+ Platform
+#### 2.2.8 MQTT Messages from Thing+ Platform
 
 A hardware should subscribe below topic for getting the MQTT Message published by Thing+ Platform. Each
 hardware can subscribe a MQTT message only for it.
 
-> MQTT Topic and Message subscribed by a hardware
+##### MQTT Topic and Message subscribed by a hardware
 
 ```
 TOPIC : v/a/g/__GATEWAY_ID__/req
 MESSAGE: {"id": __MESSAGE_ID__, "method": __METHOD__, "params": __PARAMS__}
 
-__MESSAGE_ID__ : ​It is a unique id for identifying each message and reporting the result of each request.
-__METHOD__ : ​List of requests from Thing+ Platform.
+__MESSAGE_ID__ : It is a unique id for identifying each message and reporting the result of each request.
+__METHOD__ : List of requests from Thing+ Platform.
 __PARAMS__ : : Parameters for a method. each method has its own parameters List of Methods defined by the Thing+ platform as below,
 
 ```
 
-Example
+##### Example
 
 ```
 TOPIC: v/a/g/000011112222/req
 
 ```
 
+
+#### 2.2.9 Transmission of the result of a request from Thing+
+Hardware should be able to report the result of a request from the Thing+ Platform. the request can be the command for an actuator or a configuration request.
+
+##### Transmit the result of a request from Thing+ - Success Case
+
+```javascript
+TOPIC: v/a/g/__GATEWAY_ID__/res
+MESSAGE: {"id":__MESSAGE_ID__,"result":__RESULT__}
+```
+
+##### Transmit the result of a request from Thing+ - Failed Case
+
+```javascript
+TOPIC: v/a/g/__GATEWAY_ID__/res
+MESSAGE: {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__}}
+```
+
+In case of `__ERR_CODE__`, it is the error code of the failed case. Thing+ follows the [JSONRPC Error Code Rule](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php).
+`__ERR_MSG__` should have the details about the root cause of the error.
+
+
 #### 2.2.10 List of Methods and Parameters from the Thing+ Platform
-> Method List
+
+##### Method List
 
 Method|Description|Parameters|Param Description
 :---:|---|---|---
 timeSync|Synchronize the local time of a hardware with Thing+ server time|{"time":\_\_TIME\_\_}|\_\_TIME\_\_ : current unix time as msec
-controlActuator|Execute a command on an actuator|{"id":\_\_SENSOR_ID\_\_,<br>"cmd":\_\_CMD\_\_,<br>"options":\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : ID of an actuator<br>\_\_CMD\_\_ : Command for an actator<br>\_\_OPTIONS\_\_ : Options for a command<br>
+controlActuator|Execute a command on an actuator|{"id":\_\_SENSOR_ID\_\_,<br>"cmd":\_\_CMD\_\_,<br>"options":\_\_OPTIONS\_\_}|\_\_SENSOR_ID\_\_ : ID of an actuator<br>\_\_CMD\_\_ : Command for an actator<br>\_\_OPTIONS\_\_ : Options for a command
 setProperty|Environment configuration|{"reportInterval}":\_\_INTERVAL\_\_|\_\_INTERVAL\_\_ : frequency for reporting sensor value in msec
 poweroff|Turn off the device|None|None
 reboot|Reboot the H/W|None|None
@@ -301,12 +311,13 @@ restart|Restart the embedded software|None|None
 swUpdate|Upgrade the embedded software|None|None
 swInfo|Provide the version of embedded software|None|None
 
-The mandatory methods which should be implemented for embedded software integrated with the Thing+ Platform include both ​timeSync and setProperty. Others are optional.
+The mandatory methods which should be implemented for embedded software integrated with the Thing+ Platform include both timeSync and setProperty. Others are optional.
 
 ##### timeSync
 When hardware gets an MQTT message including this method, it should reset the local time on it as the
 received time value.
-> timeSync params
+
+###### timeSync params
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
@@ -319,7 +330,7 @@ RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "messa
 __SERVER_TIME__ : Server time. It is Unix time and its unit is msec.
 ```
 
-Example
+###### Example
 
 ```
 TOPIC: v/a/g/1928dbc93871/req
@@ -334,7 +345,7 @@ REPONSE IF FAILED : {"id":"e1kcs13b9","error":{"code": -32000, "message": "inval
 This method is for changing the report interval. The unit of reporting interval values is msec. The Thing+ Portal
 provides the UI for changing the report interval.
 
->setProperty params
+###### setProperty params
 
 ```javascript
 TOPIC : v/a/g/__GATEWAY_ID__/req
@@ -345,7 +356,7 @@ RESPONSE IF SUCCESS : {"id" : "__MESSAGE_ID__", "result"}
 RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
-Example
+###### Example
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
@@ -359,9 +370,9 @@ RESPONSE IF ERROR : {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid 
 ##### controlActuator
 This method is for sending commands to an actuator. Commands can be sent from the Thing+ Portal UI and an
 actuator should execute the delivered command from the Thing+ Platform. Commands and options for each
-actuator are defined by Thing+. The examples of commands and options for some actuators are below,
+actuator are defined by Thing+.<br>A list of actuator commands and options can be found in [the result of sensorTypes API](https://api.thingplus.net/sensorTypes) after logging in to Thing+ Portal.
 
-> Commonly used actuator commands and options
+###### Commonly used actuator commands and options
 
 Actuator|Command|Option
 :---:|:---:|:---:
@@ -371,7 +382,7 @@ led|blink|duration<br>interval
 powerSwitch|on|duration
 powerSwitch|off|None
 
-> controlActuator params
+###### controlActuator params
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
@@ -381,7 +392,7 @@ RESPONSE IF SUCCESS : {"id": "__MESSAGE_ID__", "result":""}
 RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__, "message":"__ERR_MSG__"}}
 ```
 
-Example: LED ON
+###### Example: LED ON
 
 ```
 TOPIC: v/a/g/1928dbc93781/req
@@ -540,7 +551,6 @@ This is an API that brings in a gateway model defined by Thing+. Using the model
 ##### Request Example
 `GET https://api.thingplus.net/gatewayModels/34`
 
---
 ##### Response Body Format and Example
 ###### Body Format
 ```json
@@ -726,7 +736,7 @@ This is an API that handles sensor drivers as defined by Thing+.
 ##### Request Body Example
 ```json
 {
-  "reqId": "abcdefghijkl-0"
+  "reqId": "abcdefghijkl-0",
   "name": "My Device0",
   "model": "jsonrpcFullV1.0"
 }
@@ -862,7 +872,7 @@ make install
 
 #### 3.3.3 thingplus_callback_set
 ```
-- Prototype: void thingplus_callback_set(void * t, struct thingplus_callback * callback, void * callback_arg);
+- Prototype: void thingplus_callback_set(void *t, struct thingplus_callback *callback, void *callback_arg);
 - Description: Sets the callback function to be called from the SDK.
 - Parameters
   - t: SDK instance
@@ -872,7 +882,7 @@ make install
 
 #### 3.3.4 thingplus_connect
 ```
-- Prototype: int thingplus_connect(void * t, char * ca_file, int keepalive);
+- Prototype: int thingplus_connect(void *t, char *ca_file, int keepalive);
 - Description: Attempt to connect to Thing+ server. Asynchronous function, callback function set by thingplus_callback_set function is called when connected.
 - Parameters
   - t: SDK instance
@@ -886,7 +896,7 @@ make install
 
 #### 3.3.5 thingplus_disconnect
 ```
-- Prototype: int thingplus_disconnect(void * t)
+- Prototype: int thingplus_disconnect(void *t)
 - Description: Thing+ disconnects the server. Asynchronous function, callback function set by thingplus_callback_set function is called when a server connection is disconnected.
 - Parameters
   - t: SDK instance
@@ -898,7 +908,7 @@ make install
 
 #### 3.3.6 thingplus_status_publish
 ```
-- Prototype: int thingplus_status_publish(void * t, int nr_status, struct thingplus_status * status)
+- Prototype: int thingplus_status_publish(void *t, int nr_status, struct thingplus_status *status)
 - Description: Transmits the status of the gateway, sensor, and actuator.
 - Parameters
   - t: SDK instance
@@ -911,11 +921,11 @@ make install
 
 #### 3.3.7 thingplus_value_publish
 ```
-- Prototype: int thingplus_value_publish(void * t, int nr_value, struct thingplus_value * values)
+- Prototype: int thingplus_value_publish(void *t, int nr_value, struct thingplus_value *values)
 - Description: Transmit the sensor value to Thing+.
 - Parameters
   - t: SDK instance
-  - nr_value: number of sensor values ​​to transmit
+  - nr_value: number of sensor values to transmit
   - values: the sensor value to send
 - Return Value
   - 0: Success
@@ -924,7 +934,7 @@ make install
 
 #### 3.3.8 thingplus_device_register
 ```
-- Prototype: int thingplus_device_register(void * t, char * name, int uid, char * device_model_id, char device_id [THINGPLUS_ID_LENGTH]
+- Prototype: int thingplus_device_register(void *t, char *name, int uid, char *device_model_id, char device_id [THINGPLUS_ID_LENGTH]
 - Description: Register the device on Thing+ server.
 - Parameters
   - t: SDK instance
@@ -939,7 +949,7 @@ make install
 
 ##### 3.3.9 thingplus_sensor_register
 ```
-- Prototype: int thingplus_sensor_register(void * t, char * name, int uid, char * type, char * device_id, char sensor_id [THINGPLUS_ID_LENGTH]
+- Prototype: int thingplus_sensor_register(void *t, char *name, int uid, char *type, char *device_id, char sensor_id [THINGPLUS_ID_LENGTH]
 - Description: Register sensor in Thing+.
 - Parameters
   - t: SDK instance
@@ -955,7 +965,7 @@ make install
 
 #### 3.3.10 thingplus_gatewayinfo
 ```
-- Prototype: int thingplus_gatewayinfo(void * t, struct thingplus_gateway * info)
+- Prototype: int thingplus_gatewayinfo(void *t, struct thingplus_gateway *info)
 - Description: Thing+ retrieves the gateway information registered in the server.
 - Parameters
   - t: SDK instance
@@ -967,7 +977,7 @@ make install
 
 #### 3.3.11 thingplus_deviceinfo
 ```
-- Prototype: int thingplus_deviceinfo(void * t, struct thingplus_device * info)
+- Prototype: int thingplus_deviceinfo(void *t, struct thingplus_device *info)
 - Description: Thing+ brings up device information registered in server.
 - Parameters
   - t: SDK instance

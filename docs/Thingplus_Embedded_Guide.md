@@ -113,7 +113,7 @@ Thing+는 지원하는 센서와 액추에이터를 정의하고 있습니다. �
 |카메라|camera|snapPicture|사진찍기|없음|
 |문자열 액추에이터|stringActuator|send|액추에이터 실행|text|사용자 정의 문자열
 
-Thing+가 지원하는 센서, 액추에이터의 전체 목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인할 수 있습니다.
+Thing+가 지원하는 센서, 액추에이터의 전체 목록은 [센서, 엑츄에이터 정의파일](https://api.thingplus.net/sensorTypes)(Thing+ 포털 로그인 후 확인 가능)에서 확인할 수 있습니다.
 
 만약 사용하시는 센서, 액추에이터가 목록에 빠져있으면 Appendix A의 게이트웨이, 센서 등록 양식을 작성하여 contact@thingplus.net으로 보내주시기 바랍니다.
 
@@ -186,7 +186,7 @@ Will Message | err
 Will Message Retain | TRUE
 Keep Alive[sec] | {report_interval} x 2    (**Recommend**)
 
-TLS 1.0 / SSL 3.0 이하는 지원하지 않으며, TLS 1.2(최소 1.1)를 이용하여야만 Thing+에 연결할 수 있습니다.
+**TLS 1.0 / SSL 3.0 이하는 지원하지 않으며, TLS 1.2(최소 1.1)를 이용하여야만 Thing+에 연결할 수 있습니다.**
 
 #### 2.2.2 MQTT 상태 전송
 하드웨어는 MQTT 접속에 성공한 경우 MQTT의 상태가 정상임을 전송해야합니다.</br>
@@ -227,7 +227,7 @@ MESSAGE: on,90
 
 
 #### 2.2.4 센서 상태 전송
-게이트웨이는 주기적으로 센서 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 센서 상태를 재수신하지 못하면 해당 센서에 에러가 발생하였다고 판단합니다.<br>
+게이트웨이는 주기적으로 센서 상태와 상태의 유효시간을 전송해야합니다. 만약, Thing+가 유효시간이 내에 센서 상태를 재수신하지 못하면 해당 센서에 에러가 발생하였다고 판단합니다.
 
 ##### 센서 상태 전송
 
@@ -274,7 +274,7 @@ MESSAGE: on,90,000011112222-onoff-0,on,90,000011112222-temperature-0,off,90
 
 
 #### 2.2.6 센서값 전송
-하드웨어는 개별 센서의 값을 전송할 수 있습니다. 하드웨어는 센서값과 시간을 쌍으로 전송해야하며, 한개의 센서에 대해 여러개의 센서값을 한꺼번에 전송할 수도 있습니다. 여러개의 센서값 전송 시 시간순으로 정렬이 되어있어야 합니다. 센서값과 시간을 배열로 묶은 형태도 전송이 가능합니다. </br>
+하드웨어는 개별 센서의 값을 전송할 수 있습니다. 하드웨어는 센서값과 시간을 쌍으로 전송해야하며, 한개의 센서에 대해 여러개의 센서값을 한꺼번에 전송할 수도 있습니다. 여러개의 센서값 전송 시 시간순으로 정렬이 되어있어야 합니다. 센서값과 시간을 배열로 묶은 형태도 전송이 가능합니다.
 
 ##### 센서 값 전송
 
@@ -371,10 +371,11 @@ TOPIC: v/a/g/000011112222/req
 
 ##### Thing+ 요청 작업의 결과
 
-```javascritp
+```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/res
 MESSAGE IF SUCCESS": {"id":__MESSAGE_ID__,"result":__RESULT__}
 MESSAGE IF FAILED ": {"id":__MESSAGE_ID__,"error":"code":__ERR_CODE__, "message":__ERR_MSG__}}
+
 __GATEWAY_ID__: 게이트웨이 아이디
 __MESSAGE_ID__: 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
 __RESULT__: 작업의 결과
@@ -384,7 +385,7 @@ __ERR_MSG__: 실패 이유
 메시지에 {, }, "가 포함됩니다.
 ```
 
-에러코드는 [JSONRPC의 에러코드 규칙](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php)을 따르며, 자세한 에러원인은 {error_message} 에 적어주면 됩니다.
+에러코드는 [JSONRPC의 에러코드 규칙](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php)을 따르며, 자세한 에러원인은 `__ERR_MSG__`에 적어주면 됩니다.
 
 #### 2.2.10 Thing+가 요청하는 작업 목록
 
@@ -460,8 +461,7 @@ RESPONSE IF ERROR: {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid i
 ```
 
 ##### controlActuator
-controlActuator 메쏘드는 액추에이터에 명령을 내릴 때 사용합니다. 액추에이터의 명령어 및 옵션는 Thing+에서 정의하고 있으며, 메시지의 파라미터로 전송이 됩니다.<br>
-액추에이터 명령어 및 옵션의 목록은 [센서,엑츄에이터 정의파일](https://api.thingplus.net/v1/sensorTypes "Title")(Thing+ 포털 로그인 후 확인 가능)에서 확인하실 수 있습니다.
+controlActuator 메쏘드는 액추에이터에 명령을 내릴 때 사용합니다. 액추에이터의 명령어 및 옵션는 Thing+에서 정의하고 있으며, 메시지의 파라미터로 전송이 됩니다.<br>액추에이터 명령어 및 옵션의 목록은 [센서, 엑츄에이터 정의파일](https://api.thingplus.net/sensorTypes)(Thing+ 포털 로그인 후 확인 가능)에서 확인하실 수 있습니다.
 
 ######  대표적인 액추에이터 명령어 및 명령어 옵션
 
