@@ -257,7 +257,7 @@ hardware can subscribe a MQTT message only for it.
 
 ##### MQTT Topic and Message subscribed by a hardware
 
-```
+```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
 MESSAGE: {"id": __MESSAGE_ID__,"method": __METHOD__,"params": __PARAMS__}
 
@@ -325,7 +325,7 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"timeSync","params":{"time":__SERVER_TIME__}}
 
 RESPONSE IF SUCCESS: {"id":"__MESSAGE_ID__","result":""}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 
 __SERVER_TIME__: Server time. It is Unix time and its unit is msec.
 ```
@@ -338,7 +338,7 @@ TOPIC: v/a/g/1928dbc93871/req
 REQUEST MESSAGE: {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
 
 RESPONSE IF SUCCESS: {"id":"e1kcs13b9","result":""}
-REPONSE IF FAILED: {"id":"e1kcs13b9","error":{"code": -32000,"message": "invalid options"}}
+RESPONSE IF FAILED : {"id":"e1kcs13b9","error":{"code": -32000,"message": "invalid options"}}
 ```
 
 ##### setProperty
@@ -353,7 +353,7 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"setProperty","params":{"reportInterval":__INTERVAL__}}
 
 RESPONSE IF SUCCESS: {"id":"__MESSAGE_ID__","result"}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example
@@ -389,7 +389,7 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"controlActuator","params":{"id":__SENSOR_ID__,"cmd":__CMD__,"options":{__OPTIONS__}}
 
 RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__","result":""}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example: LED ON
@@ -399,7 +399,7 @@ TOPIC: v/a/g/1928dbc93781/req
 REQUEST MESSAGE: {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
 
 RESPONSE IF SUCCESS: {"id":"46h6f8xp3","result":""}
-RESPONSE IF FAILED: {"id":"46h6f8xp3","error":{"code":-32000,"message":"invalid options"}}
+RESPONSE IF FAILED : {"id":"46h6f8xp3","error":{"code":-32000,"message":"invalid options"}}
 ```
 
 ### 2.3 Thing+ HTTP Protocol
@@ -469,7 +469,7 @@ The Thing+ HTTP Protocol is the main protocol used for the Thing+ REST API. When
   "category": "sensor",
   "type": "humidity",
   "model": "jsonrpcHumi",
-  "driverName": "jsonrpcSensor"
+  "driverName": "jsonrpcSensor",
   "network": "jsonrpc",
   "name": "My Camera",
   "deviceId": "abcdefghijkl-0"
@@ -1051,7 +1051,7 @@ property|Description
 :---:|---|
 method|Name of executino method or service
 params|Parameters
-id|Request ID. Use this id when reponse.
+id|Request ID. Use this id when response.
 
 - Response
 

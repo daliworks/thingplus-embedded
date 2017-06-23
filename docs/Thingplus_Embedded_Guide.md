@@ -343,13 +343,13 @@ MESSAGE: {"000011112222-temperature-0":[1461563978000,27.5,1461563978000,28.5],"
 
 #### 2.2.8 Thing+가 하드웨어에게 작업을 요청하는 메시지
 
-Thing+는 액추에이터 실행, 하드웨어 환경 설정 등의 작업을 요청(Request)할 수 있으며, 하드웨어는 주어진 포맷에 따라 응답(Reponse)을 해야합니다.
+Thing+는 액추에이터 실행, 하드웨어 환경 설정 등의 작업을 요청(Request)할 수 있으며, 하드웨어는 주어진 포맷에 따라 응답(Response)을 해야합니다.
 
 하드웨어는 서버의 작업 요청을 받기 위해 토픽을 구독해야 하여, Thing+가 요청하는 메시지 포맷은 아래와 같습니다.
 
 ##### Thing+가 하드웨어에게 작업 요청
 
-```
+```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/req
 MESSAGE: {"id": __MESSAGE_ID__,"method": __METHOD__,"params": __PARAMS__}
 
@@ -375,8 +375,8 @@ TOPIC: v/a/g/000011112222/req
 
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/res
-MESSAGE IF SUCCESS": {"id":__MESSAGE_ID__,"result":__RESULT__}
-MESSAGE IF FAILED ": {"id":__MESSAGE_ID__,"error":{"code":__ERR_CODE__,"message":__ERR_MSG__}}
+MESSAGE IF SUCCESS: {"id":__MESSAGE_ID__,"result":__RESULT__}
+MESSAGE IF FAILED : {"id":__MESSAGE_ID__,"error":{"code":__ERR_CODE__,"message":__ERR_MSG__}}
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __MESSAGE_ID__: 메시지 아이디. 메시지의 고유값으로 서버가 전송합니다.
@@ -417,7 +417,7 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"timeSync","params":{"time":__SERVER_TIME__}}
 
 RESPONSE IF SUCCESS: {"id":"__MESSAGE_ID__","result":""}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 
 __GATEWAY_ID__: 게이트웨이 아이디
 __MESSAGE_ID__: 메시지 아이디
@@ -434,7 +434,7 @@ TOPIC: v/a/g/1928dbc93871/req
 REQUEST MESSAGE: {"id":"e1kcs13b9","method":"timeSync","params":{"time":1372874401865}}
 
 RESPONSE IF SUCCESS: {"id":"e1kcs13b9","result":""}
-REPONSE IF FAILED: {"id":"e1kcs13b9","error":{"code": -32000,"message": "invalid options"}}
+RESPONSE IF FAILED : {"id":"e1kcs13b9","error":{"code": -32000,"message": "invalid options"}}
 ```
 
 ##### setProperty
@@ -448,7 +448,7 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"setProperty","params":{"reportInterval":__INTERVAL__}}
 
 RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__","result"}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example
@@ -482,7 +482,7 @@ TOPIC: v/a/g/__GATEWAY_ID__/req
 REQUEST MESSAGE: {"id":"__MESSAGE_ID__","method":"controlActuator","params":{"id":__SENSOR_ID__,"cmd":__CMD__,"options":{__OPTIONS__}}
 
 RESPONSE IF SUCCESS: {"id": "__MESSAGE_ID__","result":""}
-RESPONSE IF FAILED: {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
+RESPONSE IF FAILED : {"id":"__MESSAGE_ID__","error":{"code":__ERR_CODE__,"message":"__ERR_MSG__"}}
 ```
 
 ###### Example: LED ON
@@ -492,7 +492,7 @@ TOPIC: v/a/g/1928dbc93781/req
 REQUEST MESSAGE: {"id":"46h6f8xp3","method":"controlActuator","params":{"id":"led-1928dbc93781-r","cmd":"on","options":{"duration":3000}}}
 
 RESPONSE IF SUCCESS: {"id":"46h6f8xp3","result":""}
-RESPONSE IF FAILED: {"id":"46h6f8xp3","error":{"code":-32000,"message":"invalid options"}}
+RESPONSE IF FAILED : {"id":"46h6f8xp3","error":{"code":-32000,"message":"invalid options"}}
 ```
 
 ### 2.3 Thing+ HTTP Protocol
