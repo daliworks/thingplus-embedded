@@ -1171,6 +1171,8 @@ Device Agent --> Thing+ Gateway
 {"id":3,"result":"on","error":null}\n
 ```
 
+**If using as an actuator, the Device Agent MUST send it's status on each report interval**
+
 ##### 4.3.2.4 "sensor.setNotification" method
 
 Request to set a sensor event

@@ -1267,6 +1267,8 @@ Device Agent --> Thing+ Gateway
 {"id":3,"result":"on","error":null}\n
 ```
 
+**액추에이터의 경우 Device Agent에서 리포트 인터벌마다 액추에이터의 상태를 전송해야 합니다.**
+
 ##### 4.3.2.4 "sensor.setNotification" method
 이벤트 센서로 설정
 
