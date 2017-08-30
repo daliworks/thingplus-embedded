@@ -182,7 +182,7 @@ PORT | 8883
 MQTT Client ID | {gateway_id}
 Clean Session | TRUE
 MQTT ID | {gateway_id}
-MQTT Passworkd | {APIKEY}
+MQTT Password | {APIKEY}
 Will Topic | v/a/g/{gateway_id}/mqtt/status
 Will Message | err
 Will Message Retain | TRUE
