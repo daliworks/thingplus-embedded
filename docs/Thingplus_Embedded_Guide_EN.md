@@ -166,7 +166,6 @@ Sensor Status Data can be transmitted along with the H/W status data. It is an e
 ```javascript
 TOPIC: v/a/g/__GATEWAY_ID__/status
 MESSAGE: __HW_STATUS__,__VALID_DURATION__,__SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__, ...(REPEAT FOR SENSOR), __SENSOR_ID__,__SENSOR_STATUS__,__VALID_DURATION__
-}
 
 __HW_STATUS__: "on" or "off"
 __VALID_DURATION__: Unit is sec
@@ -364,7 +363,6 @@ REQUEST MESSAGE: {"id":"e1kcs13bb","method":"setProperty","params":{"reportInter
 
 RESPONSE IF SUCCESS: {"id":"e1kcs13bb","result":""}
 RESPONSE IF ERROR: {"id":"e1kcs13bb","error":{"code":-32000,"message":"invalid interval"}}
-}
 ```
 
 ##### controlActuator
