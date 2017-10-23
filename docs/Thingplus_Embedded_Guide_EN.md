@@ -1016,7 +1016,7 @@ Connection|Connecting hardware and Thing+ Cloud Server
 Discover|Discover connected sensors and actuators and register it.
 TimeSync|Syncronize system time automatically
 Store DB|Save sensors value if network is disconnected
-SW Update|Upgrade Thing+ Gatweway software from remote
+SW Update|Upgrade Thing+ Gateway software from remote
 
 - Connection<br>
 The Thing+ Gateway connects hardware to the Thing+ Cloud. One thing you need to do is launch the Thing+ Gateway with APIKEY once. The Thing+ Gateway sends sensors status and values periodically based on the report interval.
