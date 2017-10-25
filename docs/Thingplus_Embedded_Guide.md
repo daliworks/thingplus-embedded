@@ -7,8 +7,8 @@ Thing+ Embedded는 다양한 IoT 기기들이 Thing+ Cloud에 연결될 수 있�
 [홈페이지](https://thingplus.net/) 참조
 
 ## 1. Thing+ Embedded Overview
-Thing+ Embedded는 Thing+ Embedded 프로토콜, Thing+ Embedded SDK, Thing+ Gateway로 구성됩니다.<br>
-Thing+ Embedded 프로토콜은 Thing+ Cloud와 하드웨어 사이에 사용하는 MQTT 토픽과 메시지를 정의하고있습니다. Thing+ Embedded SDK는 Thing+ Embedded 프로토콜을 구현한 라이브러리입니다(개발중). Thing+ Gateway는 Daliworks에서 개발한 Thing+ Embedded 프로토콜을 따르는 소프트웨어입니다.<br>
+Thing+ Embedded는 `Thing+ Embedded 프로토콜`, `Thing+ Embedded SDK`, `Thing+ Gateway`로 구성됩니다.<br>
+`Thing+ Embedded 프로토콜`은 Thing+ Cloud와 하드웨어 사이에 사용하는 MQTT 토픽과 메시지를 정의하고있습니다. `Thing+ Embedded SDK`는 Thing+ Embedded 프로토콜을 구현한 라이브러리입니다(개발중). `Thing+ Gateway`는 Daliworks에서 개발한 Thing+ Embedded 프로토콜을 따르는 소프트웨어입니다.<br>
 
 Thing+와 하드웨어를 연동하는 방법은 3가지가 있습니다.
 
@@ -1079,7 +1079,7 @@ Thing+ Gateway를 사용하면 Thing+ MQTT 프로토콜을 직접 구현하는 �
 ![Cloud_Gateway_DeviceAgent](./image/Thingplus_Embedded_Guide/Cloud_Gateway_DeviceAgent.png)
 
 ### 4.1 Hardware Requirement
-Thing+ 게이이트웨이는 하드웨어에서 실행되는 프로그램이며, Node.js로 작성했습니다. **Node.js가 동작하지 않는 시스템에서는 사용할 수 없습니다.**
+Thing+ 게이트웨이는 하드웨어에서 실행되는 프로그램이며, Node.js로 작성했습니다. **Node.js가 동작하지 않는 시스템에서는 사용할 수 없습니다.**
 
 #### Node.js 실행 환경<br>
 
