@@ -1167,6 +1167,7 @@ Device Agent --> Thing+ Gateway
 
 ```
 {"id":3,"result":"on","error":null}\n
+{"id":3,"result":null,"error":"Offline"}\n
 ```
 
 **If using as an actuator, the Device Agent MUST send it's status on each report interval**
