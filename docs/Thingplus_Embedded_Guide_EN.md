@@ -1,10 +1,12 @@
-## 1. Thing+ Embedded Overview
-Thing+ Embedded is composed of the Thing+ Embedded Protocol, Thing+ Embedded SDK and Thing+ Gateway. The Thing+ Embedded Protocol defines the format of data flowing between hardware and the Thing+ Cloud server. The Thing+ Embedded SDK is a C library that implements our Thing+ Embedded Protocol. The Thing+ Gateway is a Node.js application program that implements Thing+ Embedded Protocol.
+## 1. Thing+ Custom (Embedded) Hardware Development and Integration Overview
+Thing+ Embedded is composed of the Thing+ Embedded Protocol, where you can directly use something like NodeRed to push messages (MQTT usually) via our API, the Thing+ Embedded SDK and the Thing+ Gateway (also known as the Thing+ Agent). The Thing+ Embedded Protocol defines the format of data flowing between hardware and the Thing+ Cloud server. The Thing+ Embedded SDK is a C library that implements our Thing+ Embedded Protocol. Finally, the Thing+ Gateway is a Node.js application program that implements Thing+ Embedded Protocol, and can be used out-of-the-box on your hardware if you support Node.js, TLS, and have a linux environment.
+
+You may use any of these methods to directly push data to Thing+ for visualization on your dashboard from custom hardware.
 
 ### 1.1 Hardware application requirements
 
 #### 1.1.1 Thing+ Embedded Protocol
-The Thing+ Embedded Protocol can be implemented in hardware ranging from the low end such as WiFi chips to the high end. Firmware or any OS can be used. The ability to connect a MQTT server, sense sensors, actuate actuators, compose MQTT, and send HTTP messages are required in order to function correctly.
+The Thing+ Embedded Protocol can be implemented in hardware ranging from the low end such as WiFi chips to the high end. Firmware or any OS can be used. The ability to connect to a MQTT server, sense sensors, actuate actuators, compose MQTT, and send HTTP messages is required in order to function correctly.
 
 Category|Description
 ---|---
